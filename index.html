@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Streaming Simulation</title>
+    <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.1.0/uicons-solid-straight/css/uicons-solid-straight.css">
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <style>
+        :root {
+            --primary-purple: #5d2b8c;
+            --secondary-purple: #7b3ca6;
+            --dark-purple: #4a1e6b;
+            --neon-pink: #FF69B4;
+            --live-red: #ff0000;
+            --live-light-red: #ff3333;
+            --text-white: #ffffff;
+            --text-light: #f0f0f0;
+            --shadow-color: rgba(255, 105, 180, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-purple), var(--secondary-purple), var(--dark-purple));
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            padding: 20px;
+        }
+
+        #particles-js {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 2;
+        }
+
+        .main-container {
+            position: relative;
+            width: 300px;
+            height: 600px;
+            border-radius: 20px;
+            border: 2px solid var(--neon-pink);
+            box-shadow: 0 0 20px var(--shadow-color), 
+                        0 0 40px var(--shadow-color),
+                        inset 0 0 20px rgba(255, 105, 180, 0.1);
+            overflow: hidden;
+            z-index: 10;
+            background-color: #000;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .video-background {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Badge AO VIVO */
+        .live-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: linear-gradient(to right, var(--live-red), var(--live-light-red));
+            color: var(--text-white);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            z-index: 20;
+            box-shadow: 0 4px 10px rgba(255, 0, 0, 0.4);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .live-pulse {
+            width: 8px;
+            height: 8px;
+            background-color: var(--text-white);
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.8); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.7; }
+            100% { transform: scale(0.8); opacity: 1; }
+        }
+
+        /* Controles de Áudio */
+        .audio-control {
+            position: absolute;
+            top: 55px;
+            right: 15px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: var(--text-white);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 20;
+            transition: all 0.3s ease;
+        }
+
+        .audio-control:hover {
+            background: rgba(0, 0, 0, 0.8);
+            transform: scale(1.1);
+        }
+
+        .audio-control.muted {
+            background: rgba(255, 105, 180, 0.8);
+            border-color: var(--neon-pink);
+            animation: mutePulse 1.5s infinite;
+        }
+
+        @keyframes mutePulse {
+            0% { 
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(255, 105, 180, 0.7); 
+            }
+            50% { 
+                transform: scale(1.1);
+                box-shadow: 0 0 0 8px rgba(255, 105, 180, 0); 
+            }
+            100% { 
+                transform: scale(1);
+                box-shadow: 0 0 0 0 rgba(255, 105, 180, 0); 
+            }
+        }
+
+        .audio-icon-muted {
+            position: relative;
+            color: white;
+        }
+
+        .audio-icon-muted::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(45deg);
+            width: 24px;
+            height: 3px;
+            background-color: #ff3333;
+            border-radius: 2px;
+        }
+
+        /* Contador de Visualizações */
+        .viewer-count {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(0, 0, 0, 0.6);
+            color: var(--text-light);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 20;
+            backdrop-filter: blur(5px);
+        }
+
+        .viewer-count i {
+            color: var(--neon-pink);
+        }
+
+        /* Sistema de Comentários - CORRIGIDO */
+        .comments-section {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.5), transparent);
+            z-index: 20;
+        }
+
+        .comments-container {
+            height: 180px;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        /* Comentários corrigidos - posicionamento relativo e animação simplificada */
+        .comment {
+            color: #ffffff;
+            padding: 8px 0;
+            margin-bottom: 4px;
+            font-size: 13px;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            width: 100%;
+            line-height: 1.3;
+            position: relative;
+            animation: floatUp 15s linear forwards;
+            opacity: 0;
+            transform: translateY(0);
+        }
+
+        /* Animação simplificada e funcionando */
+        @keyframes floatUp {
+            0% {
+                transform: translateY(100%);
+                opacity: 0;
+            }
+            10% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            90% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100%);
+                opacity: 0;
+            }
+        }
+
+        /* Avatar anônimo simplificado */
+        .user-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-shrink: 0;
+            font-size: 12px;
+        }
+
+        .user-avatar i {
+            color: #ffffff;
+            font-size: 12px;
+        }
+
+        .comment-content {
+            display: flex;
+            flex-direction: column;
+            max-width: calc(100% - 32px);
+        }
+
+        .username {
+            font-weight: bold;
+            color: #ffffff;
+            font-size: 12px;
+            margin-bottom: 2px;
+        }
+
+        .username.you {
+            color: #00ff00;
+            text-shadow: 0 0 3px rgba(0, 255, 0, 0.5);
+        }
+
+        .comment-text {
+            font-size: 13px;
+            color: #ffffff;
+            word-break: break-word;
+        }
+
+        .comment-input-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .comment-input {
+            flex: 1;
+            padding: 12px 15px;
+            border-radius: 24px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-white);
+            font-size: 14px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .comment-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .comment-input:focus {
+            outline: none;
+            border-color: var(--neon-pink);
+            box-shadow: 0 0 10px rgba(255, 105, 180, 0.3);
+        }
+
+        .emoji-selector {
+            display: flex;
+            gap: 5px;
+            margin-top: 8px;
+        }
+
+        .emoji-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .emoji-btn:hover {
+            background: rgba(255, 105, 180, 0.3);
+            transform: scale(1.2);
+        }
+
+        .send-btn {
+            background: var(--neon-pink);
+            color: white;
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .send-btn:hover {
+            background: #ff4da6;
+            transform: scale(1.1);
+        }
+
+        /* Controle de Tela Cheia */
+        .fullscreen-control {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: var(--text-white);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 20;
+            transition: all 0.3s ease;
+        }
+
+        .fullscreen-control:hover {
+            background: rgba(0, 0, 0, 0.8);
+            transform: scale(1.1);
+        }
+
+        /* Responsividade */
+        @media (max-width: 480px) {
+            .main-container {
+                width: 100%;
+                max-width: 300px;
+                height: 600px;
+            }
+            
+            body {
+                padding: 10px;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .main-container {
+                width: 320px;
+                height: 640px;
+            }
+            
+            .comment {
+                font-size: 14px;
+            }
+        }
+
+        .char-count {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.6);
+            text-align: right;
+            margin-top: 4px;
+            padding-right: 5px;
+        }
+
+        .char-count.warning {
+            color: #ff9900;
+        }
+
+        .char-count.error {
+            color: #ff3333;
+        }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+    <div class="overlay"></div>
+    
+    <div class="main-container">
+        <div class="video-container">
+            <!-- VÍDEO EM LOOP -->
+            <video class="video-background" autoplay loop muted playsinline>
+                <source src="https://dg-videos.b-cdn.net/bg/720x1280_cm563.mp4" type="video/mp4">
+                Seu navegador não suporta vídeos HTML5.
+            </video>
+            
+            <!-- Badge AO VIVO -->
+            <div class="live-badge">
+                <div class="live-pulse"></div>
+                <span>AO VIVO</span>
+            </div>
+            
+            <!-- Contador de Visualizações -->
+            <div class="viewer-count">
+                <i class="fi fi-ss-eye"></i>
+                <span id="viewer-count">423</span>
+            </div>
+            
+            <!-- Controle de Áudio -->
+            <div class="audio-control" id="audio-control">
+                <i class="fi fi-ss-volume" id="audio-icon"></i>
+            </div>
+            
+            <!-- Sistema de Comentários -->
+            <div class="comments-section">
+                <div class="comments-container" id="comments-container">
+                    <!-- Comentários serão inseridos aqui via JavaScript -->
+                </div>
+                
+                <div class="comment-input-container">
+                    <input type="text" class="comment-input" id="comment-input" placeholder="Envie um comentário..." maxlength="50">
+                    <button class="send-btn" id="send-btn">
+                        <i class="fi fi-ss-paper-plane"></i>
+                    </button>
+                </div>
+                
+                <div class="char-count" id="char-count">0/50</div>
+                
+                <div class="emoji-selector">
+                    <button class="emoji-btn" data-emoji="😈">😈</button>
+                    <button class="emoji-btn" data-emoji="😇">😇</button>
+                    <button class="emoji-btn" data-emoji="🍑">🍑</button>
+                    <button class="emoji-btn" data-emoji="🤤">🤤</button>
+                    <button class="emoji-btn" data-emoji="❤️">❤️</button>
+                </div>
+            </div>
+            
+            <!-- Controle de Tela Cheia -->
+            <div class="fullscreen-control" id="fullscreen-control">
+                <i class="fi fi-ss-expand" id="fullscreen-icon"></i>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =====================================================================
+        // CONFIGURAÇÃO CENTRALIZADA DAS NOTIFICAÇÕES - SIMPLIFICADA
+        // =====================================================================
+        const NOTIFICATION_CONFIG = {
+            maxVisibleMessages: 4,           // Número máximo de mensagens visíveis
+            autoMessageInterval: 1000,       // Intervalo entre mensagens automáticas
+            messageVisibleDuration: 4000,   // Tempo que a mensagem fica visível
+            userMessagePriority: true,       // Mensagens do usuário têm prioridade
+            autoMessagesEnabled: true,       // Habilita mensagens automáticas
+            initialAutoMessages: 1,          // Mensagens iniciais
+            animationDuration: 12            // Duração da animação em segundos
+        };
+        
+        // Lista de usuários masculinos
+        const USER_NAMES = [
+            "@joão", "@pedro", "@carlos", "@lucas", "@marcos",
+            "@rafael", "@guilherme", "@thiago", "@vinicius", "@rodrigo"
+        ];
+        
+        // Banco de mensagens
+        const EMOJI_ONLY_MESSAGES = [
+            "😈😈😈", "😇😇😇", "🍑🍑🍑", "❤️❤️❤️", "🤤🤤🤤"
+        ];
+        
+        const TEXT_ONLY_MESSAGES = [
+            "Que tesão essa live!", "Estou com muito desejo agora",
+            "Que excitação!", "Isso é muito quente", "Que proibido e gostoso"
+        ];
+        
+        const MIXED_MESSAGES = [
+            "Que tesão! 😈😈", "Muito desejo agora 🤤", "Excitação total! ❤️🍑",
+            "Isso é quente demais 😇", "Proibido e gostoso 😈❤️"
+        ];
+        
+        // =====================================================================
+        // VARIÁVEIS GLOBAIS
+        // =====================================================================
+        let commentId = 0;
+        let autoCommentInterval;
+        let isAutoCommentRunning = false;
+        let activeMessages = [];
+        
+        // =====================================================================
+        // FUNÇÕES DO SISTEMA DE NOTIFICAÇÕES - CORRIGIDAS
+        // =====================================================================
+        
+        /**
+         * Adiciona uma mensagem ao sistema
+         */
+        function addNotification(user, text, isUserMessage = false) {
+            commentId++;
+            const commentEl = document.createElement('div');
+            commentEl.className = 'comment';
+            commentEl.id = `comment-${commentId}`;
+            
+            // Definir delay de animação baseado na posição
+            const currentMessages = document.querySelectorAll('.comment');
+            const baseDelay = currentMessages.length * 200;
+            
+            // Se for mensagem do usuário, prioridade máxima
+            const animationDelay = isUserMessage ? 0 : baseDelay;
+            commentEl.style.animationDelay = `${animationDelay}ms`;
+            
+            // Avatar e conteúdo
+            commentEl.innerHTML = `
+                <div class="user-avatar">
+                    <i class="fi fi-ss-user"></i>
+                </div>
+                <div class="comment-content">
+                    <div class="username ${isUserMessage ? 'you' : ''}">${user}</div>
+                    <div class="comment-text">${text}</div>
+                </div>
+            `;
+            
+            // Adicionar ao container
+            const commentsContainer = document.getElementById('comments-container');
+            
+            // Se for mensagem do usuário, adicionar no início
+            if (isUserMessage && NOTIFICATION_CONFIG.userMessagePriority) {
+                if (commentsContainer.firstChild) {
+                    commentsContainer.insertBefore(commentEl, commentsContainer.firstChild);
+                } else {
+                    commentsContainer.appendChild(commentEl);
+                }
+            } else {
+                commentsContainer.appendChild(commentEl);
+            }
+            
+            // Registrar mensagem ativa
+            activeMessages.push({
+                id: commentId,
+                element: commentEl,
+                isUserMessage: isUserMessage
+            });
+            
+            // Remover após o tempo configurado
+            setTimeout(() => {
+                if (commentEl.parentNode) {
+                    commentEl.parentNode.removeChild(commentEl);
+                    // Remover da lista de mensagens ativas
+                    activeMessages = activeMessages.filter(msg => msg.id !== commentId);
+                }
+            }, NOTIFICATION_CONFIG.messageVisibleDuration + animationDelay);
+            
+            // Gerenciar limite de mensagens
+            manageMessageLimit();
+            
+            // Forçar reflow para ativar animação
+            commentEl.offsetHeight;
+        }
+        
+        /**
+         * Gerencia o limite de mensagens visíveis
+         */
+        function manageMessageLimit() {
+            const currentMessages = document.querySelectorAll('.comment');
+            
+            if (currentMessages.length > NOTIFICATION_CONFIG.maxVisibleMessages) {
+                // Encontrar mensagens não prioritárias para remover
+                const messagesArray = Array.from(currentMessages);
+                const nonUserMessages = messagesArray.filter(msg => 
+                    !msg.querySelector('.username.you')
+                );
+                
+                // Remover a mais antiga que não seja do usuário
+                if (nonUserMessages.length > 0) {
+                    const oldestNonUser = nonUserMessages[nonUserMessages.length - 1];
+                    if (oldestNonUser.parentNode) {
+                        const msgId = parseInt(oldestNonUser.id.replace('comment-', ''));
+                        activeMessages = activeMessages.filter(msg => msg.id !== msgId);
+                        oldestNonUser.parentNode.removeChild(oldestNonUser);
+                    }
+                }
+            }
+        }
+        
+        /**
+         * Gera uma mensagem automática
+         */
+        function generateAutoMessage() {
+            if (!isAutoCommentRunning || !NOTIFICATION_CONFIG.autoMessagesEnabled) return;
+            
+            const randomUser = USER_NAMES[Math.floor(Math.random() * USER_NAMES.length)];
+            const messageType = Math.floor(Math.random() * 3);
+            
+            let randomMessage;
+            switch(messageType) {
+                case 0:
+                    randomMessage = EMOJI_ONLY_MESSAGES[Math.floor(Math.random() * EMOJI_ONLY_MESSAGES.length)];
+                    break;
+                case 1:
+                    randomMessage = TEXT_ONLY_MESSAGES[Math.floor(Math.random() * TEXT_ONLY_MESSAGES.length)];
+                    break;
+                case 2:
+                    randomMessage = MIXED_MESSAGES[Math.floor(Math.random() * MIXED_MESSAGES.length)];
+                    break;
+            }
+            
+            addNotification(randomUser, randomMessage, false);
+        }
+        
+        /**
+         * Inicia as mensagens automáticas
+         */
+        function startAutoMessages() {
+            isAutoCommentRunning = true;
+            
+            // Adicionar mensagens iniciais
+            const initialMessages = [
+                { user: "@joão", text: "😈😈😈", type: "emoji" },
+                { user: "@pedro", text: "Que tesão essa live!", type: "text" },
+                { user: "@carlos", text: "Muito desejo agora 🤤", type: "mixed" },
+                { user: "@lucas", text: "❤️❤️❤️", type: "emoji" },
+                { user: "@marcos", text: "Estou com muita excitação", type: "text" }
+            ];
+            
+            initialMessages.forEach((msg, index) => {
+                setTimeout(() => {
+                    addNotification(msg.user, msg.text, false);
+                }, index * 1000);
+            });
+            
+            // Configurar intervalo para novas mensagens
+            autoCommentInterval = setInterval(() => {
+                generateAutoMessage();
+            }, NOTIFICATION_CONFIG.autoMessageInterval);
+        }
+        
+        /**
+         * Para as mensagens automáticas
+         */
+        function stopAutoMessages() {
+            isAutoCommentRunning = false;
+            if (autoCommentInterval) {
+                clearInterval(autoCommentInterval);
+                autoCommentInterval = null;
+            }
+        }
+        
+        // =====================================================================
+        // INICIALIZAÇÃO DO SISTEMA
+        // =====================================================================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configuração do Particles.js
+            particlesJS('particles-js', {
+                particles: {
+                    number: {
+                        value: 80,
+                        density: {
+                            enable: true,
+                            value_area: 800
+                        }
+                    },
+                    color: {
+                        value: "#ffffff"
+                    },
+                    shape: {
+                        type: "circle"
+                    },
+                    opacity: {
+                        value: 0.5,
+                        random: true,
+                        anim: {
+                            enable: true,
+                            speed: 1,
+                            opacity_min: 0.1,
+                            sync: false
+                        }
+                    },
+                    size: {
+                        value: 3,
+                        random: true,
+                        anim: {
+                            enable: true,
+                            speed: 2,
+                            size_min: 0.1,
+                            sync: false
+                        }
+                    },
+                    line_linked: {
+                        enable: true,
+                        distance: 150,
+                        color: "#ffffff",
+                        opacity: 0.2,
+                        width: 1
+                    },
+                    move: {
+                        enable: true,
+                        speed: 1,
+                        direction: "none",
+                        random: true,
+                        straight: false,
+                        out_mode: "out",
+                        bounce: false,
+                        attract: {
+                            enable: false,
+                            rotateX: 600,
+                            rotateY: 1200
+                        }
+                    }
+                },
+                interactivity: {
+                    detect_on: "canvas",
+                    events: {
+                        onhover: {
+                            enable: true,
+                            mode: "repulse"
+                        },
+                        onclick: {
+                            enable: true,
+                            mode: "push"
+                        },
+                        resize: true
+                    },
+                    modes: {
+                        repulse: {
+                            distance: 100,
+                            duration: 0.4
+                        },
+                        push: {
+                            particles_nb: 4
+                        }
+                    }
+                },
+                retina_detect: true
+            });
+
+            // Elementos da DOM
+            const video = document.querySelector('.video-background');
+            const audioControl = document.getElementById('audio-control');
+            const audioIcon = document.getElementById('audio-icon');
+            const viewerCount = document.getElementById('viewer-count');
+            const commentInput = document.getElementById('comment-input');
+            const sendBtn = document.getElementById('send-btn');
+            const emojiBtns = document.querySelectorAll('.emoji-btn');
+            const fullscreenControl = document.getElementById('fullscreen-control');
+            const fullscreenIcon = document.getElementById('fullscreen-icon');
+            const charCount = document.getElementById('char-count');
+            const mainContainer = document.querySelector('.main-container');
+
+            // Estado inicial
+            let isMuted = false;
+            let viewerCountValue = 423;
+
+            // Foco automático no campo de comentário
+            commentInput.focus();
+
+            // Contador de visualizações dinâmico
+            function updateViewerCount() {
+                const change = Math.floor(Math.random() * 21) - 10;
+                viewerCountValue = Math.min(657, Math.max(375, viewerCountValue + change));
+                viewerCount.textContent = viewerCountValue;
+                setTimeout(updateViewerCount, 2000 + Math.random() * 3000);
+            }
+            updateViewerCount();
+
+            // Controle de áudio
+            audioControl.addEventListener('click', function() {
+                isMuted = !isMuted;
+                video.muted = isMuted;
+                
+                if (isMuted) {
+                    audioIcon.className = 'fi fi-ss-volume';
+                    audioIcon.classList.add('audio-icon-muted');
+                    audioControl.classList.add('muted');
+                } else {
+                    audioIcon.className = 'fi fi-ss-volume';
+                    audioIcon.classList.remove('audio-icon-muted');
+                    audioControl.classList.remove('muted');
+                }
+            });
+
+            // Pausar/play no vídeo ao clicar
+            video.addEventListener('click', function() {
+                if (video.paused) {
+                    video.play();
+                } else {
+                    video.pause();
+                }
+            });
+
+            // Enviar comentário do usuário
+            function sendComment() {
+                const text = commentInput.value.trim();
+                if (text === '') return;
+                
+                // PRIORIDADE: Mensagem do usuário
+                addNotification("@você", text, true);
+                commentInput.value = '';
+                updateCharCount();
+                
+                // Resposta automática ocasional
+                if (Math.random() > 0.5) {
+                    setTimeout(() => {
+                        const responses = [
+                            "Obrigado! 😊",
+                            "Valeu pelo comentário!",
+                            "Show! ❤️",
+                            "Continue participando!",
+                            "Muito bom! 🤤"
+                        ];
+                        const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                        addNotification("@streamer", randomResponse, false);
+                    }, 1000 + Math.random() * 2000);
+                }
+            }
+
+            // Evento de enviar comentário
+            sendBtn.addEventListener('click', sendComment);
+            
+            // Enviar com Enter
+            commentInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendComment();
+                }
+            });
+
+            // Inserir emoji
+            emojiBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const emoji = this.getAttribute('data-emoji');
+                    const cursorPos = commentInput.selectionStart;
+                    const textBefore = commentInput.value.substring(0, cursorPos);
+                    const textAfter = commentInput.value.substring(cursorPos);
+                    
+                    commentInput.value = textBefore + emoji + textAfter;
+                    commentInput.focus();
+                    commentInput.selectionStart = commentInput.selectionEnd = cursorPos + emoji.length;
+                    updateCharCount();
+                });
+            });
+
+            // Atualizar contador de caracteres
+            function updateCharCount() {
+                const length = commentInput.value.length;
+                charCount.textContent = `${length}/50`;
+                
+                charCount.classList.remove('warning', 'error');
+                if (length > 40) {
+                    charCount.classList.add('warning');
+                }
+                if (length >= 50) {
+                    charCount.classList.add('error');
+                }
+            }
+            commentInput.addEventListener('input', updateCharCount);
+            updateCharCount();
+
+            // Controle de tela cheia
+            fullscreenControl.addEventListener('click', function() {
+                if (!document.fullscreenElement) {
+                    if (mainContainer.requestFullscreen) {
+                        mainContainer.requestFullscreen();
+                    } else if (mainContainer.webkitRequestFullscreen) {
+                        mainContainer.webkitRequestFullscreen();
+                    } else if (mainContainer.msRequestFullscreen) {
+                        mainContainer.msRequestFullscreen();
+                    }
+                } else {
+                    if (document.exitFullscreen) {
+                        document.exitFullscreen();
+                    } else if (document.webkitExitFullscreen) {
+                        document.webkitExitFullscreen();
+                    } else if (document.msExitFullscreen) {
+                        document.msExitFullscreen();
+                    }
+                }
+            });
+
+            // Mudar ícone de tela cheia
+            document.addEventListener('fullscreenchange', updateFullscreenIcon);
+            document.addEventListener('webkitfullscreenchange', updateFullscreenIcon);
+            document.addEventListener('msfullscreenchange', updateFullscreenIcon);
+
+            function updateFullscreenIcon() {
+                if (document.fullscreenElement || 
+                    document.webkitFullscreenElement || 
+                    document.msFullscreenElement) {
+                    fullscreenIcon.className = 'fi fi-ss-compress';
+                } else {
+                    fullscreenIcon.className = 'fi fi-ss-expand';
+                }
+            }
+
+            // Iniciar o sistema de mensagens automáticas
+            startAutoMessages();
+
+            // Pausar comentários automáticos quando a janela não está visível
+            document.addEventListener('visibilitychange', function() {
+                if (document.hidden) {
+                    stopAutoMessages();
+                } else {
+                    startAutoMessages();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
