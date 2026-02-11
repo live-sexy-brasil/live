@@ -34,6 +34,7 @@
             justify-content: center;
             align-items: center;
             position: relative;
+            padding: 10px;
         }
 
         body.tutorial-active {
@@ -49,26 +50,31 @@
 
         .main-container {
             position: relative;
-            width: 100%;
-            height: 100vh;
+            width: 95%;
+            max-width: 340px;
+            height: 620px;
             overflow: hidden;
             background: #000;
             z-index: 10;
             opacity: 1;
             transition: filter 0.5s ease;
+            border-radius: 20px;
+            border: 2px solid var(--neon-pink);
+            box-shadow: 0 0 30px rgba(255, 105, 180, 0.5);
         }
 
         @media (min-width: 768px) {
             .main-container {
                 width: 375px;
                 height: 667px;
-                border-radius: 20px;
-                border: 2px solid var(--neon-pink);
-                box-shadow: 0 0 30px rgba(255, 105, 180, 0.5);
             }
-            
-            body {
-                padding: 20px;
+        }
+
+        @media (max-width: 360px) {
+            .main-container {
+                width: 95%;
+                height: 580px;
+                max-width: 320px;
             }
         }
 
@@ -88,39 +94,39 @@
         /* HORÁRIO EM NEGRITO E BRANCO */
         .live-time {
             position: absolute;
-            top: 25px;
+            top: 15px;
             left: 50%;
             transform: translateX(-50%);
             color: var(--text-white);
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 900;
             z-index: 20;
-            text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
             font-family: 'Courier New', monospace;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
         }
 
         /* Controles sempre visíveis */
         .live-badge {
             position: absolute;
-            top: 20px;
-            right: 20px;
+            top: 15px;
+            right: 15px;
             background: linear-gradient(to right, var(--live-red), #ff3333);
             color: var(--text-white);
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 14px;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 12px;
             font-weight: bold;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             z-index: 20;
-            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.5);
+            box-shadow: 0 3px 10px rgba(255, 0, 0, 0.4);
         }
 
         .live-pulse {
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             background: var(--text-white);
             border-radius: 50%;
             animation: pulse 1.5s infinite;
@@ -128,16 +134,16 @@
 
         @keyframes pulse {
             0%, 100% { transform: scale(0.8); opacity: 1; }
-            50% { transform: scale(1.2); opacity: 0.7; }
+            50% { transform: scale(1.1); opacity: 0.7; }
         }
 
         /* Controle de áudio atualizado */
         .audio-control {
             position: absolute;
-            top: 70px;
-            right: 20px;
-            width: 44px;
-            height: 44px;
+            top: 60px;
+            right: 15px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
             background: rgba(255, 105, 180, 0.9);
             border: 2px solid var(--neon-pink);
@@ -148,8 +154,8 @@
             cursor: pointer;
             z-index: 20;
             transition: all 0.3s ease;
-            font-size: 20px;
-            box-shadow: 0 0 15px rgba(255, 105, 180, 0.5);
+            font-size: 18px;
+            box-shadow: 0 0 10px rgba(255, 105, 180, 0.5);
         }
 
         .audio-control:active {
@@ -173,24 +179,24 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) rotate(45deg);
-            width: 24px;
-            height: 3px;
+            width: 20px;
+            height: 2px;
             background-color: #ff3333;
-            border-radius: 2px;
+            border-radius: 1px;
         }
 
         .viewer-count {
             position: absolute;
-            top: 20px;
-            left: 20px;
+            top: 15px;
+            left: 15px;
             background: rgba(0, 0, 0, 0.7);
             color: #f0f0f0;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 14px;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 12px;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             z-index: 20;
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -202,25 +208,25 @@
             bottom: 0;
             left: 0;
             width: 100%;
-            padding: 20px;
+            padding: 15px;
             background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
             z-index: 20;
         }
 
         .comments-container {
-            height: 180px;
+            height: 150px;
             overflow: hidden;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
 
         .comment {
             color: #ffffff;
-            padding: 10px 0;
-            margin-bottom: 5px;
-            font-size: 14px;
+            padding: 8px 0;
+            margin-bottom: 3px;
+            font-size: 12px;
             display: flex;
             align-items: flex-start;
-            gap: 10px;
+            gap: 8px;
             animation: floatUp 15s linear forwards;
             opacity: 0;
         }
@@ -233,63 +239,65 @@
         }
 
         .user-avatar {
-            width: 28px;
-            height: 28px;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
             background: rgba(255, 255, 255, 0.15);
             display: flex;
             justify-content: center;
             align-items: center;
             flex-shrink: 0;
+            font-size: 10px;
         }
 
         .username {
             font-weight: bold;
-            font-size: 13px;
-            margin-bottom: 3px;
+            font-size: 11px;
+            margin-bottom: 2px;
         }
 
         .username.you {
             color: #00ff00;
-            text-shadow: 0 0 5px rgba(0, 255, 0, 0.7);
+            text-shadow: 0 0 3px rgba(0, 255, 0, 0.7);
         }
 
         .comment-text {
-            font-size: 14px;
+            font-size: 12px;
             word-break: break-word;
+            line-height: 1.3;
         }
 
         .comment-input-container {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
         }
 
         .comment-input {
             flex: 1;
-            padding: 14px 18px;
-            border-radius: 25px;
+            padding: 10px 14px;
+            border-radius: 20px;
             border: none;
             background: rgba(255, 255, 255, 0.15);
             color: var(--text-white);
-            font-size: 16px;
+            font-size: 14px;
             border: 1px solid rgba(255, 255, 255, 0.25);
         }
 
         .comment-input:focus {
             outline: none;
             border-color: var(--neon-pink);
-            box-shadow: 0 0 15px rgba(255, 105, 180, 0.5);
+            box-shadow: 0 0 10px rgba(255, 105, 180, 0.5);
         }
 
         .send-btn {
             background: var(--neon-pink);
             color: white;
             border: none;
-            width: 44px;
-            height: 44px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
-            font-size: 18px;
+            font-size: 16px;
             cursor: pointer;
             transition: all 0.2s ease;
             display: flex;
@@ -303,18 +311,19 @@
 
         .emoji-selector {
             display: flex;
-            gap: 8px;
-            margin-top: 12px;
+            gap: 6px;
+            margin-top: 10px;
             flex-wrap: wrap;
+            justify-content: center;
         }
 
         .emoji-btn {
             background: rgba(255, 255, 255, 0.2);
             border: none;
-            width: 42px;
-            height: 42px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
-            font-size: 20px;
+            font-size: 16px;
             cursor: pointer;
             display: flex;
             justify-content: center;
@@ -328,13 +337,13 @@
         /* Botão de tela cheia destacado */
         .fullscreen-control {
             position: absolute;
-            bottom: 20px;
-            right: 20px;
-            width: 48px;
-            height: 48px;
+            bottom: 15px;
+            right: 15px;
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
             background: rgba(255, 255, 255, 1);
-            border: 3px solid var(--neon-pink);
+            border: 2px solid var(--neon-pink);
             color: var(--neon-pink);
             display: flex;
             justify-content: center;
@@ -342,7 +351,7 @@
             cursor: pointer;
             z-index: 10000;
             transition: all 0.3s ease;
-            box-shadow: 0 0 25px rgba(255, 0, 255, 0.8);
+            box-shadow: 0 0 15px rgba(255, 0, 255, 0.6);
         }
 
         body.tutorial-active .fullscreen-control {
@@ -352,12 +361,11 @@
         @keyframes buttonGlow {
             0% { 
                 transform: scale(1);
-                box-shadow: 0 0 15px rgba(255, 0, 255, 0.6);
+                box-shadow: 0 0 10px rgba(255, 0, 255, 0.6);
             }
             100% { 
-                transform: scale(1.15);
-                box-shadow: 0 0 35px rgba(255, 0, 255, 1),
-                            0 0 50px rgba(255, 0, 255, 0.8);
+                transform: scale(1.1);
+                box-shadow: 0 0 25px rgba(255, 0, 255, 1);
             }
         }
 
@@ -386,16 +394,16 @@
             left: 50%;
             transform: translate(-50%, -50%);
             color: white;
-            font-size: 22px;
+            font-size: 18px;
             font-weight: bold;
             text-align: center;
-            text-shadow: 0 0 15px rgba(0, 0, 0, 0.9);
-            padding: 20px;
-            max-width: 300px;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
+            padding: 15px;
+            max-width: 280px;
             pointer-events: none;
             opacity: 1;
             background: rgba(0, 0, 0, 0.5);
-            border-radius: 15px;
+            border-radius: 12px;
             backdrop-filter: blur(5px);
         }
 
@@ -403,14 +411,14 @@
             display: none !important;
         }
 
-        /* Modal de doação quase transparente - AGORA PERMANENTE E SEMPRE VISÍVEL */
+        /* Modal de doação quase transparente */
         .donation-modal {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 20000; /* Z-INDEX MUITO ALTO PARA FICAR NA FRENTE DE TUDO */
+            z-index: 20000;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -438,54 +446,55 @@
         .donation-container {
             background: rgba(255, 77, 166, 0.15);
             width: 90%;
-            max-width: 320px;
-            border-radius: 20px;
+            max-width: 300px;
+            border-radius: 15px;
             padding: 0;
             position: relative;
-            box-shadow: 0 0 40px rgba(255, 105, 180, 0.3);
+            box-shadow: 0 0 30px rgba(255, 105, 180, 0.3);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
         .donation-red-line {
             width: 100%;
-            height: 3px;
+            height: 2px;
             background: #ff0000;
-            border-radius: 20px 20px 0 0;
+            border-radius: 15px 15px 0 0;
             opacity: 0.8;
         }
 
         .donation-title {
             color: white;
-            font-size: 18px;
+            font-size: 14px;
             font-weight: bold;
             text-align: center;
-            padding: 20px 15px 10px;
-            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+            padding: 15px 12px 8px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+            line-height: 1.3;
         }
 
         .qr-code-container {
             background: rgba(255, 255, 255, 0.9);
-            width: 180px;
-            height: 180px;
-            margin: 15px auto;
-            border-radius: 10px;
+            width: 150px;
+            height: 150px;
+            margin: 10px auto;
+            border-radius: 8px;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 10px;
+            padding: 8px;
         }
 
         .qr-code-placeholder {
-            width: 160px;
-            height: 160px;
+            width: 130px;
+            height: 130px;
             background: linear-gradient(45deg, #333, #666);
             border-radius: 5px;
             display: flex;
             justify-content: center;
             align-items: center;
             color: #000;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: bold;
             position: relative;
         }
@@ -494,19 +503,19 @@
             content: "QR CODE PIX";
             position: absolute;
             color: rgba(255, 255, 255, 0.9);
-            font-size: 16px;
+            font-size: 14px;
         }
 
         .copy-key-btn {
             display: block;
             width: 80%;
-            margin: 0 auto 15px;
-            padding: 12px;
+            margin: 0 auto 12px;
+            padding: 10px;
             background: rgba(255, 255, 255, 0.9);
             color: var(--donation-pink);
             border: none;
-            border-radius: 25px;
-            font-size: 16px;
+            border-radius: 20px;
+            font-size: 14px;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -524,105 +533,125 @@
 
         .donation-instructions {
             color: white;
-            font-size: 13px;
-            padding: 0 20px 20px;
-            line-height: 1.5;
+            font-size: 11px;
+            padding: 0 15px 15px;
+            line-height: 1.4;
             text-align: center;
         }
 
         .donation-instructions ol {
             text-align: left;
-            margin-left: 20px;
+            margin-left: 18px;
             margin-top: 5px;
         }
 
         .donation-instructions li {
-            margin-bottom: 5px;
+            margin-bottom: 3px;
         }
 
         .surprise-me {
             position: absolute;
-            bottom: 20px;
+            bottom: 15px;
             left: 50%;
             transform: translateX(-50%);
             color: white;
-            font-size: 14px;
+            font-size: 12px;
             font-style: italic;
-            text-shadow: 0 0 10px rgba(255, 0, 255, 0.8);
+            text-shadow: 0 0 8px rgba(255, 0, 255, 0.8);
             z-index: 10001;
         }
 
         /* Responsividade otimizada */
         @media (max-width: 480px) {
+            .main-container {
+                width: 90%;
+                height: 600px;
+                max-width: 340px;
+            }
+            
             .tutorial-text {
-                font-size: 20px;
-                max-width: 280px;
+                font-size: 16px;
+                max-width: 250px;
                 top: 35%;
             }
             
             .comments-container {
-                height: 160px;
+                height: 140px;
             }
             
             .donation-container {
                 width: 85%;
-                max-width: 300px;
+                max-width: 280px;
             }
             
             .donation-title {
-                font-size: 16px;
-                padding: 15px 10px 8px;
+                font-size: 13px;
+                padding: 12px 10px 6px;
             }
             
             .qr-code-container {
-                width: 160px;
-                height: 160px;
-            }
-            
-            .qr-code-placeholder {
                 width: 140px;
                 height: 140px;
             }
             
+            .qr-code-placeholder {
+                width: 120px;
+                height: 120px;
+            }
+            
             .live-time {
-                font-size: 14px;
-                top: 23px;
+                font-size: 13px;
+                top: 12px;
             }
         }
 
-        @media (max-height: 700px) {
+        @media (max-width: 360px) {
+            .main-container {
+                height: 550px;
+                max-width: 320px;
+            }
+            
             .comments-container {
-                height: 140px;
+                height: 120px;
             }
             
             .tutorial-text {
                 top: 30%;
-                font-size: 18px;
-                max-width: 250px;
+                font-size: 14px;
+                max-width: 220px;
             }
             
             .donation-container {
-                max-width: 280px;
+                max-width: 260px;
             }
             
             .qr-code-container {
-                width: 150px;
-                height: 150px;
-                margin: 10px auto;
+                width: 130px;
+                height: 130px;
+                margin: 8px auto;
             }
             
             .qr-code-placeholder {
-                width: 130px;
-                height: 130px;
+                width: 110px;
+                height: 110px;
+            }
+            
+            .comment {
+                font-size: 11px;
+            }
+            
+            .user-avatar {
+                width: 22px;
+                height: 22px;
             }
         }
 
         .char-count {
-            font-size: 12px;
+            font-size: 10px;
             color: rgba(255, 255, 255, 0.7);
             text-align: right;
-            margin-top: 6px;
-            padding-right: 8px;
+            margin-top: 4px;
+            padding-right: 6px;
         }
     </style>
 </head>
@@ -656,7 +685,7 @@
         <div class="surprise-me">Surpreenda-Me</div>
     </div>
     
-    <!-- Container principal -->
+    <!-- Container principal - REDUZIDO PARA MOBILE -->
     <div class="main-container" id="main-container">
         <div class="video-container">
             <!-- Vídeo da live - PLAYER AUTOMÁTICO GARANTIDO -->
@@ -1047,7 +1076,7 @@
             // Configurar particles.js
             particlesJS('particles-js', {
                 particles: {
-                    number: { value: 50, density: { enable: true, value_area: 800 } },
+                    number: { value: 40, density: { enable: true, value_area: 800 } },
                     color: { value: "#ffffff" },
                     shape: { type: "circle" },
                     opacity: { value: 0.2, random: true, anim: { enable: true, speed: 1 } },
