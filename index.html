@@ -25,14 +25,15 @@
 
         html, body {
             height: 100%;
+            width: 100%;
             overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         body {
             background: linear-gradient(135deg, var(--primary-pink), #FF69B4, #DB7093);
-            display: flex;
-            justify-content: center;
-            align-items: center;
             position: relative;
             padding: 10px;
         }
@@ -48,6 +49,7 @@
             z-index: 1;
         }
 
+        /* CORREÇÃO DO PROBLEMA DE TELA CHEIA */
         .main-container {
             position: relative;
             width: 95%;
@@ -57,10 +59,35 @@
             background: #000;
             z-index: 10;
             opacity: 1;
-            transition: filter 0.5s ease;
+            transition: all 0.3s ease;
             border-radius: 20px;
             border: 2px solid var(--neon-pink);
             box-shadow: 0 0 30px rgba(255, 105, 180, 0.5);
+        }
+
+        /* ESTILOS PARA TELA CHEIA - CORRIGIDO */
+        .main-container:fullscreen {
+            width: 100vw;
+            height: 100vh;
+            max-width: 100vw;
+            border-radius: 0;
+            border: none;
+        }
+
+        .main-container:-webkit-full-screen {
+            width: 100vw;
+            height: 100vh;
+            max-width: 100vw;
+            border-radius: 0;
+            border: none;
+        }
+
+        .main-container:-moz-full-screen {
+            width: 100vw;
+            height: 100vh;
+            max-width: 100vw;
+            border-radius: 0;
+            border: none;
         }
 
         @media (min-width: 768px) {
@@ -82,6 +109,9 @@
             width: 100%;
             height: 100%;
             position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .video-background {
@@ -89,6 +119,27 @@
             height: 100%;
             object-fit: cover;
             display: block;
+            background: #000;
+        }
+
+        /* CORREÇÃO: Video fallback */
+        .video-fallback {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #FF1493, #FF69B4);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            z-index: 5;
+        }
+
+        .video-fallback.hidden {
+            display: none;
         }
 
         /* HORÁRIO EM NEGRITO E BRANCO */
@@ -334,7 +385,7 @@
             transform: scale(0.9);
         }
 
-        /* Botão de tela cheia destacado */
+        /* Botão de tela cheia destacado - CORRIGIDO */
         .fullscreen-control {
             position: absolute;
             bottom: 15px;
@@ -653,6 +704,23 @@
             margin-top: 4px;
             padding-right: 6px;
         }
+
+        .retry-btn {
+            background: var(--neon-pink);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .retry-btn:active {
+            transform: scale(0.95);
+        }
     </style>
 </head>
 <body>
@@ -688,9 +756,25 @@
     <!-- Container principal - REDUZIDO PARA MOBILE -->
     <div class="main-container" id="main-container">
         <div class="video-container">
-            <!-- Vídeo da live - PLAYER AUTOMÁTICO GARANTIDO -->
-            <video class="video-background" autoplay loop muted playsinline id="live-video">
+            <!-- Video fallback em caso de erro -->
+            <div class="video-fallback hidden" id="video-fallback">
+                <h3>Carregando live...</h3>
+                <p>Se o vídeo não carregar automaticamente, tente:</p>
+                <ol style="text-align: left; margin: 10px 0;">
+                    <li>Verificar sua conexão</li>
+                    <li>Atualizar a página</li>
+                    <li>Tocar no botão abaixo</li>
+                </ol>
+                <button class="retry-btn" id="retry-video">Tentar Carregar Vídeo</button>
+            </div>
+            
+            <!-- Vídeo da live - COM MÚLTIPLAS FONTES -->
+            <video class="video-background" autoplay loop muted playsinline id="live-video" preload="auto">
+                <!-- Primeira fonte principal -->
                 <source src="https://dg-videos.b-cdn.net/bg/720x1280_cm563.mp4" type="video/mp4">
+                <!-- Fontes alternativas em caso de falha -->
+                <source src="https://assets.mixkit.co/videos/preview/mixkit-woman-with-red-lips-posing-1644-large.mp4" type="video/mp4">
+                <source src="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4" type="video/mp4">
                 Seu navegador não suporta vídeos HTML5.
             </video>
             
@@ -736,7 +820,7 @@
                 </div>
             </div>
             
-            <!-- Botão de tela cheia -->
+            <!-- Botão de tela cheia - CORRIGIDO -->
             <div class="fullscreen-control" id="fullscreen-control">
                 <i class="fi fi-ss-expand" id="fullscreen-icon"></i>
             </div>
@@ -825,6 +909,7 @@
         let donationModalShown = false;
         let siteStartTime = Date.now();
         let viewerCountUpdateTimer;
+        let videoErrorCount = 0;
         
         // Chave PIX para copiar
         const PIX_KEY = "jasmine.live@hotgirl.com";
@@ -1039,23 +1124,50 @@
             });
         }
         
-        // Garantir que o vídeo esteja em player automático
+        // GARANTIR QUE O VÍDEO ESTEJA EM PLAYER AUTOMÁTICO - CORRIGIDO
         function ensureVideoAutoplay() {
             const video = document.getElementById('live-video');
+            const videoFallback = document.getElementById('video-fallback');
             
-            // Tenta tocar o vídeo
+            // Remover o atributo 'hidden' inicialmente
+            videoFallback.classList.remove('hidden');
+            
+            // Configurar tratamento de erro
+            video.addEventListener('error', (e) => {
+                console.error('Erro ao carregar vídeo:', e);
+                videoErrorCount++;
+                
+                if (videoErrorCount >= 2) {
+                    videoFallback.classList.remove('hidden');
+                    console.log("Mostrando fallback - vídeo falhou");
+                }
+            });
+            
+            // Verificar se o vídeo está carregando
+            video.addEventListener('loadeddata', () => {
+                console.log("Vídeo carregado com sucesso");
+                videoFallback.classList.add('hidden');
+            });
+            
+            // Tentar tocar o vídeo
             const playPromise = video.play();
             
             if (playPromise !== undefined) {
                 playPromise.then(() => {
                     console.log("Vídeo tocando automaticamente");
+                    videoFallback.classList.add('hidden');
                 }).catch(error => {
                     console.log("Autoplay falhou, tentando com user interaction...");
                     
-                    // Se falhar, tenta tocar quando o usuário interagir
+                    // Se falhar, mostra o fallback
+                    videoFallback.classList.remove('hidden');
+                    
+                    // Tenta tocar quando o usuário interagir
                     const playOnInteraction = () => {
+                        video.muted = true; // Forçar mudo para autoplay
                         video.play().then(() => {
                             console.log("Vídeo tocando após interação do usuário");
+                            videoFallback.classList.add('hidden');
                         }).catch(e => {
                             console.log("Ainda não foi possível tocar o vídeo:", e);
                         });
@@ -1068,6 +1180,48 @@
                     document.addEventListener('click', playOnInteraction);
                     document.addEventListener('touchstart', playOnInteraction);
                 });
+            }
+        }
+        
+        // CORREÇÃO DO PROBLEMA DE TELA CHEIA
+        function toggleFullscreen() {
+            const container = document.getElementById('main-container');
+            
+            if (tutorialShown) {
+                completeTutorial();
+            }
+            
+            // Verificar se já está em tela cheia
+            if (!document.fullscreenElement && !document.webkitFullscreenElement && 
+                !document.mozFullScreenElement && !document.msFullscreenElement) {
+                
+                // Entrar em tela cheia
+                if (container.requestFullscreen) {
+                    container.requestFullscreen();
+                } else if (container.webkitRequestFullscreen) {
+                    container.webkitRequestFullscreen();
+                } else if (container.mozRequestFullScreen) {
+                    container.mozRequestFullScreen();
+                } else if (container.msRequestFullscreen) {
+                    container.msRequestFullscreen();
+                }
+                
+                isFullscreen = true;
+                document.getElementById('fullscreen-icon').className = 'fi fi-ss-compress';
+            } else {
+                // Sair da tela cheia
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+                
+                isFullscreen = false;
+                document.getElementById('fullscreen-icon').className = 'fi fi-ss-expand';
             }
         }
         
@@ -1106,6 +1260,8 @@
             const charCount = document.getElementById('char-count');
             const mainContainer = document.getElementById('main-container');
             const copyKeyBtn = document.getElementById('copy-key-btn');
+            const retryVideoBtn = document.getElementById('retry-video');
+            const videoFallback = document.getElementById('video-fallback');
             
             let isMuted = true;
             
@@ -1124,14 +1280,23 @@
                 showDonationModal();
             }, 120000);
             
-            // Atualizar tempo no site
-            setInterval(() => {
-                timeOnSite += 1;
-                console.log(`Tempo no site: ${timeOnSite} minutos`);
-            }, 60000);
-            
             // Garantir que o vídeo esteja em player automático
             ensureVideoAutoplay();
+            
+            // Botão para tentar recarregar o vídeo
+            retryVideoBtn.addEventListener('click', () => {
+                videoErrorCount = 0;
+                video.load(); // Recarrega o vídeo
+                videoFallback.classList.add('hidden');
+                
+                // Tenta tocar novamente
+                setTimeout(() => {
+                    video.play().catch(e => {
+                        console.log("Falha ao tocar vídeo após retry");
+                        videoFallback.classList.remove('hidden');
+                    });
+                }, 500);
+            });
             
             // Controle de áudio ATUALIZADO
             function toggleAudio() {
@@ -1189,28 +1354,24 @@
             }
             commentInput.addEventListener('input', updateCharCount);
             
-            // Controle de tela cheia - NÃO AFETA O MODAL DE DOAÇÃO
-            function toggleFullscreen() {
-                if (tutorialShown) {
-                    completeTutorial();
-                }
-                
-                if (!document.fullscreenElement) {
-                    mainContainer.requestFullscreen().catch(console.log);
-                } else {
-                    document.exitFullscreen();
-                }
-            }
-            
+            // Controle de tela cheia - CORRIGIDO
             fullscreenControl.addEventListener('click', toggleFullscreen);
             
-            // Atualizar ícone de tela cheia
-            function updateFullscreenIcon() {
-                isFullscreen = !isFullscreen;
-                fullscreenIcon.className = isFullscreen ? 'fi fi-ss-compress' : 'fi fi-ss-expand';
-            }
+            // Atualizar ícone de tela cheia quando o estado mudar
+            document.addEventListener('fullscreenchange', updateFullscreenState);
+            document.addEventListener('webkitfullscreenchange', updateFullscreenState);
+            document.addEventListener('mozfullscreenchange', updateFullscreenState);
+            document.addEventListener('MSFullscreenChange', updateFullscreenState);
             
-            document.addEventListener('fullscreenchange', updateFullscreenIcon);
+            function updateFullscreenState() {
+                const isFullscreenNow = !!(document.fullscreenElement || 
+                    document.webkitFullscreenElement || 
+                    document.mozFullScreenElement || 
+                    document.msFullscreenElement);
+                
+                isFullscreen = isFullscreenNow;
+                fullscreenIcon.className = isFullscreenNow ? 'fi fi-ss-compress' : 'fi fi-ss-expand';
+            }
             
             // Copiar chave PIX
             copyKeyBtn.addEventListener('click', copyPixKey);
