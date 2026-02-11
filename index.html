@@ -2,21 +2,17 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Streaming Simulation</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Live Streaming</title>
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.1.0/uicons-solid-straight/css/uicons-solid-straight.css">
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <style>
         :root {
-            --primary-purple: #5d2b8c;
-            --secondary-purple: #7b3ca6;
-            --dark-purple: #4a1e6b;
-            --neon-pink: #FF69B4;
+            --primary-pink: #FF1493;
+            --neon-pink: #FF00FF;
             --live-red: #ff0000;
-            --live-light-red: #ff3333;
             --text-white: #ffffff;
-            --text-light: #f0f0f0;
-            --shadow-color: rgba(255, 105, 180, 0.3);
+            --donation-pink: #ff4da6;
         }
 
         * {
@@ -24,107 +20,127 @@
             padding: 0;
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
         }
 
         body {
-            background: linear-gradient(135deg, var(--primary-purple), var(--secondary-purple), var(--dark-purple));
-            min-height: 100vh;
+            background: linear-gradient(135deg, var(--primary-pink), #FF69B4, #DB7093);
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow: hidden;
-            padding: 20px;
+            position: relative;
+        }
+
+        body.tutorial-active {
+            filter: brightness(0.6);
         }
 
         #particles-js {
             position: fixed;
-            top: 0;
-            left: 0;
             width: 100%;
             height: 100%;
             z-index: 1;
         }
 
-        .overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.4);
-            z-index: 2;
-        }
-
         .main-container {
             position: relative;
-            width: 300px;
-            height: 600px;
-            border-radius: 20px;
-            border: 2px solid var(--neon-pink);
-            box-shadow: 0 0 20px var(--shadow-color), 
-                        0 0 40px var(--shadow-color),
-                        inset 0 0 20px rgba(255, 105, 180, 0.1);
+            width: 100%;
+            height: 100vh;
             overflow: hidden;
+            background: #000;
             z-index: 10;
-            background-color: #000;
+            opacity: 1;
+            transition: filter 0.5s ease;
+        }
+
+        @media (min-width: 768px) {
+            .main-container {
+                width: 375px;
+                height: 667px;
+                border-radius: 20px;
+                border: 2px solid var(--neon-pink);
+                box-shadow: 0 0 30px rgba(255, 105, 180, 0.5);
+            }
+            
+            body {
+                padding: 20px;
+            }
         }
 
         .video-container {
-            position: relative;
             width: 100%;
             height: 100%;
-            overflow: hidden;
+            position: relative;
         }
 
         .video-background {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            display: block;
         }
 
-        /* Badge AO VIVO */
+        /* HORÁRIO EM NEGRITO E BRANCO */
+        .live-time {
+            position: absolute;
+            top: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--text-white);
+            font-size: 16px;
+            font-weight: 900;
+            z-index: 20;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+            font-family: 'Courier New', monospace;
+            letter-spacing: 2px;
+        }
+
+        /* Controles sempre visíveis */
         .live-badge {
             position: absolute;
-            top: 15px;
-            right: 15px;
-            background: linear-gradient(to right, var(--live-red), var(--live-light-red));
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(to right, var(--live-red), #ff3333);
             color: var(--text-white);
-            padding: 6px 12px;
+            padding: 8px 15px;
             border-radius: 20px;
-            font-size: 12px;
+            font-size: 14px;
             font-weight: bold;
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 8px;
             z-index: 20;
-            box-shadow: 0 4px 10px rgba(255, 0, 0, 0.4);
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.5);
         }
 
         .live-pulse {
-            width: 8px;
-            height: 8px;
-            background-color: var(--text-white);
+            width: 10px;
+            height: 10px;
+            background: var(--text-white);
             border-radius: 50%;
             animation: pulse 1.5s infinite;
         }
 
         @keyframes pulse {
-            0% { transform: scale(0.8); opacity: 1; }
+            0%, 100% { transform: scale(0.8); opacity: 1; }
             50% { transform: scale(1.2); opacity: 0.7; }
-            100% { transform: scale(0.8); opacity: 1; }
         }
 
-        /* Controles de Áudio */
+        /* Controle de áudio atualizado */
         .audio-control {
             position: absolute;
-            top: 55px;
-            right: 15px;
-            width: 36px;
-            height: 36px;
+            top: 70px;
+            right: 20px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
-            background: rgba(0, 0, 0, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 105, 180, 0.9);
+            border: 2px solid var(--neon-pink);
             color: var(--text-white);
             display: flex;
             justify-content: center;
@@ -132,40 +148,26 @@
             cursor: pointer;
             z-index: 20;
             transition: all 0.3s ease;
+            font-size: 20px;
+            box-shadow: 0 0 15px rgba(255, 105, 180, 0.5);
         }
 
-        .audio-control:hover {
-            background: rgba(0, 0, 0, 0.8);
-            transform: scale(1.1);
+        .audio-control:active {
+            transform: scale(0.95);
         }
 
-        .audio-control.muted {
-            background: rgba(255, 105, 180, 0.8);
-            border-color: var(--neon-pink);
-            animation: mutePulse 1.5s infinite;
+        .audio-control.inactive {
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: none;
         }
 
-        @keyframes mutePulse {
-            0% { 
-                transform: scale(1);
-                box-shadow: 0 0 0 0 rgba(255, 105, 180, 0.7); 
-            }
-            50% { 
-                transform: scale(1.1);
-                box-shadow: 0 0 0 8px rgba(255, 105, 180, 0); 
-            }
-            100% { 
-                transform: scale(1);
-                box-shadow: 0 0 0 0 rgba(255, 105, 180, 0); 
-            }
-        }
-
-        .audio-icon-muted {
+        .audio-icon-inactive {
             position: relative;
-            color: white;
+            color: rgba(255, 255, 255, 0.7);
         }
 
-        .audio-icon-muted::after {
+        .audio-icon-inactive::after {
             content: "";
             position: absolute;
             top: 50%;
@@ -177,163 +179,115 @@
             border-radius: 2px;
         }
 
-        /* Contador de Visualizações */
         .viewer-count {
             position: absolute;
-            top: 15px;
-            left: 15px;
-            background: rgba(0, 0, 0, 0.6);
-            color: var(--text-light);
-            padding: 6px 12px;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #f0f0f0;
+            padding: 8px 15px;
             border-radius: 20px;
-            font-size: 13px;
+            font-size: 14px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             z-index: 20;
-            backdrop-filter: blur(5px);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        .viewer-count i {
-            color: var(--neon-pink);
-        }
-
-        /* Sistema de Comentários - CORRIGIDO */
+        /* Sistema de comentários otimizado */
         .comments-section {
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
-            padding: 15px;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0.5), transparent);
+            padding: 20px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
             z-index: 20;
         }
 
         .comments-container {
             height: 180px;
             overflow: hidden;
-            position: relative;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
 
-        /* Comentários corrigidos - posicionamento relativo e animação simplificada */
         .comment {
             color: #ffffff;
-            padding: 8px 0;
-            margin-bottom: 4px;
-            font-size: 13px;
+            padding: 10px 0;
+            margin-bottom: 5px;
+            font-size: 14px;
             display: flex;
             align-items: flex-start;
-            gap: 8px;
-            width: 100%;
-            line-height: 1.3;
-            position: relative;
+            gap: 10px;
             animation: floatUp 15s linear forwards;
             opacity: 0;
-            transform: translateY(0);
         }
 
-        /* Animação simplificada e funcionando */
         @keyframes floatUp {
-            0% {
-                transform: translateY(100%);
-                opacity: 0;
-            }
-            10% {
-                transform: translateY(0);
-                opacity: 1;
-            }
-            90% {
-                transform: translateY(0);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-100%);
-                opacity: 0;
-            }
+            0% { transform: translateY(100%); opacity: 0; }
+            5% { transform: translateY(0); opacity: 1; }
+            90% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-100%); opacity: 0; }
         }
 
-        /* Avatar anônimo simplificado */
         .user-avatar {
-            width: 24px;
-            height: 24px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.15);
             display: flex;
             justify-content: center;
             align-items: center;
             flex-shrink: 0;
-            font-size: 12px;
-        }
-
-        .user-avatar i {
-            color: #ffffff;
-            font-size: 12px;
-        }
-
-        .comment-content {
-            display: flex;
-            flex-direction: column;
-            max-width: calc(100% - 32px);
         }
 
         .username {
             font-weight: bold;
-            color: #ffffff;
-            font-size: 12px;
-            margin-bottom: 2px;
+            font-size: 13px;
+            margin-bottom: 3px;
         }
 
         .username.you {
             color: #00ff00;
-            text-shadow: 0 0 3px rgba(0, 255, 0, 0.5);
+            text-shadow: 0 0 5px rgba(0, 255, 0, 0.7);
         }
 
         .comment-text {
-            font-size: 13px;
-            color: #ffffff;
+            font-size: 14px;
             word-break: break-word;
         }
 
         .comment-input-container {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
         }
 
         .comment-input {
             flex: 1;
-            padding: 12px 15px;
-            border-radius: 24px;
+            padding: 14px 18px;
+            border-radius: 25px;
             border: none;
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.15);
             color: var(--text-white);
-            font-size: 14px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .comment-input::placeholder {
-            color: rgba(255, 255, 255, 0.6);
+            font-size: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
         }
 
         .comment-input:focus {
             outline: none;
             border-color: var(--neon-pink);
-            box-shadow: 0 0 10px rgba(255, 105, 180, 0.3);
+            box-shadow: 0 0 15px rgba(255, 105, 180, 0.5);
         }
 
-        .emoji-selector {
-            display: flex;
-            gap: 5px;
-            margin-top: 8px;
-        }
-
-        .emoji-btn {
-            background: rgba(255, 255, 255, 0.15);
+        .send-btn {
+            background: var(--neon-pink);
+            color: white;
             border: none;
-            width: 36px;
-            height: 36px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
             font-size: 18px;
             cursor: pointer;
@@ -343,130 +297,397 @@
             align-items: center;
         }
 
-        .emoji-btn:hover {
-            background: rgba(255, 105, 180, 0.3);
-            transform: scale(1.2);
+        .send-btn:active {
+            transform: scale(0.95);
         }
 
-        .send-btn {
-            background: var(--neon-pink);
-            color: white;
+        .emoji-selector {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+
+        .emoji-btn {
+            background: rgba(255, 255, 255, 0.2);
             border: none;
-            width: 36px;
-            height: 36px;
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
-            font-size: 16px;
+            font-size: 20px;
             cursor: pointer;
-            transition: all 0.2s ease;
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
-        .send-btn:hover {
-            background: #ff4da6;
-            transform: scale(1.1);
+        .emoji-btn:active {
+            transform: scale(0.9);
         }
 
-        /* Controle de Tela Cheia */
+        /* Botão de tela cheia destacado */
         .fullscreen-control {
             position: absolute;
-            bottom: 15px;
-            right: 15px;
-            width: 36px;
-            height: 36px;
+            bottom: 20px;
+            right: 20px;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
-            background: rgba(0, 0, 0, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: var(--text-white);
+            background: rgba(255, 255, 255, 1);
+            border: 3px solid var(--neon-pink);
+            color: var(--neon-pink);
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            z-index: 20;
+            z-index: 10000;
             transition: all 0.3s ease;
+            box-shadow: 0 0 25px rgba(255, 0, 255, 0.8);
         }
 
-        .fullscreen-control:hover {
-            background: rgba(0, 0, 0, 0.8);
-            transform: scale(1.1);
+        body.tutorial-active .fullscreen-control {
+            animation: buttonGlow 0.8s infinite alternate;
         }
 
-        /* Responsividade */
+        @keyframes buttonGlow {
+            0% { 
+                transform: scale(1);
+                box-shadow: 0 0 15px rgba(255, 0, 255, 0.6);
+            }
+            100% { 
+                transform: scale(1.15);
+                box-shadow: 0 0 35px rgba(255, 0, 255, 1),
+                            0 0 50px rgba(255, 0, 255, 0.8);
+            }
+        }
+
+        .fullscreen-control:active {
+            transform: scale(0.95);
+        }
+
+        /* Tutorial simplificado - APENAS TEXTO */
+        .tutorial-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        .tutorial-text {
+            position: fixed;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 22px;
+            font-weight: bold;
+            text-align: center;
+            text-shadow: 0 0 15px rgba(0, 0, 0, 0.9);
+            padding: 20px;
+            max-width: 300px;
+            pointer-events: none;
+            opacity: 1;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+        }
+
+        .tutorial-hidden {
+            display: none !important;
+        }
+
+        /* Modal de doação quase transparente - AGORA PERMANENTE E SEMPRE VISÍVEL */
+        .donation-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 20000; /* Z-INDEX MUITO ALTO PARA FICAR NA FRENTE DE TUDO */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            pointer-events: none;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease, visibility 0.5s;
+        }
+
+        .donation-modal.active {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        /* Forçar o modal a ficar visível mesmo em fullscreen */
+        .main-container:fullscreen .donation-modal,
+        .main-container:-webkit-full-screen .donation-modal,
+        .main-container:-moz-full-screen .donation-modal,
+        .main-container:-ms-fullscreen .donation-modal {
+            z-index: 20000;
+            position: fixed;
+        }
+
+        .donation-container {
+            background: rgba(255, 77, 166, 0.15);
+            width: 90%;
+            max-width: 320px;
+            border-radius: 20px;
+            padding: 0;
+            position: relative;
+            box-shadow: 0 0 40px rgba(255, 105, 180, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .donation-red-line {
+            width: 100%;
+            height: 3px;
+            background: #ff0000;
+            border-radius: 20px 20px 0 0;
+            opacity: 0.8;
+        }
+
+        .donation-title {
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            padding: 20px 15px 10px;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+        }
+
+        .qr-code-container {
+            background: rgba(255, 255, 255, 0.9);
+            width: 180px;
+            height: 180px;
+            margin: 15px auto;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+        }
+
+        .qr-code-placeholder {
+            width: 160px;
+            height: 160px;
+            background: linear-gradient(45deg, #333, #666);
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #000;
+            font-size: 14px;
+            font-weight: bold;
+            position: relative;
+        }
+
+        .qr-code-placeholder:before {
+            content: "QR CODE PIX";
+            position: absolute;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
+        }
+
+        .copy-key-btn {
+            display: block;
+            width: 80%;
+            margin: 0 auto 15px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--donation-pink);
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            pointer-events: auto;
+        }
+
+        .copy-key-btn:hover {
+            background: rgba(255, 255, 255, 1);
+            transform: scale(1.05);
+        }
+
+        .copy-key-btn:active {
+            transform: scale(0.95);
+        }
+
+        .donation-instructions {
+            color: white;
+            font-size: 13px;
+            padding: 0 20px 20px;
+            line-height: 1.5;
+            text-align: center;
+        }
+
+        .donation-instructions ol {
+            text-align: left;
+            margin-left: 20px;
+            margin-top: 5px;
+        }
+
+        .donation-instructions li {
+            margin-bottom: 5px;
+        }
+
+        .surprise-me {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 14px;
+            font-style: italic;
+            text-shadow: 0 0 10px rgba(255, 0, 255, 0.8);
+            z-index: 10001;
+        }
+
+        /* Responsividade otimizada */
         @media (max-width: 480px) {
-            .main-container {
-                width: 100%;
-                max-width: 300px;
-                height: 600px;
+            .tutorial-text {
+                font-size: 20px;
+                max-width: 280px;
+                top: 35%;
             }
             
-            body {
-                padding: 10px;
+            .comments-container {
+                height: 160px;
+            }
+            
+            .donation-container {
+                width: 85%;
+                max-width: 300px;
+            }
+            
+            .donation-title {
+                font-size: 16px;
+                padding: 15px 10px 8px;
+            }
+            
+            .qr-code-container {
+                width: 160px;
+                height: 160px;
+            }
+            
+            .qr-code-placeholder {
+                width: 140px;
+                height: 140px;
+            }
+            
+            .live-time {
+                font-size: 14px;
+                top: 23px;
             }
         }
 
-        @media (min-width: 768px) {
-            .main-container {
-                width: 320px;
-                height: 640px;
+        @media (max-height: 700px) {
+            .comments-container {
+                height: 140px;
             }
             
-            .comment {
-                font-size: 14px;
+            .tutorial-text {
+                top: 30%;
+                font-size: 18px;
+                max-width: 250px;
+            }
+            
+            .donation-container {
+                max-width: 280px;
+            }
+            
+            .qr-code-container {
+                width: 150px;
+                height: 150px;
+                margin: 10px auto;
+            }
+            
+            .qr-code-placeholder {
+                width: 130px;
+                height: 130px;
             }
         }
 
         .char-count {
-            font-size: 11px;
-            color: rgba(255, 255, 255, 0.6);
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
             text-align: right;
-            margin-top: 4px;
-            padding-right: 5px;
-        }
-
-        .char-count.warning {
-            color: #ff9900;
-        }
-
-        .char-count.error {
-            color: #ff3333;
+            margin-top: 6px;
+            padding-right: 8px;
         }
     </style>
 </head>
 <body>
     <div id="particles-js"></div>
-    <div class="overlay"></div>
     
-    <div class="main-container">
+    <!-- Tutorial simplificado - APENAS TEXTO -->
+    <div class="tutorial-overlay tutorial-hidden" id="tutorial-overlay">
+        <div class="tutorial-text" id="tutorial-text">Clique no botão para maximizar a tela e ter a melhor experiência</div>
+    </div>
+    
+    <!-- Modal de doação SEM BOTÃO DE FECHAR - AGORA PERMANENTE -->
+    <div class="donation-modal" id="donation-modal">
+        <div class="donation-container">
+            <div class="donation-red-line"></div>
+            <div class="donation-title">JASMINE ESTÁ PEDINDO UM PIX MÍNIMO DE 20,00 REAIS. PARA VOCÊ FICAR E VER A BUCETINHA</div>
+            <div class="qr-code-container">
+                <div class="qr-code-placeholder"></div>
+            </div>
+            <button class="copy-key-btn" id="copy-key-btn">COPIAR CHAVE PIX</button>
+            <div class="donation-instructions">
+                <strong>Instruções:</strong>
+                <ol>
+                    <li>Copie a CHAVE PIX acima</li>
+                    <li>Abra o APP do seu Banco</li>
+                    <li>Cole a Chave no PIX</li>
+                    <li>Preencha o Valor de no Mínimo 20,00 Reais ou MAIS</li>
+                </ol>
+            </div>
+        </div>
+        <div class="surprise-me">Surpreenda-Me</div>
+    </div>
+    
+    <!-- Container principal -->
+    <div class="main-container" id="main-container">
         <div class="video-container">
-            <!-- VÍDEO EM LOOP -->
-            <video class="video-background" autoplay loop muted playsinline>
+            <!-- Vídeo da live - PLAYER AUTOMÁTICO GARANTIDO -->
+            <video class="video-background" autoplay loop muted playsinline id="live-video">
                 <source src="https://dg-videos.b-cdn.net/bg/720x1280_cm563.mp4" type="video/mp4">
                 Seu navegador não suporta vídeos HTML5.
             </video>
             
-            <!-- Badge AO VIVO -->
+            <!-- HORÁRIO EM NEGRITO E BRANCO -->
+            <div class="live-time" id="live-time">00:00</div>
+            
+            <!-- Indicador AO VIVO -->
             <div class="live-badge">
                 <div class="live-pulse"></div>
                 <span>AO VIVO</span>
             </div>
             
-            <!-- Contador de Visualizações -->
+            <!-- Contador de visualizações -->
             <div class="viewer-count">
                 <i class="fi fi-ss-eye"></i>
-                <span id="viewer-count">423</span>
+                <span id="viewer-count">570</span>
             </div>
             
-            <!-- Controle de Áudio -->
+            <!-- Controle de áudio ATUALIZADO -->
             <div class="audio-control" id="audio-control">
                 <i class="fi fi-ss-volume" id="audio-icon"></i>
             </div>
             
-            <!-- Sistema de Comentários -->
+            <!-- Sistema de comentários -->
             <div class="comments-section">
-                <div class="comments-container" id="comments-container">
-                    <!-- Comentários serão inseridos aqui via JavaScript -->
-                </div>
+                <div class="comments-container" id="comments-container"></div>
                 
                 <div class="comment-input-container">
                     <input type="text" class="comment-input" id="comment-input" placeholder="Envie um comentário..." maxlength="50">
@@ -486,7 +707,7 @@
                 </div>
             </div>
             
-            <!-- Controle de Tela Cheia -->
+            <!-- Botão de tela cheia -->
             <div class="fullscreen-control" id="fullscreen-control">
                 <i class="fi fi-ss-expand" id="fullscreen-icon"></i>
             </div>
@@ -494,459 +715,483 @@
     </div>
 
     <script>
-        // =====================================================================
-        // CONFIGURAÇÃO CENTRALIZADA DAS NOTIFICAÇÕES - SIMPLIFICADA
-        // =====================================================================
-        const NOTIFICATION_CONFIG = {
-            maxVisibleMessages: 4,           // Número máximo de mensagens visíveis
-            autoMessageInterval: 1000,       // Intervalo entre mensagens automáticas
-            messageVisibleDuration: 4000,   // Tempo que a mensagem fica visível
-            userMessagePriority: true,       // Mensagens do usuário têm prioridade
-            autoMessagesEnabled: true,       // Habilita mensagens automáticas
-            initialAutoMessages: 1,          // Mensagens iniciais
-            animationDuration: 12            // Duração da animação em segundos
+        // Configurações do sistema
+        const CONFIG = {
+            maxMessages: 4,
+            messageInterval: 1500,
+            messageDuration: 15000,
+            autoMessages: false
         };
         
-        // Lista de usuários masculinos
+        // Sistema de notificações de mensagens
         const USER_NAMES = [
-            "@joão", "@pedro", "@carlos", "@lucas", "@marcos",
-            "@rafael", "@guilherme", "@thiago", "@vinicius", "@rodrigo"
+            "@joão_silva", "@pedro_henrique", "@carlos_edu", "@lucas_ribeiro", 
+            "@marcos_paulo", "@rafael_alves", "@guilherme_lima", "@thiago_santos",
+            "@vinicius_oliveira", "@rodrigo_fernandes", "@bruno_costa", "@andre_lopes",
+            "@felipe_martins", "@ricardo_souza", "@gustavo_pereira"
         ];
         
         // Banco de mensagens
-        const EMOJI_ONLY_MESSAGES = [
-            "😈😈😈", "😇😇😇", "🍑🍑🍑", "❤️❤️❤️", "🤤🤤🤤"
+        const MESSAGES = [
+            // Elogios para @kauan (fez PIX e deixou a live mais sexy)
+            "@kauan fez um PIX agora! A live ficou muito mais sexy! 🔥",
+            "Valeu @kauan pelo PIX! Agora a live tá quente demais! 🍑",
+            "@kauan mandou bem no PIX! Tá tudo mais excitante! 🤤",
+            "Depois do PIX do @kauan, essa live tá insana! 😈",
+            "@kauan é o cara! O PIX dele deixou tudo mais gostoso! 💋",
+            "Obrigado @kauan pelo PIX! A live tá incrível! ❤️",
+            "@kauan fez PIX e a Jasmim tá muito mais sexy! 🔥",
+            
+            // Elogios para @naru (sempre presente)
+            "@naru sempre presente! Que fiel! 👏",
+            "Valeu @naru por sempre estar aqui! 🙌",
+            "@naru não falta uma live! Respeito! 🫡",
+            "Presença confirmada do @naru como sempre! 💪",
+            "@naru é fiel demais! Toda live tá aqui! 👊",
+            "Respeito ao @naru que nunca falta! 🎯",
+            "@naru é o maior fã da Jasmim! 🏆",
+            
+            // Comentários sobre fazer PIX de diferentes valores
+            "Vou fazer um PIX de 50 reais agora! 🔥",
+            "Fazendo PIX de 20 reais para a Jasmim! 💖",
+            "Aguardando aprovação do PIX de 100 reais! 🚀",
+            "Acabei de mandar 50 reais no PIX! 🍑",
+            "PIX de 20 reais enviado! Agora é sua vez Jasmim! 😈",
+            "Vou fazer um PIX de 100 reais, prepara que vem coisa boa! 💰",
+            "PIX de 50 reais a caminho! Tá valendo a pena! 🤤",
+            "20 reais no PIX já foi! Agora quero ver! 😇",
+            "Meu PIX de 100 reais já caiu? Quero ver a recompensa! 🔥",
+            "Acabei de mandar 50 reais, mostra mais Jasmim! 🍑",
+            "PIX de 20 reais feito! Ansioso para o que vem! 😈",
+            "100 reais no PIX! Espero que valha a pena! 💸",
+            
+            // Comentários gerais sobre a live
+            "Que tesão essa live! 😈😈😈",
+            "Muito desejo agora! 🤤🤤🤤",
+            "Excitação total! ❤️🍑",
+            "Isso é quente demais! 🔥",
+            "Que delícia de live! 🍭",
+            "Proibido e gostoso! 😈❤️",
+            "Tá muito sexy hoje! 💋",
+            "Que bucetinha linda! 🍑",
+            "Mais quente que isso impossível! 🔥",
+            "Melhor live da semana! 🏆",
+            "Não consigo parar de assistir! 👀",
+            "Que mulher gostosa! 😍",
+            "Perfeição em forma de mulher! ✨",
+            "Sonho de consumo! 💭",
+            "Impossível não se excitar! 🥵"
         ];
         
-        const TEXT_ONLY_MESSAGES = [
-            "Que tesão essa live!", "Estou com muito desejo agora",
-            "Que excitação!", "Isso é muito quente", "Que proibido e gostoso"
-        ];
-        
-        const MIXED_MESSAGES = [
-            "Que tesão! 😈😈", "Muito desejo agora 🤤", "Excitação total! ❤️🍑",
-            "Isso é quente demais 😇", "Proibido e gostoso 😈❤️"
-        ];
-        
-        // =====================================================================
-        // VARIÁVEIS GLOBAIS
-        // =====================================================================
+        // Estado do sistema
         let commentId = 0;
         let autoCommentInterval;
-        let isAutoCommentRunning = false;
+        let tutorialShown = false;
+        let isFullscreen = false;
         let activeMessages = [];
+        let viewerCountInterval;
+        let timeOnSite = 0;
+        let donationTimer;
+        let viewerPhase = "initial";
+        let donationModalShown = false;
+        let siteStartTime = Date.now();
+        let viewerCountUpdateTimer;
         
-        // =====================================================================
-        // FUNÇÕES DO SISTEMA DE NOTIFICAÇÕES - CORRIGIDAS
-        // =====================================================================
+        // Chave PIX para copiar
+        const PIX_KEY = "jasmine.live@hotgirl.com";
         
-        /**
-         * Adiciona uma mensagem ao sistema
-         */
-        function addNotification(user, text, isUserMessage = false) {
-            commentId++;
-            const commentEl = document.createElement('div');
-            commentEl.className = 'comment';
-            commentEl.id = `comment-${commentId}`;
+        // Função para atualizar o horário
+        function updateLiveTime() {
+            const now = new Date();
+            // Horário de Brasília (UTC-3)
+            const brasiliaTime = new Date(now.getTime() - 3 * 60 * 60 * 1000);
             
-            // Definir delay de animação baseado na posição
-            const currentMessages = document.querySelectorAll('.comment');
-            const baseDelay = currentMessages.length * 200;
+            const hours = String(brasiliaTime.getUTCHours()).padStart(2, '0');
+            const minutes = String(brasiliaTime.getUTCMinutes()).padStart(2, '0');
             
-            // Se for mensagem do usuário, prioridade máxima
-            const animationDelay = isUserMessage ? 0 : baseDelay;
-            commentEl.style.animationDelay = `${animationDelay}ms`;
+            document.getElementById('live-time').textContent = `${hours}:${minutes}`;
+        }
+        
+        // Inicialização do tutorial
+        function initTutorial() {
+            const hasSeenTutorial = localStorage.getItem('liveTutorialSeen');
             
-            // Avatar e conteúdo
-            commentEl.innerHTML = `
-                <div class="user-avatar">
-                    <i class="fi fi-ss-user"></i>
-                </div>
-                <div class="comment-content">
-                    <div class="username ${isUserMessage ? 'you' : ''}">${user}</div>
-                    <div class="comment-text">${text}</div>
-                </div>
-            `;
-            
-            // Adicionar ao container
-            const commentsContainer = document.getElementById('comments-container');
-            
-            // Se for mensagem do usuário, adicionar no início
-            if (isUserMessage && NOTIFICATION_CONFIG.userMessagePriority) {
-                if (commentsContainer.firstChild) {
-                    commentsContainer.insertBefore(commentEl, commentsContainer.firstChild);
-                } else {
-                    commentsContainer.appendChild(commentEl);
-                }
+            if (!hasSeenTutorial) {
+                document.body.classList.add('tutorial-active');
+                document.getElementById('tutorial-overlay').classList.remove('tutorial-hidden');
+                tutorialShown = true;
+                console.log("Tutorial ativado - primeira visita");
             } else {
-                commentsContainer.appendChild(commentEl);
+                startAutoMessages();
             }
-            
-            // Registrar mensagem ativa
-            activeMessages.push({
-                id: commentId,
-                element: commentEl,
-                isUserMessage: isUserMessage
-            });
-            
-            // Remover após o tempo configurado
-            setTimeout(() => {
-                if (commentEl.parentNode) {
-                    commentEl.parentNode.removeChild(commentEl);
-                    // Remover da lista de mensagens ativas
-                    activeMessages = activeMessages.filter(msg => msg.id !== commentId);
-                }
-            }, NOTIFICATION_CONFIG.messageVisibleDuration + animationDelay);
-            
-            // Gerenciar limite de mensagens
-            manageMessageLimit();
-            
-            // Forçar reflow para ativar animação
-            commentEl.offsetHeight;
         }
         
-        /**
-         * Gerencia o limite de mensagens visíveis
-         */
-        function manageMessageLimit() {
-            const currentMessages = document.querySelectorAll('.comment');
+        // Finalizar tutorial
+        function completeTutorial() {
+            if (!tutorialShown) return;
             
-            if (currentMessages.length > NOTIFICATION_CONFIG.maxVisibleMessages) {
-                // Encontrar mensagens não prioritárias para remover
-                const messagesArray = Array.from(currentMessages);
-                const nonUserMessages = messagesArray.filter(msg => 
-                    !msg.querySelector('.username.you')
-                );
+            localStorage.setItem('liveTutorialSeen', 'true');
+            tutorialShown = false;
+            
+            document.getElementById('tutorial-overlay').classList.add('tutorial-hidden');
+            document.body.classList.remove('tutorial-active');
+            
+            const button = document.getElementById('fullscreen-control');
+            button.style.animation = 'none';
+            button.style.background = 'rgba(0, 0, 0, 0.7)';
+            button.style.border = '2px solid rgba(255, 255, 255, 0.4)';
+            button.style.color = '#ffffff';
+            button.style.boxShadow = 'none';
+            button.style.transform = 'scale(1)';
+            
+            startAutoMessages();
+            console.log("Tutorial completado");
+        }
+        
+        // Sistema de mensagens
+        class MessageSystem {
+            constructor() {
+                this.messages = [];
+                this.nextId = 0;
+                this.container = document.getElementById('comments-container');
+            }
+            
+            addMessage(user, text) {
+                this.nextId++;
+                const messageId = this.nextId;
                 
-                // Remover a mais antiga que não seja do usuário
-                if (nonUserMessages.length > 0) {
-                    const oldestNonUser = nonUserMessages[nonUserMessages.length - 1];
-                    if (oldestNonUser.parentNode) {
-                        const msgId = parseInt(oldestNonUser.id.replace('comment-', ''));
-                        activeMessages = activeMessages.filter(msg => msg.id !== msgId);
-                        oldestNonUser.parentNode.removeChild(oldestNonUser);
-                    }
+                const comment = document.createElement('div');
+                comment.className = 'comment';
+                comment.id = `comment-${messageId}`;
+                
+                const delay = this.messages.length * 200;
+                comment.style.animationDelay = `${delay}ms`;
+                
+                comment.innerHTML = `
+                    <div class="user-avatar">
+                        <i class="fi fi-ss-user"></i>
+                    </div>
+                    <div class="comment-content">
+                        <div class="username">${user}</div>
+                        <div class="comment-text">${text}</div>
+                    </div>
+                `;
+                
+                this.container.appendChild(comment);
+                this.messages.push(messageId);
+                
+                setTimeout(() => {
+                    this.removeMessage(messageId);
+                }, CONFIG.messageDuration + delay);
+                
+                this.manageMessageLimit();
+                
+                return messageId;
+            }
+            
+            addUserMessage(text) {
+                return this.addMessage("@você", text);
+            }
+            
+            removeMessage(messageId) {
+                const element = document.getElementById(`comment-${messageId}`);
+                if (element) {
+                    element.remove();
+                    this.messages = this.messages.filter(id => id !== messageId);
+                }
+            }
+            
+            manageMessageLimit() {
+                if (this.messages.length > CONFIG.maxMessages) {
+                    const oldestId = this.messages.shift();
+                    this.removeMessage(oldestId);
+                }
+            }
+            
+            generateRandomMessage() {
+                const user = USER_NAMES[Math.floor(Math.random() * USER_NAMES.length)];
+                const text = MESSAGES[Math.floor(Math.random() * MESSAGES.length)];
+                return this.addMessage(user, text);
+            }
+            
+            startAutoMessages() {
+                if (this.autoInterval) clearInterval(this.autoInterval);
+                this.autoInterval = setInterval(() => {
+                    this.generateRandomMessage();
+                }, CONFIG.messageInterval);
+            }
+            
+            stopAutoMessages() {
+                if (this.autoInterval) {
+                    clearInterval(this.autoInterval);
+                    this.autoInterval = null;
                 }
             }
         }
         
-        /**
-         * Gera uma mensagem automática
-         */
-        function generateAutoMessage() {
-            if (!isAutoCommentRunning || !NOTIFICATION_CONFIG.autoMessagesEnabled) return;
-            
-            const randomUser = USER_NAMES[Math.floor(Math.random() * USER_NAMES.length)];
-            const messageType = Math.floor(Math.random() * 3);
-            
-            let randomMessage;
-            switch(messageType) {
-                case 0:
-                    randomMessage = EMOJI_ONLY_MESSAGES[Math.floor(Math.random() * EMOJI_ONLY_MESSAGES.length)];
-                    break;
-                case 1:
-                    randomMessage = TEXT_ONLY_MESSAGES[Math.floor(Math.random() * TEXT_ONLY_MESSAGES.length)];
-                    break;
-                case 2:
-                    randomMessage = MIXED_MESSAGES[Math.floor(Math.random() * MIXED_MESSAGES.length)];
-                    break;
-            }
-            
-            addNotification(randomUser, randomMessage, false);
-        }
+        // Instanciar sistema de mensagens
+        const messageSystem = new MessageSystem();
         
-        /**
-         * Inicia as mensagens automáticas
-         */
+        // Iniciar mensagens automáticas
         function startAutoMessages() {
-            isAutoCommentRunning = true;
-            
-            // Adicionar mensagens iniciais
-            const initialMessages = [
-                { user: "@joão", text: "😈😈😈", type: "emoji" },
-                { user: "@pedro", text: "Que tesão essa live!", type: "text" },
-                { user: "@carlos", text: "Muito desejo agora 🤤", type: "mixed" },
-                { user: "@lucas", text: "❤️❤️❤️", type: "emoji" },
-                { user: "@marcos", text: "Estou com muita excitação", type: "text" }
-            ];
-            
-            initialMessages.forEach((msg, index) => {
-                setTimeout(() => {
-                    addNotification(msg.user, msg.text, false);
-                }, index * 1000);
-            });
-            
-            // Configurar intervalo para novas mensagens
-            autoCommentInterval = setInterval(() => {
-                generateAutoMessage();
-            }, NOTIFICATION_CONFIG.autoMessageInterval);
+            CONFIG.autoMessages = true;
+            messageSystem.startAutoMessages();
         }
         
-        /**
-         * Para as mensagens automáticas
-         */
-        function stopAutoMessages() {
-            isAutoCommentRunning = false;
-            if (autoCommentInterval) {
-                clearInterval(autoCommentInterval);
-                autoCommentInterval = null;
+        // Atualizar contador de visualizações - RESPEITANDO OS TEMPOS
+        function updateViewerCount() {
+            const viewerCountElement = document.getElementById('viewer-count');
+            let currentCount = parseInt(viewerCountElement.textContent);
+            let min, max;
+            
+            // Verifica se já passaram 5 minutos (300000 ms) desde o início
+            const currentTime = Date.now();
+            const timeElapsed = currentTime - siteStartTime;
+            
+            if (timeElapsed < 300000) { // Menos de 5 minutos
+                viewerPhase = "initial";
+                min = 570;
+                max = 577;
+            } else { // Mais de 5 minutos
+                viewerPhase = "after5min";
+                min = 702;
+                max = 720;
+            }
+            
+            let newCount;
+            do {
+                newCount = Math.floor(Math.random() * (max - min + 1)) + min;
+            } while (newCount === currentCount);
+            
+            viewerCountElement.textContent = newCount;
+        }
+        
+        // Iniciar timer para atualização do contador de visualizações
+        function startViewerCountTimer() {
+            // Atualiza a cada 5 segundos (5000 ms) - RESPEITANDO O TEMPO
+            viewerCountUpdateTimer = setInterval(updateViewerCount, 5000);
+        }
+        
+        // Mostrar modal de doação - RESPEITANDO O TEMPO DE 2 MINUTOS
+        function showDonationModal() {
+            if (donationModalShown) return;
+            
+            const currentTime = Date.now();
+            const timeElapsed = currentTime - siteStartTime;
+            
+            // Verifica se já passaram 2 minutos (120000 ms)
+            if (timeElapsed >= 120000) {
+                donationModalShown = true;
+                document.getElementById('donation-modal').classList.add('active');
+                console.log("Modal de doação ativado após 2 minutos");
+            } else {
+                // Agenda para aparecer no tempo correto
+                const timeRemaining = 120000 - timeElapsed;
+                setTimeout(showDonationModal, timeRemaining);
             }
         }
         
-        // =====================================================================
-        // INICIALIZAÇÃO DO SISTEMA
-        // =====================================================================
-        document.addEventListener('DOMContentLoaded', function() {
-            // Configuração do Particles.js
+        // Copiar chave PIX
+        function copyPixKey() {
+            navigator.clipboard.writeText(PIX_KEY).then(() => {
+                const btn = document.getElementById('copy-key-btn');
+                const originalText = btn.textContent;
+                btn.textContent = "CHAVE COPIADA!";
+                btn.style.background = "#4CAF50";
+                btn.style.color = "white";
+                
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = "";
+                    btn.style.color = "";
+                }, 2000);
+            }).catch(err => {
+                console.error('Erro ao copiar chave PIX:', err);
+            });
+        }
+        
+        // Garantir que o vídeo esteja em player automático
+        function ensureVideoAutoplay() {
+            const video = document.getElementById('live-video');
+            
+            // Tenta tocar o vídeo
+            const playPromise = video.play();
+            
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    console.log("Vídeo tocando automaticamente");
+                }).catch(error => {
+                    console.log("Autoplay falhou, tentando com user interaction...");
+                    
+                    // Se falhar, tenta tocar quando o usuário interagir
+                    const playOnInteraction = () => {
+                        video.play().then(() => {
+                            console.log("Vídeo tocando após interação do usuário");
+                        }).catch(e => {
+                            console.log("Ainda não foi possível tocar o vídeo:", e);
+                        });
+                        
+                        // Remove os listeners após a primeira interação
+                        document.removeEventListener('click', playOnInteraction);
+                        document.removeEventListener('touchstart', playOnInteraction);
+                    };
+                    
+                    document.addEventListener('click', playOnInteraction);
+                    document.addEventListener('touchstart', playOnInteraction);
+                });
+            }
+        }
+        
+        // Inicialização principal
+        document.addEventListener('DOMContentLoaded', () => {
+            // Configurar particles.js
             particlesJS('particles-js', {
                 particles: {
-                    number: {
-                        value: 80,
-                        density: {
-                            enable: true,
-                            value_area: 800
-                        }
-                    },
-                    color: {
-                        value: "#ffffff"
-                    },
-                    shape: {
-                        type: "circle"
-                    },
-                    opacity: {
-                        value: 0.5,
-                        random: true,
-                        anim: {
-                            enable: true,
-                            speed: 1,
-                            opacity_min: 0.1,
-                            sync: false
-                        }
-                    },
-                    size: {
-                        value: 3,
-                        random: true,
-                        anim: {
-                            enable: true,
-                            speed: 2,
-                            size_min: 0.1,
-                            sync: false
-                        }
-                    },
-                    line_linked: {
-                        enable: true,
-                        distance: 150,
-                        color: "#ffffff",
-                        opacity: 0.2,
-                        width: 1
-                    },
-                    move: {
-                        enable: true,
-                        speed: 1,
-                        direction: "none",
-                        random: true,
-                        straight: false,
-                        out_mode: "out",
-                        bounce: false,
-                        attract: {
-                            enable: false,
-                            rotateX: 600,
-                            rotateY: 1200
-                        }
-                    }
+                    number: { value: 50, density: { enable: true, value_area: 800 } },
+                    color: { value: "#ffffff" },
+                    shape: { type: "circle" },
+                    opacity: { value: 0.2, random: true, anim: { enable: true, speed: 1 } },
+                    size: { value: 2, random: true, anim: { enable: true, speed: 2 } },
+                    line_linked: { enable: true, distance: 120, color: "#ffffff", opacity: 0.1, width: 1 },
+                    move: { enable: true, speed: 0.8, direction: "none", random: true }
                 },
                 interactivity: {
                     detect_on: "canvas",
                     events: {
-                        onhover: {
-                            enable: true,
-                            mode: "repulse"
-                        },
-                        onclick: {
-                            enable: true,
-                            mode: "push"
-                        },
+                        onhover: { enable: true, mode: "repulse" },
+                        onclick: { enable: true, mode: "push" },
                         resize: true
-                    },
-                    modes: {
-                        repulse: {
-                            distance: 100,
-                            duration: 0.4
-                        },
-                        push: {
-                            particles_nb: 4
-                        }
                     }
-                },
-                retina_detect: true
+                }
             });
-
-            // Elementos da DOM
-            const video = document.querySelector('.video-background');
+            
+            // Elementos DOM
+            const video = document.getElementById('live-video');
             const audioControl = document.getElementById('audio-control');
             const audioIcon = document.getElementById('audio-icon');
-            const viewerCount = document.getElementById('viewer-count');
             const commentInput = document.getElementById('comment-input');
             const sendBtn = document.getElementById('send-btn');
             const emojiBtns = document.querySelectorAll('.emoji-btn');
             const fullscreenControl = document.getElementById('fullscreen-control');
             const fullscreenIcon = document.getElementById('fullscreen-icon');
             const charCount = document.getElementById('char-count');
-            const mainContainer = document.querySelector('.main-container');
-
-            // Estado inicial
-            let isMuted = false;
-            let viewerCountValue = 423;
-
-            // Foco automático no campo de comentário
-            commentInput.focus();
-
-            // Contador de visualizações dinâmico
-            function updateViewerCount() {
-                const change = Math.floor(Math.random() * 21) - 10;
-                viewerCountValue = Math.min(657, Math.max(375, viewerCountValue + change));
-                viewerCount.textContent = viewerCountValue;
-                setTimeout(updateViewerCount, 2000 + Math.random() * 3000);
-            }
-            updateViewerCount();
-
-            // Controle de áudio
-            audioControl.addEventListener('click', function() {
+            const mainContainer = document.getElementById('main-container');
+            const copyKeyBtn = document.getElementById('copy-key-btn');
+            
+            let isMuted = true;
+            
+            // Iniciar tutorial
+            initTutorial();
+            
+            // Iniciar relógio
+            updateLiveTime();
+            setInterval(updateLiveTime, 60000); // Atualizar a cada minuto
+            
+            // Iniciar contador de visualizações
+            startViewerCountTimer();
+            
+            // Iniciar timer para modal de doação (2 minutos) - RESPEITANDO O TEMPO
+            donationTimer = setTimeout(() => {
+                showDonationModal();
+            }, 120000);
+            
+            // Atualizar tempo no site
+            setInterval(() => {
+                timeOnSite += 1;
+                console.log(`Tempo no site: ${timeOnSite} minutos`);
+            }, 60000);
+            
+            // Garantir que o vídeo esteja em player automático
+            ensureVideoAutoplay();
+            
+            // Controle de áudio ATUALIZADO
+            function toggleAudio() {
                 isMuted = !isMuted;
                 video.muted = isMuted;
                 
                 if (isMuted) {
+                    // Áudio inativo - cinza com risco vermelho
                     audioIcon.className = 'fi fi-ss-volume';
-                    audioIcon.classList.add('audio-icon-muted');
-                    audioControl.classList.add('muted');
-                } else {
-                    audioIcon.className = 'fi fi-ss-volume';
-                    audioIcon.classList.remove('audio-icon-muted');
+                    audioIcon.classList.add('audio-icon-inactive');
+                    audioControl.classList.add('inactive');
                     audioControl.classList.remove('muted');
-                }
-            });
-
-            // Pausar/play no vídeo ao clicar
-            video.addEventListener('click', function() {
-                if (video.paused) {
-                    video.play();
                 } else {
-                    video.pause();
+                    // Áudio ativo - rosa pink
+                    audioIcon.className = 'fi fi-ss-volume';
+                    audioIcon.classList.remove('audio-icon-inactive');
+                    audioControl.classList.remove('inactive');
+                    audioControl.classList.add('muted');
                 }
-            });
-
+            }
+            
+            // Inicializar áudio como inativo (mudo)
+            toggleAudio(); // Isso definirá o estado inicial como inativo
+            
+            audioControl.addEventListener('click', toggleAudio);
+            
             // Enviar comentário do usuário
             function sendComment() {
                 const text = commentInput.value.trim();
-                if (text === '') return;
+                if (!text) return;
                 
-                // PRIORIDADE: Mensagem do usuário
-                addNotification("@você", text, true);
+                messageSystem.addUserMessage(text);
                 commentInput.value = '';
                 updateCharCount();
-                
-                // Resposta automática ocasional
-                if (Math.random() > 0.5) {
-                    setTimeout(() => {
-                        const responses = [
-                            "Obrigado! 😊",
-                            "Valeu pelo comentário!",
-                            "Show! ❤️",
-                            "Continue participando!",
-                            "Muito bom! 🤤"
-                        ];
-                        const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-                        addNotification("@streamer", randomResponse, false);
-                    }, 1000 + Math.random() * 2000);
-                }
             }
-
-            // Evento de enviar comentário
-            sendBtn.addEventListener('click', sendComment);
             
-            // Enviar com Enter
-            commentInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    sendComment();
-                }
-            });
-
-            // Inserir emoji
+            sendBtn.addEventListener('click', sendComment);
+            commentInput.addEventListener('keypress', (e) => e.key === 'Enter' && sendComment());
+            
+            // Emojis
             emojiBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const emoji = this.getAttribute('data-emoji');
-                    const cursorPos = commentInput.selectionStart;
-                    const textBefore = commentInput.value.substring(0, cursorPos);
-                    const textAfter = commentInput.value.substring(cursorPos);
-                    
-                    commentInput.value = textBefore + emoji + textAfter;
+                btn.addEventListener('click', () => {
+                    const emoji = btn.getAttribute('data-emoji');
+                    commentInput.value += emoji;
                     commentInput.focus();
-                    commentInput.selectionStart = commentInput.selectionEnd = cursorPos + emoji.length;
                     updateCharCount();
                 });
             });
-
-            // Atualizar contador de caracteres
+            
+            // Contador de caracteres
             function updateCharCount() {
                 const length = commentInput.value.length;
                 charCount.textContent = `${length}/50`;
-                
-                charCount.classList.remove('warning', 'error');
-                if (length > 40) {
-                    charCount.classList.add('warning');
-                }
-                if (length >= 50) {
-                    charCount.classList.add('error');
-                }
+                charCount.className = length > 40 ? 'char-count warning' : 'char-count';
             }
             commentInput.addEventListener('input', updateCharCount);
-            updateCharCount();
-
-            // Controle de tela cheia
-            fullscreenControl.addEventListener('click', function() {
-                if (!document.fullscreenElement) {
-                    if (mainContainer.requestFullscreen) {
-                        mainContainer.requestFullscreen();
-                    } else if (mainContainer.webkitRequestFullscreen) {
-                        mainContainer.webkitRequestFullscreen();
-                    } else if (mainContainer.msRequestFullscreen) {
-                        mainContainer.msRequestFullscreen();
-                    }
-                } else {
-                    if (document.exitFullscreen) {
-                        document.exitFullscreen();
-                    } else if (document.webkitExitFullscreen) {
-                        document.webkitExitFullscreen();
-                    } else if (document.msExitFullscreen) {
-                        document.msExitFullscreen();
-                    }
+            
+            // Controle de tela cheia - NÃO AFETA O MODAL DE DOAÇÃO
+            function toggleFullscreen() {
+                if (tutorialShown) {
+                    completeTutorial();
                 }
-            });
-
-            // Mudar ícone de tela cheia
-            document.addEventListener('fullscreenchange', updateFullscreenIcon);
-            document.addEventListener('webkitfullscreenchange', updateFullscreenIcon);
-            document.addEventListener('msfullscreenchange', updateFullscreenIcon);
-
-            function updateFullscreenIcon() {
-                if (document.fullscreenElement || 
-                    document.webkitFullscreenElement || 
-                    document.msFullscreenElement) {
-                    fullscreenIcon.className = 'fi fi-ss-compress';
+                
+                if (!document.fullscreenElement) {
+                    mainContainer.requestFullscreen().catch(console.log);
                 } else {
-                    fullscreenIcon.className = 'fi fi-ss-expand';
+                    document.exitFullscreen();
                 }
             }
-
-            // Iniciar o sistema de mensagens automáticas
-            startAutoMessages();
-
-            // Pausar comentários automáticos quando a janela não está visível
-            document.addEventListener('visibilitychange', function() {
+            
+            fullscreenControl.addEventListener('click', toggleFullscreen);
+            
+            // Atualizar ícone de tela cheia
+            function updateFullscreenIcon() {
+                isFullscreen = !isFullscreen;
+                fullscreenIcon.className = isFullscreen ? 'fi fi-ss-compress' : 'fi fi-ss-expand';
+            }
+            
+            document.addEventListener('fullscreenchange', updateFullscreenIcon);
+            
+            // Copiar chave PIX
+            copyKeyBtn.addEventListener('click', copyPixKey);
+            
+            // Gerenciar visibilidade da página
+            document.addEventListener('visibilitychange', () => {
                 if (document.hidden) {
-                    stopAutoMessages();
-                } else {
-                    startAutoMessages();
+                    messageSystem.stopAutoMessages();
+                } else if (CONFIG.autoMessages) {
+                    messageSystem.startAutoMessages();
                 }
             });
         });
