@@ -29,13 +29,13 @@
             overflow: hidden;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start; /* Alinha ao topo */
+            background: #000; /* Fundo preto */
         }
 
         body {
-            background: linear-gradient(135deg, var(--primary-pink), #FF69B4, #DB7093);
             position: relative;
-            padding: 10px;
+            padding: 0; /* Remove padding */
         }
 
         body.tutorial-active {
@@ -47,20 +47,23 @@
             width: 100%;
             height: 100%;
             z-index: 1;
+            opacity: 0.3; /* Reduz opacidade para não competir com fundo preto */
         }
 
+        /* Container principal - FIXO NO TOPO, OCUPA ALTURA TOTAL */
         .main-container {
             position: relative;
-            width: 95%;
+            width: 100%;
             max-width: 340px;
-            height: 620px;
+            height: 100vh; /* Exatamente a altura da tela */
+            margin: 0 auto;
             overflow: hidden;
             background: #000;
             z-index: 10;
             opacity: 1;
             transition: all 0.3s ease;
-            border-radius: 20px;
-            border: 2px solid var(--neon-pink);
+            border-radius: 20px 20px 0 0; /* Arredondado apenas em cima, reto embaixo */
+            border: 5px solid var(--neon-pink); /* Borda mais espessa, cor neon pink */
             box-shadow: 0 0 30px rgba(255, 105, 180, 0.5);
         }
 
@@ -70,41 +73,38 @@
             height: 100vh !important;
             max-width: 100vw !important;
             border-radius: 0;
-            border: none;
+            border: 5px solid var(--neon-pink); /* Mantém borda */
         }
         .main-container:-webkit-full-screen {
             width: 100vw !important;
             height: 100vh !important;
             max-width: 100vw !important;
             border-radius: 0;
-            border: none;
+            border: 5px solid var(--neon-pink);
         }
         .main-container:-moz-full-screen {
             width: 100vw !important;
             height: 100vh !important;
             max-width: 100vw !important;
             border-radius: 0;
-            border: none;
+            border: 5px solid var(--neon-pink);
         }
         .main-container:-ms-fullscreen {
             width: 100vw !important;
             height: 100vh !important;
             max-width: 100vw !important;
             border-radius: 0;
-            border: none;
+            border: 5px solid var(--neon-pink);
         }
 
         @media (min-width: 768px) {
             .main-container {
-                width: 375px;
-                height: 667px;
+                max-width: 375px; /* Ajuste para telas maiores */
             }
         }
 
         @media (max-width: 360px) {
             .main-container {
-                width: 95%;
-                height: 580px;
                 max-width: 320px;
             }
         }
@@ -605,10 +605,9 @@
             z-index: 10001;
         }
 
+        /* Responsividade */
         @media (max-width: 480px) {
             .main-container {
-                width: 90%;
-                height: 600px;
                 max-width: 340px;
             }
             .tutorial-text {
@@ -643,7 +642,6 @@
 
         @media (max-width: 360px) {
             .main-container {
-                height: 550px;
                 max-width: 320px;
             }
             .comments-container {
@@ -731,7 +729,7 @@
         <div class="surprise-me">Surpreenda-Me</div>
     </div>
     
-    <!-- Container principal -->
+    <!-- Container principal - FIXO NO TOPO, ALTURA TOTAL -->
     <div class="main-container" id="main-container">
         <div class="video-container">
             <!-- Video fallback -->
@@ -763,7 +761,7 @@
                 Seu navegador não suporta vídeos HTML5.
             </video>
             
-            <!-- Overlays (sempre visíveis quando container não está em fullscreen nativo) -->
+            <!-- Overlays -->
             <div class="live-time" id="live-time">00:00</div>
             <div class="live-badge">
                 <div class="live-pulse"></div>
@@ -1068,7 +1066,7 @@
             if (!isCurrentlyFullscreen) {
                 // ---- Entrar em tela cheia ----
                 if (isIOS) {
-                    // iOS: usa player nativo do vídeo (NÃO mostra overlays, mas é a única opção)
+                    // iOS: usa player nativo do vídeo (NÃO mostra overlays)
                     if (video.webkitEnterFullscreen) {
                         video.webkitEnterFullscreen();
                     }
