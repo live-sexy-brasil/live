@@ -64,6 +64,36 @@
             box-shadow: 0 0 30px rgba(255, 105, 180, 0.5);
         }
 
+        /* Estilos para quando o container estiver em tela cheia (Android/Desktop) */
+        .main-container:fullscreen {
+            width: 100vw !important;
+            height: 100vh !important;
+            max-width: 100vw !important;
+            border-radius: 0;
+            border: none;
+        }
+        .main-container:-webkit-full-screen {
+            width: 100vw !important;
+            height: 100vh !important;
+            max-width: 100vw !important;
+            border-radius: 0;
+            border: none;
+        }
+        .main-container:-moz-full-screen {
+            width: 100vw !important;
+            height: 100vh !important;
+            max-width: 100vw !important;
+            border-radius: 0;
+            border: none;
+        }
+        .main-container:-ms-fullscreen {
+            width: 100vw !important;
+            height: 100vh !important;
+            max-width: 100vw !important;
+            border-radius: 0;
+            border: none;
+        }
+
         @media (min-width: 768px) {
             .main-container {
                 width: 375px;
@@ -131,7 +161,6 @@
             letter-spacing: 1px;
         }
 
-        /* Controles sempre visíveis */
         .live-badge {
             position: absolute;
             top: 15px;
@@ -162,7 +191,6 @@
             50% { transform: scale(1.1); opacity: 0.7; }
         }
 
-        /* Controle de áudio */
         .audio-control {
             position: absolute;
             top: 60px;
@@ -398,7 +426,7 @@
             transform: scale(0.95);
         }
 
-        /* Tutorial simplificado */
+        /* Tutorial */
         .tutorial-overlay {
             position: fixed;
             top: 0;
@@ -577,44 +605,36 @@
             z-index: 10001;
         }
 
-        /* Responsividade */
         @media (max-width: 480px) {
             .main-container {
                 width: 90%;
                 height: 600px;
                 max-width: 340px;
             }
-            
             .tutorial-text {
                 font-size: 16px;
                 max-width: 250px;
                 top: 35%;
             }
-            
             .comments-container {
                 height: 140px;
             }
-            
             .donation-container {
                 width: 85%;
                 max-width: 280px;
             }
-            
             .donation-title {
                 font-size: 13px;
                 padding: 12px 10px 6px;
             }
-            
             .qr-code-container {
                 width: 140px;
                 height: 140px;
             }
-            
             .qr-code-placeholder {
                 width: 120px;
                 height: 120px;
             }
-            
             .live-time {
                 font-size: 13px;
                 top: 12px;
@@ -626,36 +646,29 @@
                 height: 550px;
                 max-width: 320px;
             }
-            
             .comments-container {
                 height: 120px;
             }
-            
             .tutorial-text {
                 top: 30%;
                 font-size: 14px;
                 max-width: 220px;
             }
-            
             .donation-container {
                 max-width: 260px;
             }
-            
             .qr-code-container {
                 width: 130px;
                 height: 130px;
                 margin: 8px auto;
             }
-            
             .qr-code-placeholder {
                 width: 110px;
                 height: 110px;
             }
-            
             .comment {
                 font-size: 11px;
             }
-            
             .user-avatar {
                 width: 22px;
                 height: 22px;
@@ -691,7 +704,7 @@
 <body>
     <div id="particles-js"></div>
     
-    <!-- Tutorial simplificado -->
+    <!-- Tutorial -->
     <div class="tutorial-overlay tutorial-hidden" id="tutorial-overlay">
         <div class="tutorial-text" id="tutorial-text">Clique no botão para maximizar a tela e ter a melhor experiência</div>
     </div>
@@ -733,7 +746,7 @@
                 <button class="retry-btn" id="retry-video">CONECTAR NOVAMENTE</button>
             </div>
             
-            <!-- Vídeo da live - com playsinline para iOS -->
+            <!-- Vídeo da live -->
             <video 
                 class="video-background" 
                 autoplay 
@@ -744,30 +757,22 @@
                 id="live-video" 
                 preload="auto"
             >
-                <!-- Fonte principal -->
                 <source src="https://dg-videos.b-cdn.net/bg/720x1280_cm563.mp4" type="video/mp4">
-                <!-- Fontes alternativas -->
                 <source src="https://assets.mixkit.co/videos/preview/mixkit-woman-with-red-lips-posing-1644-large.mp4" type="video/mp4">
                 <source src="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4" type="video/mp4">
                 Seu navegador não suporta vídeos HTML5.
             </video>
             
-            <!-- Horário -->
+            <!-- Overlays (sempre visíveis quando container não está em fullscreen nativo) -->
             <div class="live-time" id="live-time">00:00</div>
-            
-            <!-- Indicador AO VIVO -->
             <div class="live-badge">
                 <div class="live-pulse"></div>
                 <span>AO VIVO</span>
             </div>
-            
-            <!-- Contador de visualizações -->
             <div class="viewer-count">
                 <i class="fi fi-ss-eye"></i>
                 <span id="viewer-count">570</span>
             </div>
-            
-            <!-- Controle de áudio -->
             <div class="audio-control" id="audio-control">
                 <i class="fi fi-ss-volume" id="audio-icon"></i>
             </div>
@@ -775,16 +780,13 @@
             <!-- Sistema de comentários -->
             <div class="comments-section">
                 <div class="comments-container" id="comments-container"></div>
-                
                 <div class="comment-input-container">
                     <input type="text" class="comment-input" id="comment-input" placeholder="Envie um comentário..." maxlength="50">
                     <button class="send-btn" id="send-btn">
                         <i class="fi fi-ss-paper-plane"></i>
                     </button>
                 </div>
-                
                 <div class="char-count" id="char-count">0/50</div>
-                
                 <div class="emoji-selector">
                     <button class="emoji-btn" data-emoji="😈">😈</button>
                     <button class="emoji-btn" data-emoji="😇">😇</button>
@@ -794,7 +796,7 @@
                 </div>
             </div>
             
-            <!-- Botão de tela cheia (agora atua no VÍDEO) -->
+            <!-- Botão de tela cheia -->
             <div class="fullscreen-control" id="fullscreen-control">
                 <i class="fi fi-ss-expand" id="fullscreen-icon"></i>
             </div>
@@ -882,14 +884,11 @@
             addMessage(user, text) {
                 this.nextId++;
                 const messageId = this.nextId;
-                
                 const comment = document.createElement('div');
                 comment.className = 'comment';
                 comment.id = `comment-${messageId}`;
-                
                 const delay = this.messages.length * 200;
                 comment.style.animationDelay = `${delay}ms`;
-                
                 comment.innerHTML = `
                     <div class="user-avatar">
                         <i class="fi fi-ss-user"></i>
@@ -899,14 +898,9 @@
                         <div class="comment-text">${text}</div>
                     </div>
                 `;
-                
                 this.container.appendChild(comment);
                 this.messages.push(messageId);
-                
-                setTimeout(() => {
-                    this.removeMessage(messageId);
-                }, CONFIG.messageDuration + delay);
-                
+                setTimeout(() => this.removeMessage(messageId), CONFIG.messageDuration + delay);
                 this.manageMessageLimit();
                 return messageId;
             }
@@ -938,9 +932,7 @@
             
             startAutoMessages() {
                 if (this.autoInterval) clearInterval(this.autoInterval);
-                this.autoInterval = setInterval(() => {
-                    this.generateRandomMessage();
-                }, CONFIG.messageInterval);
+                this.autoInterval = setInterval(() => this.generateRandomMessage(), CONFIG.messageInterval);
             }
             
             stopAutoMessages() {
@@ -992,18 +984,15 @@
             let currentCount = parseInt(viewerCountElement.textContent);
             let min, max;
             const timeElapsed = Date.now() - siteStartTime;
-            
             if (timeElapsed < 300000) {
                 min = 570; max = 577;
             } else {
                 min = 702; max = 720;
             }
-            
             let newCount;
             do {
                 newCount = Math.floor(Math.random() * (max - min + 1)) + min;
             } while (newCount === currentCount);
-            
             viewerCountElement.textContent = newCount;
         }
         
@@ -1041,29 +1030,17 @@
         function ensureVideoAutoplay() {
             const video = document.getElementById('live-video');
             const videoFallback = document.getElementById('video-fallback');
-            
             videoFallback.classList.remove('hidden');
-            
             video.addEventListener('error', (e) => {
                 videoErrorCount++;
-                if (videoErrorCount >= 2) {
-                    videoFallback.classList.remove('hidden');
-                }
+                if (videoErrorCount >= 2) videoFallback.classList.remove('hidden');
             });
-            
-            video.addEventListener('loadeddata', () => {
-                videoFallback.classList.add('hidden');
-            });
-            
-            video.play().then(() => {
-                videoFallback.classList.add('hidden');
-            }).catch(() => {
+            video.addEventListener('loadeddata', () => videoFallback.classList.add('hidden'));
+            video.play().then(() => videoFallback.classList.add('hidden')).catch(() => {
                 videoFallback.classList.remove('hidden');
                 const playOnInteraction = () => {
                     video.muted = true;
-                    video.play().then(() => {
-                        videoFallback.classList.add('hidden');
-                    }).catch(e => console.log);
+                    video.play().then(() => videoFallback.classList.add('hidden')).catch(e => console.log);
                     document.removeEventListener('click', playOnInteraction);
                     document.removeEventListener('touchstart', playOnInteraction);
                 };
@@ -1072,35 +1049,40 @@
             });
         }
         
-        // ========== FUNÇÃO CORRIGIDA - FULLSCREEN NO VÍDEO ==========
+        // ========== FUNÇÃO HÍBRIDA DE FULLSCREEN ==========
         function toggleFullscreen() {
             const video = document.getElementById('live-video');
+            const container = document.getElementById('main-container');
             
-            if (tutorialShown) {
-                completeTutorial();
-            }
+            if (tutorialShown) completeTutorial();
             
-            // Verifica se já está em tela cheia
+            // Detecta iOS (iPhone/iPad)
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            
+            // Verifica se já está em fullscreen
             const isCurrentlyFullscreen = !!(document.fullscreenElement || 
                 document.webkitFullscreenElement || 
                 document.mozFullScreenElement || 
                 document.msFullscreenElement);
             
             if (!isCurrentlyFullscreen) {
-                // ---- Entrar em tela cheia no VÍDEO ----
-                // iOS Safari: usa webkitEnterFullscreen (API específica)
-                if (video.webkitEnterFullscreen) {
-                    video.webkitEnterFullscreen();
-                }
-                // Android / Desktop: requestFullscreen com prefixos
-                else if (video.requestFullscreen) {
-                    video.requestFullscreen();
-                } else if (video.webkitRequestFullscreen) {
-                    video.webkitRequestFullscreen();
-                } else if (video.mozRequestFullScreen) {
-                    video.mozRequestFullScreen();
-                } else if (video.msRequestFullscreen) {
-                    video.msRequestFullscreen();
+                // ---- Entrar em tela cheia ----
+                if (isIOS) {
+                    // iOS: usa player nativo do vídeo (NÃO mostra overlays, mas é a única opção)
+                    if (video.webkitEnterFullscreen) {
+                        video.webkitEnterFullscreen();
+                    }
+                } else {
+                    // Android / Desktop: coloca o container inteiro em fullscreen (overlays aparecem!)
+                    if (container.requestFullscreen) {
+                        container.requestFullscreen();
+                    } else if (container.webkitRequestFullscreen) {
+                        container.webkitRequestFullscreen();
+                    } else if (container.mozRequestFullScreen) {
+                        container.mozRequestFullScreen();
+                    } else if (container.msRequestFullscreen) {
+                        container.msRequestFullscreen();
+                    }
                 }
             } else {
                 // ---- Sair da tela cheia ----
@@ -1122,7 +1104,6 @@
                 document.webkitFullscreenElement || 
                 document.mozFullScreenElement || 
                 document.msFullscreenElement);
-            
             isFullscreen = isFullscreenNow;
             const icon = document.getElementById('fullscreen-icon');
             icon.className = isFullscreenNow ? 'fi fi-ss-compress' : 'fi fi-ss-expand';
@@ -1180,9 +1161,7 @@
                 video.load();
                 videoFallback.classList.add('hidden');
                 setTimeout(() => {
-                    video.play().catch(() => {
-                        videoFallback.classList.remove('hidden');
-                    });
+                    video.play().catch(() => videoFallback.classList.remove('hidden'));
                 }, 500);
             });
             
@@ -1190,7 +1169,6 @@
             function toggleAudio() {
                 isMuted = !isMuted;
                 video.muted = isMuted;
-                
                 if (isMuted) {
                     audioIcon.className = 'fi fi-ss-volume';
                     audioIcon.classList.add('audio-icon-inactive');
@@ -1233,7 +1211,7 @@
             }
             commentInput.addEventListener('input', updateCharCount);
             
-            // Fullscreen - evento do botão
+            // Fullscreen - evento do botão (chama a função híbrida)
             fullscreenControl.addEventListener('click', toggleFullscreen);
             
             // Monitora mudanças no estado de fullscreen (para ícone)
