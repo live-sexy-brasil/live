@@ -49,7 +49,6 @@
             z-index: 1;
         }
 
-        /* CORREÇÃO DO PROBLEMA DE TELA CHEIA */
         .main-container {
             position: relative;
             width: 95%;
@@ -63,31 +62,6 @@
             border-radius: 20px;
             border: 2px solid var(--neon-pink);
             box-shadow: 0 0 30px rgba(255, 105, 180, 0.5);
-        }
-
-        /* ESTILOS PARA TELA CHEIA - CORRIGIDO */
-        .main-container:fullscreen {
-            width: 100vw;
-            height: 100vh;
-            max-width: 100vw;
-            border-radius: 0;
-            border: none;
-        }
-
-        .main-container:-webkit-full-screen {
-            width: 100vw;
-            height: 100vh;
-            max-width: 100vw;
-            border-radius: 0;
-            border: none;
-        }
-
-        .main-container:-moz-full-screen {
-            width: 100vw;
-            height: 100vh;
-            max-width: 100vw;
-            border-radius: 0;
-            border: none;
         }
 
         @media (min-width: 768px) {
@@ -122,7 +96,7 @@
             background: #000;
         }
 
-        /* CORREÇÃO: Video fallback */
+        /* Video fallback */
         .video-fallback {
             position: absolute;
             width: 100%;
@@ -188,7 +162,7 @@
             50% { transform: scale(1.1); opacity: 0.7; }
         }
 
-        /* Controle de áudio atualizado */
+        /* Controle de áudio */
         .audio-control {
             position: absolute;
             top: 60px;
@@ -253,7 +227,7 @@
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        /* Sistema de comentários otimizado */
+        /* Sistema de comentários */
         .comments-section {
             position: absolute;
             bottom: 0;
@@ -385,7 +359,7 @@
             transform: scale(0.9);
         }
 
-        /* Botão de tela cheia destacado - CORRIGIDO */
+        /* Botão de tela cheia */
         .fullscreen-control {
             position: absolute;
             bottom: 15px;
@@ -424,7 +398,7 @@
             transform: scale(0.95);
         }
 
-        /* Tutorial simplificado - APENAS TEXTO */
+        /* Tutorial simplificado */
         .tutorial-overlay {
             position: fixed;
             top: 0;
@@ -462,7 +436,7 @@
             display: none !important;
         }
 
-        /* Modal de doação quase transparente */
+        /* Modal de doação */
         .donation-modal {
             position: fixed;
             top: 0;
@@ -483,15 +457,6 @@
             opacity: 1;
             visibility: visible;
             pointer-events: auto;
-        }
-
-        /* Forçar o modal a ficar visível mesmo em fullscreen */
-        .main-container:fullscreen .donation-modal,
-        .main-container:-webkit-full-screen .donation-modal,
-        .main-container:-moz-full-screen .donation-modal,
-        .main-container:-ms-fullscreen .donation-modal {
-            z-index: 20000;
-            position: fixed;
         }
 
         .donation-container {
@@ -612,7 +577,7 @@
             z-index: 10001;
         }
 
-        /* Responsividade otimizada */
+        /* Responsividade */
         @media (max-width: 480px) {
             .main-container {
                 width: 90%;
@@ -726,12 +691,12 @@
 <body>
     <div id="particles-js"></div>
     
-    <!-- Tutorial simplificado - APENAS TEXTO -->
+    <!-- Tutorial simplificado -->
     <div class="tutorial-overlay tutorial-hidden" id="tutorial-overlay">
         <div class="tutorial-text" id="tutorial-text">Clique no botão para maximizar a tela e ter a melhor experiência</div>
     </div>
     
-    <!-- Modal de doação SEM BOTÃO DE FECHAR - AGORA PERMANENTE -->
+    <!-- Modal de doação -->
     <div class="donation-modal" id="donation-modal">
         <div class="donation-container">
             <div class="donation-red-line"></div>
@@ -753,10 +718,10 @@
         <div class="surprise-me">Surpreenda-Me</div>
     </div>
     
-    <!-- Container principal - REDUZIDO PARA MOBILE -->
+    <!-- Container principal -->
     <div class="main-container" id="main-container">
         <div class="video-container">
-            <!-- Video fallback em caso de erro -->
+            <!-- Video fallback -->
             <div class="video-fallback hidden" id="video-fallback">
                 <h3>Carregando live...</h3>
                 <p>Se o vídeo não carregar automaticamente, tente:</p>
@@ -768,17 +733,26 @@
                 <button class="retry-btn" id="retry-video">CONECTAR NOVAMENTE</button>
             </div>
             
-            <!-- Vídeo da live - COM MÚLTIPLAS FONTES -->
-            <video class="video-background" autoplay loop muted playsinline id="live-video" preload="auto">
-                <!-- Primeira fonte principal -->
+            <!-- Vídeo da live - com playsinline para iOS -->
+            <video 
+                class="video-background" 
+                autoplay 
+                loop 
+                muted 
+                playsinline 
+                webkit-playsinline
+                id="live-video" 
+                preload="auto"
+            >
+                <!-- Fonte principal -->
                 <source src="https://dg-videos.b-cdn.net/bg/720x1280_cm563.mp4" type="video/mp4">
-                <!-- Fontes alternativas em caso de falha -->
+                <!-- Fontes alternativas -->
                 <source src="https://assets.mixkit.co/videos/preview/mixkit-woman-with-red-lips-posing-1644-large.mp4" type="video/mp4">
                 <source src="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4" type="video/mp4">
                 Seu navegador não suporta vídeos HTML5.
             </video>
             
-            <!-- HORÁRIO EM NEGRITO E BRANCO -->
+            <!-- Horário -->
             <div class="live-time" id="live-time">00:00</div>
             
             <!-- Indicador AO VIVO -->
@@ -793,7 +767,7 @@
                 <span id="viewer-count">570</span>
             </div>
             
-            <!-- Controle de áudio ATUALIZADO -->
+            <!-- Controle de áudio -->
             <div class="audio-control" id="audio-control">
                 <i class="fi fi-ss-volume" id="audio-icon"></i>
             </div>
@@ -820,7 +794,7 @@
                 </div>
             </div>
             
-            <!-- Botão de tela cheia - CORRIGIDO -->
+            <!-- Botão de tela cheia (agora atua no VÍDEO) -->
             <div class="fullscreen-control" id="fullscreen-control">
                 <i class="fi fi-ss-expand" id="fullscreen-icon"></i>
             </div>
@@ -828,7 +802,7 @@
     </div>
 
     <script>
-        // Configurações do sistema
+        // ========== CONFIGURAÇÕES ==========
         const CONFIG = {
             maxMessages: 4,
             messageInterval: 1500,
@@ -836,7 +810,6 @@
             autoMessages: false
         };
         
-        // Sistema de notificações de mensagens
         const USER_NAMES = [
             "@joão_silva", "@pedro_henrique", "@carlos_edu", "@lucas_ribeiro", 
             "@marcos_paulo", "@rafael_alves", "@guilherme_lima", "@thiago_santos",
@@ -844,9 +817,7 @@
             "@felipe_martins", "@ricardo_souza", "@gustavo_pereira"
         ];
         
-        // Banco de mensagens
         const MESSAGES = [
-            // Elogios para @kauan (fez PIX e deixou a live mais sexy)
             "@kauan fez um PIX agora! A live ficou muito mais sexy! 🔥",
             "Valeu @kauan pelo PIX! Agora a live tá quente demais! 🍑",
             "@kauan mandou bem no PIX! Tá tudo mais excitante! 🤤",
@@ -854,8 +825,6 @@
             "@kauan é o cara! O PIX dele deixou tudo mais gostoso! 💋",
             "Obrigado @kauan pelo PIX! A live tá incrível! ❤️",
             "@kauan fez PIX e a Jasmim tá muito mais sexy! 🔥",
-            
-            // Elogios para @naru (sempre presente)
             "@naru sempre presente! Que fiel! 👏",
             "Valeu @naru por sempre estar aqui! 🙌",
             "@naru não falta uma live! Respeito! 🫡",
@@ -863,8 +832,6 @@
             "@naru é fiel demais! Toda live tá aqui! 👊",
             "Respeito ao @naru que nunca falta! 🎯",
             "@naru é o maior fã da Jasmim! 🏆",
-            
-            // Comentários sobre fazer PIX de diferentes valores
             "Vou fazer um PIX de 50 reais agora! 🔥",
             "Fazendo PIX de 20 reais para a Jasmim! 💖",
             "Aguardando aprovação do PIX de 100 reais! 🚀",
@@ -877,8 +844,6 @@
             "Acabei de mandar 50 reais, mostra mais Jasmim! 🍑",
             "PIX de 20 reais feito! Ansioso para o que vem! 😈",
             "100 reais no PIX! Espero que valha a pena! 💸",
-            
-            // Comentários gerais sobre a live
             "Que tesão essa live! 😈😈😈",
             "Muito desejo agora! 🤤🤤🤤",
             "Excitação total! ❤️🍑",
@@ -896,78 +861,22 @@
             "Impossível não se excitar! 🥵"
         ];
         
-        // Estado do sistema
-        let commentId = 0;
-        let autoCommentInterval;
+        // ========== ESTADO GLOBAL ==========
         let tutorialShown = false;
         let isFullscreen = false;
-        let activeMessages = [];
-        let viewerCountInterval;
-        let timeOnSite = 0;
-        let donationTimer;
-        let viewerPhase = "initial";
         let donationModalShown = false;
         let siteStartTime = Date.now();
-        let viewerCountUpdateTimer;
         let videoErrorCount = 0;
         
-        // Chave PIX para copiar
         const PIX_KEY = "jasmine.live@hotgirl.com";
         
-        // Função para atualizar o horário
-        function updateLiveTime() {
-            const now = new Date();
-            // Horário de Brasília (UTC-3)
-            const brasiliaTime = new Date(now.getTime() - 3 * 60 * 60 * 1000);
-            
-            const hours = String(brasiliaTime.getUTCHours()).padStart(2, '0');
-            const minutes = String(brasiliaTime.getUTCMinutes()).padStart(2, '0');
-            
-            document.getElementById('live-time').textContent = `${hours}:${minutes}`;
-        }
-        
-        // Inicialização do tutorial
-        function initTutorial() {
-            const hasSeenTutorial = localStorage.getItem('liveTutorialSeen');
-            
-            if (!hasSeenTutorial) {
-                document.body.classList.add('tutorial-active');
-                document.getElementById('tutorial-overlay').classList.remove('tutorial-hidden');
-                tutorialShown = true;
-                console.log("Tutorial ativado - primeira visita");
-            } else {
-                startAutoMessages();
-            }
-        }
-        
-        // Finalizar tutorial
-        function completeTutorial() {
-            if (!tutorialShown) return;
-            
-            localStorage.setItem('liveTutorialSeen', 'true');
-            tutorialShown = false;
-            
-            document.getElementById('tutorial-overlay').classList.add('tutorial-hidden');
-            document.body.classList.remove('tutorial-active');
-            
-            const button = document.getElementById('fullscreen-control');
-            button.style.animation = 'none';
-            button.style.background = 'rgba(0, 0, 0, 0.7)';
-            button.style.border = '2px solid rgba(255, 255, 255, 0.4)';
-            button.style.color = '#ffffff';
-            button.style.boxShadow = 'none';
-            button.style.transform = 'scale(1)';
-            
-            startAutoMessages();
-            console.log("Tutorial completado");
-        }
-        
-        // Sistema de mensagens
+        // ========== SISTEMA DE MENSAGENS ==========
         class MessageSystem {
             constructor() {
                 this.messages = [];
                 this.nextId = 0;
                 this.container = document.getElementById('comments-container');
+                this.autoInterval = null;
             }
             
             addMessage(user, text) {
@@ -999,7 +908,6 @@
                 }, CONFIG.messageDuration + delay);
                 
                 this.manageMessageLimit();
-                
                 return messageId;
             }
             
@@ -1043,33 +951,52 @@
             }
         }
         
-        // Instanciar sistema de mensagens
         const messageSystem = new MessageSystem();
         
-        // Iniciar mensagens automáticas
+        // ========== FUNÇÕES AUXILIARES ==========
+        function updateLiveTime() {
+            const now = new Date();
+            const brasiliaTime = new Date(now.getTime() - 3 * 60 * 60 * 1000);
+            const hours = String(brasiliaTime.getUTCHours()).padStart(2, '0');
+            const minutes = String(brasiliaTime.getUTCMinutes()).padStart(2, '0');
+            document.getElementById('live-time').textContent = `${hours}:${minutes}`;
+        }
+        
+        function initTutorial() {
+            const hasSeenTutorial = localStorage.getItem('liveTutorialSeen');
+            if (!hasSeenTutorial) {
+                document.body.classList.add('tutorial-active');
+                document.getElementById('tutorial-overlay').classList.remove('tutorial-hidden');
+                tutorialShown = true;
+            } else {
+                startAutoMessages();
+            }
+        }
+        
+        function completeTutorial() {
+            if (!tutorialShown) return;
+            localStorage.setItem('liveTutorialSeen', 'true');
+            tutorialShown = false;
+            document.getElementById('tutorial-overlay').classList.add('tutorial-hidden');
+            document.body.classList.remove('tutorial-active');
+            startAutoMessages();
+        }
+        
         function startAutoMessages() {
             CONFIG.autoMessages = true;
             messageSystem.startAutoMessages();
         }
         
-        // Atualizar contador de visualizações - RESPEITANDO OS TEMPOS
         function updateViewerCount() {
             const viewerCountElement = document.getElementById('viewer-count');
             let currentCount = parseInt(viewerCountElement.textContent);
             let min, max;
+            const timeElapsed = Date.now() - siteStartTime;
             
-            // Verifica se já passaram 5 minutos (300000 ms) desde o início
-            const currentTime = Date.now();
-            const timeElapsed = currentTime - siteStartTime;
-            
-            if (timeElapsed < 300000) { // Menos de 5 minutos
-                viewerPhase = "initial";
-                min = 570;
-                max = 577;
-            } else { // Mais de 5 minutos
-                viewerPhase = "after5min";
-                min = 702;
-                max = 720;
+            if (timeElapsed < 300000) {
+                min = 570; max = 577;
+            } else {
+                min = 702; max = 720;
             }
             
             let newCount;
@@ -1080,32 +1007,21 @@
             viewerCountElement.textContent = newCount;
         }
         
-        // Iniciar timer para atualização do contador de visualizações
         function startViewerCountTimer() {
-            // Atualiza a cada 5 segundos (5000 ms) - RESPEITANDO O TEMPO
-            viewerCountUpdateTimer = setInterval(updateViewerCount, 5000);
+            setInterval(updateViewerCount, 5000);
         }
         
-        // Mostrar modal de doação - RESPEITANDO O TEMPO DE 2 MINUTOS
         function showDonationModal() {
             if (donationModalShown) return;
-            
-            const currentTime = Date.now();
-            const timeElapsed = currentTime - siteStartTime;
-            
-            // Verifica se já passaram 2 minutos (120000 ms)
+            const timeElapsed = Date.now() - siteStartTime;
             if (timeElapsed >= 120000) {
                 donationModalShown = true;
                 document.getElementById('donation-modal').classList.add('active');
-                console.log("Modal de doação ativado após 2 minutos");
             } else {
-                // Agenda para aparecer no tempo correto
-                const timeRemaining = 120000 - timeElapsed;
-                setTimeout(showDonationModal, timeRemaining);
+                setTimeout(showDonationModal, 120000 - timeElapsed);
             }
         }
         
-        // Copiar chave PIX
         function copyPixKey() {
             navigator.clipboard.writeText(PIX_KEY).then(() => {
                 const btn = document.getElementById('copy-key-btn');
@@ -1113,103 +1029,81 @@
                 btn.textContent = "CHAVE COPIADA!";
                 btn.style.background = "#4CAF50";
                 btn.style.color = "white";
-                
                 setTimeout(() => {
                     btn.textContent = originalText;
                     btn.style.background = "";
                     btn.style.color = "";
                 }, 2000);
-            }).catch(err => {
-                console.error('Erro ao copiar chave PIX:', err);
-            });
+            }).catch(console.error);
         }
         
-        // GARANTIR QUE O VÍDEO ESTEJA EM PLAYER AUTOMÁTICO - CORRIGIDO
+        // ========== GERENCIAMENTO DO VÍDEO ==========
         function ensureVideoAutoplay() {
             const video = document.getElementById('live-video');
             const videoFallback = document.getElementById('video-fallback');
             
-            // Remover o atributo 'hidden' inicialmente
             videoFallback.classList.remove('hidden');
             
-            // Configurar tratamento de erro
             video.addEventListener('error', (e) => {
-                console.error('Erro ao carregar vídeo:', e);
                 videoErrorCount++;
-                
                 if (videoErrorCount >= 2) {
                     videoFallback.classList.remove('hidden');
-                    console.log("Mostrando fallback - vídeo falhou");
                 }
             });
             
-            // Verificar se o vídeo está carregando
             video.addEventListener('loadeddata', () => {
-                console.log("Vídeo carregado com sucesso");
                 videoFallback.classList.add('hidden');
             });
             
-            // Tentar tocar o vídeo
-            const playPromise = video.play();
-            
-            if (playPromise !== undefined) {
-                playPromise.then(() => {
-                    console.log("Vídeo tocando automaticamente");
-                    videoFallback.classList.add('hidden');
-                }).catch(error => {
-                    console.log("Autoplay falhou, tentando com user interaction...");
-                    
-                    // Se falhar, mostra o fallback
-                    videoFallback.classList.remove('hidden');
-                    
-                    // Tenta tocar quando o usuário interagir
-                    const playOnInteraction = () => {
-                        video.muted = true; // Forçar mudo para autoplay
-                        video.play().then(() => {
-                            console.log("Vídeo tocando após interação do usuário");
-                            videoFallback.classList.add('hidden');
-                        }).catch(e => {
-                            console.log("Ainda não foi possível tocar o vídeo:", e);
-                        });
-                        
-                        // Remove os listeners após a primeira interação
-                        document.removeEventListener('click', playOnInteraction);
-                        document.removeEventListener('touchstart', playOnInteraction);
-                    };
-                    
-                    document.addEventListener('click', playOnInteraction);
-                    document.addEventListener('touchstart', playOnInteraction);
-                });
-            }
+            video.play().then(() => {
+                videoFallback.classList.add('hidden');
+            }).catch(() => {
+                videoFallback.classList.remove('hidden');
+                const playOnInteraction = () => {
+                    video.muted = true;
+                    video.play().then(() => {
+                        videoFallback.classList.add('hidden');
+                    }).catch(e => console.log);
+                    document.removeEventListener('click', playOnInteraction);
+                    document.removeEventListener('touchstart', playOnInteraction);
+                };
+                document.addEventListener('click', playOnInteraction);
+                document.addEventListener('touchstart', playOnInteraction);
+            });
         }
         
-        // CORREÇÃO DO PROBLEMA DE TELA CHEIA
+        // ========== FUNÇÃO CORRIGIDA - FULLSCREEN NO VÍDEO ==========
         function toggleFullscreen() {
-            const container = document.getElementById('main-container');
+            const video = document.getElementById('live-video');
             
             if (tutorialShown) {
                 completeTutorial();
             }
             
-            // Verificar se já está em tela cheia
-            if (!document.fullscreenElement && !document.webkitFullscreenElement && 
-                !document.mozFullScreenElement && !document.msFullscreenElement) {
-                
-                // Entrar em tela cheia
-                if (container.requestFullscreen) {
-                    container.requestFullscreen();
-                } else if (container.webkitRequestFullscreen) {
-                    container.webkitRequestFullscreen();
-                } else if (container.mozRequestFullScreen) {
-                    container.mozRequestFullScreen();
-                } else if (container.msRequestFullscreen) {
-                    container.msRequestFullscreen();
+            // Verifica se já está em tela cheia
+            const isCurrentlyFullscreen = !!(document.fullscreenElement || 
+                document.webkitFullscreenElement || 
+                document.mozFullScreenElement || 
+                document.msFullscreenElement);
+            
+            if (!isCurrentlyFullscreen) {
+                // ---- Entrar em tela cheia no VÍDEO ----
+                // iOS Safari: usa webkitEnterFullscreen (API específica)
+                if (video.webkitEnterFullscreen) {
+                    video.webkitEnterFullscreen();
                 }
-                
-                isFullscreen = true;
-                document.getElementById('fullscreen-icon').className = 'fi fi-ss-compress';
+                // Android / Desktop: requestFullscreen com prefixos
+                else if (video.requestFullscreen) {
+                    video.requestFullscreen();
+                } else if (video.webkitRequestFullscreen) {
+                    video.webkitRequestFullscreen();
+                } else if (video.mozRequestFullScreen) {
+                    video.mozRequestFullScreen();
+                } else if (video.msRequestFullscreen) {
+                    video.msRequestFullscreen();
+                }
             } else {
-                // Sair da tela cheia
+                // ---- Sair da tela cheia ----
                 if (document.exitFullscreen) {
                     document.exitFullscreen();
                 } else if (document.webkitExitFullscreen) {
@@ -1219,15 +1113,24 @@
                 } else if (document.msExitFullscreen) {
                     document.msExitFullscreen();
                 }
-                
-                isFullscreen = false;
-                document.getElementById('fullscreen-icon').className = 'fi fi-ss-expand';
             }
         }
         
-        // Inicialização principal
+        // Atualiza ícone do fullscreen conforme estado
+        function updateFullscreenState() {
+            const isFullscreenNow = !!(document.fullscreenElement || 
+                document.webkitFullscreenElement || 
+                document.mozFullScreenElement || 
+                document.msFullscreenElement);
+            
+            isFullscreen = isFullscreenNow;
+            const icon = document.getElementById('fullscreen-icon');
+            icon.className = isFullscreenNow ? 'fi fi-ss-compress' : 'fi fi-ss-expand';
+        }
+        
+        // ========== INICIALIZAÇÃO ==========
         document.addEventListener('DOMContentLoaded', () => {
-            // Configurar particles.js
+            // Particles
             particlesJS('particles-js', {
                 particles: {
                     number: { value: 40, density: { enable: true, value_area: 800 } },
@@ -1256,91 +1159,68 @@
             const sendBtn = document.getElementById('send-btn');
             const emojiBtns = document.querySelectorAll('.emoji-btn');
             const fullscreenControl = document.getElementById('fullscreen-control');
-            const fullscreenIcon = document.getElementById('fullscreen-icon');
             const charCount = document.getElementById('char-count');
-            const mainContainer = document.getElementById('main-container');
             const copyKeyBtn = document.getElementById('copy-key-btn');
             const retryVideoBtn = document.getElementById('retry-video');
             const videoFallback = document.getElementById('video-fallback');
             
             let isMuted = true;
             
-            // Iniciar tutorial
+            // Inicializações
             initTutorial();
-            
-            // Iniciar relógio
             updateLiveTime();
-            setInterval(updateLiveTime, 60000); // Atualizar a cada minuto
-            
-            // Iniciar contador de visualizações
+            setInterval(updateLiveTime, 60000);
             startViewerCountTimer();
-            
-            // Iniciar timer para modal de doação (2 minutos) - RESPEITANDO O TEMPO
-            donationTimer = setTimeout(() => {
-                showDonationModal();
-            }, 120000);
-            
-            // Garantir que o vídeo esteja em player automático
+            setTimeout(showDonationModal, 120000);
             ensureVideoAutoplay();
             
-            // Botão para tentar recarregar o vídeo
+            // Retry vídeo
             retryVideoBtn.addEventListener('click', () => {
                 videoErrorCount = 0;
-                video.load(); // Recarrega o vídeo
+                video.load();
                 videoFallback.classList.add('hidden');
-                
-                // Tenta tocar novamente
                 setTimeout(() => {
-                    video.play().catch(e => {
-                        console.log("Falha ao tocar vídeo após retry");
+                    video.play().catch(() => {
                         videoFallback.classList.remove('hidden');
                     });
                 }, 500);
             });
             
-            // Controle de áudio ATUALIZADO
+            // Controle de áudio
             function toggleAudio() {
                 isMuted = !isMuted;
                 video.muted = isMuted;
                 
                 if (isMuted) {
-                    // Áudio inativo - cinza com risco vermelho
                     audioIcon.className = 'fi fi-ss-volume';
                     audioIcon.classList.add('audio-icon-inactive');
                     audioControl.classList.add('inactive');
                     audioControl.classList.remove('muted');
                 } else {
-                    // Áudio ativo - rosa pink
                     audioIcon.className = 'fi fi-ss-volume';
                     audioIcon.classList.remove('audio-icon-inactive');
                     audioControl.classList.remove('inactive');
                     audioControl.classList.add('muted');
                 }
             }
-            
-            // Inicializar áudio como inativo (mudo)
-            toggleAudio(); // Isso definirá o estado inicial como inativo
-            
+            toggleAudio(); // estado inicial: mudo
             audioControl.addEventListener('click', toggleAudio);
             
-            // Enviar comentário do usuário
+            // Comentários
             function sendComment() {
                 const text = commentInput.value.trim();
                 if (!text) return;
-                
                 messageSystem.addUserMessage(text);
                 commentInput.value = '';
                 updateCharCount();
             }
-            
             sendBtn.addEventListener('click', sendComment);
             commentInput.addEventListener('keypress', (e) => e.key === 'Enter' && sendComment());
             
             // Emojis
             emojiBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
-                    const emoji = btn.getAttribute('data-emoji');
-                    commentInput.value += emoji;
+                    commentInput.value += btn.getAttribute('data-emoji');
                     commentInput.focus();
                     updateCharCount();
                 });
@@ -1350,33 +1230,22 @@
             function updateCharCount() {
                 const length = commentInput.value.length;
                 charCount.textContent = `${length}/50`;
-                charCount.className = length > 40 ? 'char-count warning' : 'char-count';
             }
             commentInput.addEventListener('input', updateCharCount);
             
-            // Controle de tela cheia - CORRIGIDO
+            // Fullscreen - evento do botão
             fullscreenControl.addEventListener('click', toggleFullscreen);
             
-            // Atualizar ícone de tela cheia quando o estado mudar
+            // Monitora mudanças no estado de fullscreen (para ícone)
             document.addEventListener('fullscreenchange', updateFullscreenState);
             document.addEventListener('webkitfullscreenchange', updateFullscreenState);
             document.addEventListener('mozfullscreenchange', updateFullscreenState);
             document.addEventListener('MSFullscreenChange', updateFullscreenState);
             
-            function updateFullscreenState() {
-                const isFullscreenNow = !!(document.fullscreenElement || 
-                    document.webkitFullscreenElement || 
-                    document.mozFullScreenElement || 
-                    document.msFullscreenElement);
-                
-                isFullscreen = isFullscreenNow;
-                fullscreenIcon.className = isFullscreenNow ? 'fi fi-ss-compress' : 'fi fi-ss-expand';
-            }
-            
-            // Copiar chave PIX
+            // Copiar Pix
             copyKeyBtn.addEventListener('click', copyPixKey);
             
-            // Gerenciar visibilidade da página
+            // Visibilidade da página
             document.addEventListener('visibilitychange', () => {
                 if (document.hidden) {
                     messageSystem.stopAutoMessages();
