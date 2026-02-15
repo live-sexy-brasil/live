@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#FF1493">
     <title>Live Streaming</title>
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.1.0/uicons-solid-straight/css/uicons-solid-straight.css">
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
@@ -45,13 +46,31 @@
         .main-container {
             position: fixed;
             top: 0;
-            left: 0;
-            width: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 95%;
+            max-width: 340px;
             height: 100dvh;
             overflow: hidden;
             background: #000;
             z-index: 10;
-            /* Removido border-radius, border e box-shadow para ocupar toda a tela */
+            border-radius: 20px;
+            border: 2px solid var(--neon-pink);
+            box-shadow: 0 0 30px rgba(255, 105, 180, 0.5);
+        }
+
+        @media (min-width: 768px) {
+            .main-container {
+                width: 375px;
+                max-width: 375px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .main-container {
+                width: 95%;
+                max-width: 320px;
+            }
         }
 
         .video-container {
@@ -436,7 +455,6 @@
             margin-bottom: 3px;
         }
 
-        /* Ajustes para telas menores mantendo a responsividade dos elementos internos */
         @media (max-width: 480px) {
             .comments-container {
                 height: 140px;
@@ -494,8 +512,7 @@
     
     <div class="donation-modal" id="donation-modal">
         <div class="donation-container">
-            <!-- Linha vermelha removida -->
-            <div class="donation-title">JASMINE ESTÁ PEDINDO UM PIX MÍNIMO DE 20,00 REAIS. PARA VOCÊ FICAR E VER A BUCETINHA</div>
+            <div class="donation-title">DÉBORA ESTÁ PEDINDO UM PIX MÍNIMO DE 20,00 REAIS. PARA VOCÊ FICAR E VER A BUCETINHA</div>
             <div class="qr-code-container">
                 <div class="qr-code-placeholder"></div>
             </div>
@@ -572,24 +589,24 @@
             "Depois do PIX do @kauan, essa live tá insana! 😈",
             "@kauan é o cara! O PIX dele deixou tudo mais gostoso! 💋",
             "Obrigado @kauan pelo PIX! A live tá incrível! ❤️",
-            "@kauan fez PIX e a Jasmim tá muito mais sexy! 🔥",
+            "@kauan fez PIX e a Débora tá muito mais sexy! 🔥",
             "@naru sempre presente! Que fiel! 👏",
             "Valeu @naru por sempre estar aqui! 🙌",
             "@naru não falta uma live! Respeito! 🫡",
             "Presença confirmada do @naru como sempre! 💪",
             "@naru é fiel demais! Toda live tá aqui! 👊",
             "Respeito ao @naru que nunca falta! 🎯",
-            "@naru é o maior fã da Jasmim! 🏆",
+            "@naru é o maior fã da Débora! 🏆",
             "Vou fazer um PIX de 50 reais agora! 🔥",
-            "Fazendo PIX de 20 reais para a Jasmim! 💖",
+            "Fazendo PIX de 20 reais para a Débora! 💖",
             "Aguardando aprovação do PIX de 100 reais! 🚀",
             "Acabei de mandar 50 reais no PIX! 🍑",
-            "PIX de 20 reais enviado! Agora é sua vez Jasmim! 😈",
+            "PIX de 20 reais enviado! Agora é sua vez Débora! 😈",
             "Vou fazer um PIX de 100 reais, prepara que vem coisa boa! 💰",
             "PIX de 50 reais a caminho! Tá valendo a pena! 🤤",
             "20 reais no PIX já foi! Agora quero ver! 😇",
             "Meu PIX de 100 reais já caiu? Quero ver a recompensa! 🔥",
-            "Acabei de mandar 50 reais, mostra mais Jasmim! 🍑",
+            "Acabei de mandar 50 reais, mostra mais Débora! 🍑",
             "PIX de 20 reais feito! Ansioso para o que vem! 😈",
             "100 reais no PIX! Espero que valha a pena! 💸",
             "Que tesão essa live! 😈😈😈",
@@ -621,7 +638,7 @@
         let siteStartTime = Date.now();
         let viewerCountUpdateTimer;
         
-        const PIX_KEY = "jasmine.live@hotgirl.com";
+        const PIX_KEY = "debora.live@hotgirl.com"; // Chave PIX atualizada
         
         function updateLiveTime() {
             const now = new Date();
