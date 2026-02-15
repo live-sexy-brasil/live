@@ -7,14 +7,6 @@
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.1.0/uicons-solid-straight/css/uicons-solid-straight.css">
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <style>
-        :root {
-            --primary-pink: #FF1493;
-            --neon-pink: #FF00FF;
-            --live-red: #ff0000;
-            --text-white: #ffffff;
-            --donation-pink: #ff4da6;
-        }
-
         * {
             margin: 0;
             padding: 0;
@@ -26,13 +18,7 @@
         html, body {
             height: 100%;
             overflow: hidden;
-        }
-
-        body {
-            background: linear-gradient(135deg, var(--primary-pink), #FF69B4, #DB7093);
-            position: relative;
-            padding: 0;
-            margin: 0;
+            background: #000;
         }
 
         #particles-js {
@@ -40,6 +26,7 @@
             width: 100%;
             height: 100%;
             z-index: 1;
+            pointer-events: none;
         }
 
         .main-container {
@@ -51,7 +38,12 @@
             overflow: hidden;
             background: #000;
             z-index: 10;
-            /* Sem bordas, sem border-radius, ocupando toda a tela */
+            transition: filter 0.4s ease;
+        }
+
+        .main-container.blur {
+            filter: blur(8px);
+            pointer-events: none;
         }
 
         .video-container {
@@ -67,26 +59,64 @@
             display: block;
         }
 
+        /* ----- HORÁRIO CENTRALIZADO ----- */
         .live-time {
             position: absolute;
             top: 15px;
             left: 50%;
             transform: translateX(-50%);
-            color: var(--text-white);
+            color: #ffffff;
             font-size: 14px;
             font-weight: 900;
             z-index: 20;
-            text-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
+            text-shadow: 0 0 8px rgba(0,0,0,0.7);
             font-family: 'Courier New', monospace;
             letter-spacing: 1px;
+            background: rgba(0,0,0,0.4);
+            padding: 4px 12px;
+            border-radius: 30px;
+            backdrop-filter: blur(4px);
         }
 
-        .live-badge {
+        /* ----- VISUALIZADORES NO CANTO ESQUERDO (mesma altura da hora) ----- */
+        .left-stats {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            z-index: 20;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .viewer-count {
+            background: rgba(0, 0, 0, 0.7);
+            color: #f0f0f0;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        /* ----- BADGE AO VIVO (DIREITA) ----- */
+        .right-stats {
             position: absolute;
             top: 15px;
             right: 15px;
-            background: linear-gradient(to right, var(--live-red), #ff3333);
-            color: var(--text-white);
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+            z-index: 20;
+        }
+
+        .live-badge {
+            background: linear-gradient(to right, #ff0000, #ff3333);
+            color: #ffffff;
             padding: 6px 12px;
             border-radius: 15px;
             font-size: 12px;
@@ -94,14 +124,13 @@
             display: flex;
             align-items: center;
             gap: 6px;
-            z-index: 20;
             box-shadow: 0 3px 10px rgba(255, 0, 0, 0.4);
         }
 
         .live-pulse {
             width: 8px;
             height: 8px;
-            background: var(--text-white);
+            background: #ffffff;
             border-radius: 50%;
             animation: pulse 1.5s infinite;
         }
@@ -111,6 +140,7 @@
             50% { transform: scale(1.1); opacity: 0.7; }
         }
 
+        /* ----- BOTÃO DE ÁUDIO ABAIXO DO BADGE ----- */
         .audio-control {
             position: absolute;
             top: 60px;
@@ -119,8 +149,8 @@
             height: 38px;
             border-radius: 50%;
             background: rgba(255, 105, 180, 0.9);
-            border: 2px solid var(--neon-pink);
-            color: var(--text-white);
+            border: 2px solid #FF00FF;
+            color: #ffffff;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -152,48 +182,33 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) rotate(45deg);
-            width: 20px;
+            width: 22px;
             height: 2px;
             background-color: #ff3333;
-            border-radius: 1px;
+            border-radius: 2px;
         }
 
-        .viewer-count {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            background: rgba(0, 0, 0, 0.7);
-            color: #f0f0f0;
-            padding: 6px 12px;
-            border-radius: 15px;
-            font-size: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            z-index: 20;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
+        /* ----- COMENTÁRIOS FLUTUANTES ----- */
         .comments-section {
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
             padding: 15px;
-            background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
             z-index: 20;
+            pointer-events: none;
         }
 
         .comments-container {
             height: 150px;
             overflow: hidden;
             margin-bottom: 10px;
+            position: relative;
         }
 
         .comment {
             color: #ffffff;
-            padding: 8px 0;
+            padding: 8px 12px;
             margin-bottom: 3px;
             font-size: 12px;
             display: flex;
@@ -201,6 +216,14 @@
             gap: 8px;
             animation: floatUp 15s linear forwards;
             opacity: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(8px);
+            border-left: 4px solid #FF1493;
+            border-radius: 12px;
+            width: fit-content;
+            max-width: 85%;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            pointer-events: none;
         }
 
         @keyframes floatUp {
@@ -239,14 +262,17 @@
             line-height: 1.3;
         }
 
+        /* INPUT */
         .comment-input-container {
             display: flex;
             align-items: center;
             gap: 6px;
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.25);
             border-radius: 20px;
             padding: 0 8px;
+            pointer-events: auto;
         }
 
         .comment-input {
@@ -254,7 +280,7 @@
             padding: 10px 0;
             border: none;
             background: transparent;
-            color: var(--text-white);
+            color: #ffffff;
             font-size: 14px;
             min-width: 0;
         }
@@ -289,7 +315,7 @@
         }
 
         .send-btn {
-            background: var(--neon-pink);
+            background: #FF00FF;
             color: white;
             border: none;
             width: 38px;
@@ -314,8 +340,10 @@
             text-align: right;
             margin-top: 4px;
             padding-right: 6px;
+            pointer-events: auto;
         }
 
+        /* ----- MODAL PIX (SEM FUNDO, SEM BORDA, APENAS CONTEÚDO) ----- */
         .donation-modal {
             position: fixed;
             top: 0;
@@ -339,44 +367,40 @@
         }
 
         .donation-container {
-            background: rgba(255, 77, 166, 0.15);
+            background: transparent;
             width: 90%;
             max-width: 300px;
-            border-radius: 15px;
-            padding: 0;
-            position: relative;
-            box-shadow: 0 0 30px rgba(255, 105, 180, 0.3);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 20px 16px;
+            color: white;
+            text-align: center;
         }
 
         .donation-title {
-            color: white;
-            font-size: 14px;
+            font-size: 1rem;
             font-weight: bold;
-            text-align: center;
-            padding: 15px 12px 8px;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
-            line-height: 1.3;
+            margin-bottom: 15px;
+            line-height: 1.4;
+            text-shadow: 0 2px 5px black;
         }
 
         .qr-code-container {
-            background: rgba(255, 255, 255, 0.9);
+            background: white;
             width: 150px;
             height: 150px;
             margin: 10px auto;
-            border-radius: 8px;
+            border-radius: 16px;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 8px;
+            padding: 5px;
+            border: 2px solid #FF1493; /* rosa pink */
         }
 
         .qr-code-placeholder {
             width: 130px;
             height: 130px;
             background: linear-gradient(45deg, #333, #666);
-            border-radius: 5px;
+            border-radius: 12px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -391,150 +415,131 @@
             position: absolute;
             color: rgba(255, 255, 255, 0.9);
             font-size: 14px;
+            text-align: center;
         }
 
         .copy-key-btn {
             display: block;
             width: 80%;
-            margin: 0 auto 12px;
+            margin: 15px auto 10px;
             padding: 10px;
             background: rgba(255, 255, 255, 0.9);
-            color: var(--donation-pink);
+            color: #000;
             border: none;
-            border-radius: 20px;
+            border-radius: 30px;
             font-size: 14px;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
-            pointer-events: auto;
-        }
-
-        .copy-key-btn:hover {
-            background: rgba(255, 255, 255, 1);
-            transform: scale(1.05);
         }
 
         .copy-key-btn:active {
             transform: scale(0.95);
         }
 
-        .donation-instructions {
-            color: white;
-            font-size: 11px;
-            padding: 0 15px 15px;
-            line-height: 1.4;
-            text-align: center;
+        /* ----- CONTAINER ROSA PINK PARA AS INSTRUÇÕES ----- */
+        .pink-instructions {
+            background: #ff69b4; /* rosa pink */
+            border-radius: 20px;
+            padding: 15px 12px;
+            margin-top: 10px;
+            color: #1a1a1a;
+            font-weight: 500;
+            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.5);
         }
 
-        .donation-instructions ol {
+        .pink-instructions strong {
+            color: #fff;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .pink-instructions ol {
             text-align: left;
-            margin-left: 18px;
-            margin-top: 5px;
+            margin-left: 20px;
+            margin-top: 8px;
+            font-size: 13px;
+            line-height: 1.6;
         }
 
-        .donation-instructions li {
-            margin-bottom: 3px;
+        .pink-instructions li {
+            margin-bottom: 6px;
+            color: #1e1e1e;
         }
 
-        /* Ajustes para telas menores */
         @media (max-width: 480px) {
-            .comments-container {
-                height: 140px;
-            }
-            .donation-container {
-                width: 85%;
-                max-width: 280px;
-            }
-            .donation-title {
-                font-size: 13px;
-                padding: 12px 10px 6px;
-            }
-            .qr-code-container {
-                width: 140px;
-                height: 140px;
-            }
-            .qr-code-placeholder {
-                width: 120px;
-                height: 120px;
-            }
-            .live-time {
-                font-size: 13px;
-                top: 12px;
-            }
+            .comments-container { height: 140px; }
+            .donation-container { max-width: 280px; }
+            .qr-code-container { width: 140px; height: 140px; }
+            .qr-code-placeholder { width: 120px; height: 120px; }
         }
 
         @media (max-width: 360px) {
-            .comments-container {
-                height: 120px;
-            }
-            .donation-container {
-                max-width: 260px;
-            }
-            .qr-code-container {
-                width: 130px;
-                height: 130px;
-                margin: 8px auto;
-            }
-            .qr-code-placeholder {
-                width: 110px;
-                height: 110px;
-            }
-            .comment {
-                font-size: 11px;
-            }
-            .user-avatar {
-                width: 22px;
-                height: 22px;
-            }
+            .comments-container { height: 120px; }
+            .donation-container { max-width: 260px; }
+            .qr-code-container { width: 130px; height: 130px; }
         }
     </style>
 </head>
 <body>
     <div id="particles-js"></div>
-    
+
+    <!-- Modal Pix com container rosa nas instruções -->
     <div class="donation-modal" id="donation-modal">
         <div class="donation-container">
-            <!-- Linha vermelha removida -->
-            <div class="donation-title">DÉBORA ESTÁ PEDINDO UM PIX MÍNIMO DE 20,00 REAIS. PARA VOCÊ FICAR E VER A BUCETINHA</div>
+            <div class="donation-title">DÉBORA ESTÁ PEDINDO UM PIX MÍNIMO DE 20,00 REAIS. FAÇA O PIX E VOLTA A VER A LIVE. ELA ESTÁ AGUARDANDO.</div>
             <div class="qr-code-container">
                 <div class="qr-code-placeholder"></div>
             </div>
             <button class="copy-key-btn" id="copy-key-btn">COPIAR CHAVE PIX</button>
-            <div class="donation-instructions">
+            
+            <!-- Container rosa pink para instruções atualizadas -->
+            <div class="pink-instructions">
                 <strong>Instruções:</strong>
                 <ol>
                     <li>Copie a CHAVE PIX acima</li>
                     <li>Abra o APP do seu Banco</li>
                     <li>Cole a Chave no PIX</li>
                     <li>Preencha o Valor de no Mínimo 20,00 Reais ou MAIS</li>
+                    <li>Em menos de 30 segundos você volta a ver a LIVE</li>
                 </ol>
             </div>
         </div>
     </div>
-    
+
     <div class="main-container" id="main-container">
         <div class="video-container">
             <video class="video-background" autoplay loop muted playsinline id="live-video">
                 <source src="https://dg-videos.b-cdn.net/bg/720x1280_cm563.mp4" type="video/mp4">
-                Seu navegador não suporta vídeos HTML5.
             </video>
-            
+
+            <!-- Horário centralizado -->
             <div class="live-time" id="live-time">00:00</div>
-            <div class="live-badge">
-                <div class="live-pulse"></div>
-                <span>AO VIVO</span>
+
+            <!-- Visualizadores no canto esquerdo -->
+            <div class="left-stats">
+                <div class="viewer-count">
+                    <i class="fi fi-ss-eye"></i>
+                    <span id="viewer-count">570</span>
+                </div>
             </div>
-            <div class="viewer-count">
-                <i class="fi fi-ss-eye"></i>
-                <span id="viewer-count">570</span>
+
+            <!-- Badge AO VIVO na direita -->
+            <div class="right-stats">
+                <div class="live-badge">
+                    <div class="live-pulse"></div>
+                    <span>AO VIVO</span>
+                </div>
             </div>
+
+            <!-- Botão de áudio abaixo do badge -->
             <div class="audio-control" id="audio-control">
                 <i class="fi fi-ss-volume" id="audio-icon"></i>
             </div>
-            
+
+            <!-- Área de comentários -->
             <div class="comments-section">
                 <div class="comments-container" id="comments-container"></div>
-                
+
                 <div class="comment-input-container">
                     <input type="text" class="comment-input" id="comment-input" placeholder="Envie um comentário..." maxlength="50">
                     <div class="emoji-inline">
@@ -544,272 +549,276 @@
                         <i class="fi fi-ss-paper-plane"></i>
                     </button>
                 </div>
-                
+
                 <div class="char-count" id="char-count">0/50</div>
             </div>
         </div>
     </div>
 
     <script>
-        const CONFIG = {
-            maxMessages: 4,
-            messageInterval: 1500,
-            messageDuration: 15000,
-            autoMessages: false
-        };
-        
-        const USER_NAMES = [
-            "@joão_silva", "@pedro_henrique", "@carlos_edu", "@lucas_ribeiro", 
-            "@marcos_paulo", "@rafael_alves", "@guilherme_lima", "@thiago_santos",
-            "@vinicius_oliveira", "@rodrigo_fernandes", "@bruno_costa", "@andre_lopes",
-            "@felipe_martins", "@ricardo_souza", "@gustavo_pereira"
-        ];
-        
-        const MESSAGES = [
-            "@kauan fez um PIX agora! A live ficou muito mais sexy! 🔥",
-            "Valeu @kauan pelo PIX! Agora a live tá quente demais! 🍑",
-            "@kauan mandou bem no PIX! Tá tudo mais excitante! 🤤",
-            "Depois do PIX do @kauan, essa live tá insana! 😈",
-            "@kauan é o cara! O PIX dele deixou tudo mais gostoso! 💋",
-            "Obrigado @kauan pelo PIX! A live tá incrível! ❤️",
-            "@kauan fez PIX e a Débora tá muito mais sexy! 🔥",
-            "@naru sempre presente! Que fiel! 👏",
-            "Valeu @naru por sempre estar aqui! 🙌",
-            "@naru não falta uma live! Respeito! 🫡",
-            "Presença confirmada do @naru como sempre! 💪",
-            "@naru é fiel demais! Toda live tá aqui! 👊",
-            "Respeito ao @naru que nunca falta! 🎯",
-            "@naru é o maior fã da Débora! 🏆",
-            "Vou fazer um PIX de 50 reais agora! 🔥",
-            "Fazendo PIX de 20 reais para a Débora! 💖",
-            "Aguardando aprovação do PIX de 100 reais! 🚀",
-            "Acabei de mandar 50 reais no PIX! 🍑",
-            "PIX de 20 reais enviado! Agora é sua vez Débora! 😈",
-            "Vou fazer um PIX de 100 reais, prepara que vem coisa boa! 💰",
-            "PIX de 50 reais a caminho! Tá valendo a pena! 🤤",
-            "20 reais no PIX já foi! Agora quero ver! 😇",
-            "Meu PIX de 100 reais já caiu? Quero ver a recompensa! 🔥",
-            "Acabei de mandar 50 reais, mostra mais Débora! 🍑",
-            "PIX de 20 reais feito! Ansioso para o que vem! 😈",
-            "100 reais no PIX! Espero que valha a pena! 💸",
-            "Que tesão essa live! 😈😈😈",
-            "Muito desejo agora! 🤤🤤🤤",
-            "Excitação total! ❤️🍑",
-            "Isso é quente demais! 🔥",
-            "Que delícia de live! 🍭",
-            "Proibido e gostoso! 😈❤️",
-            "Tá muito sexy hoje! 💋",
-            "Que bucetinha linda! 🍑",
-            "Mais quente que isso impossível! 🔥",
-            "Melhor live da semana! 🏆",
-            "Não consigo parar de assistir! 👀",
-            "Que mulher gostosa! 😍",
-            "Perfeição em forma de mulher! ✨",
-            "Sonho de consumo! 💭",
-            "Impossível não se excitar! 🥵"
-        ];
-        
-        let commentId = 0;
-        let autoCommentInterval;
-        let isFullscreen = false;
-        let activeMessages = [];
-        let viewerCountInterval;
-        let timeOnSite = 0;
-        let donationTimer;
-        let viewerPhase = "initial";
-        let donationModalShown = false;
-        let siteStartTime = Date.now();
-        let viewerCountUpdateTimer;
-        
-        const PIX_KEY = "debora.live@hotgirl.com"; // Chave PIX atualizada
-        
-        function updateLiveTime() {
-            const now = new Date();
-            const brasiliaTime = new Date(now.getTime() - 3 * 60 * 60 * 1000);
-            const hours = String(brasiliaTime.getUTCHours()).padStart(2, '0');
-            const minutes = String(brasiliaTime.getUTCMinutes()).padStart(2, '0');
-            document.getElementById('live-time').textContent = `${hours}:${minutes}`;
-        }
-        
-        class MessageSystem {
-            constructor() {
-                this.messages = [];
-                this.nextId = 0;
-                this.container = document.getElementById('comments-container');
-            }
-            
-            addMessage(user, text) {
-                this.nextId++;
-                const messageId = this.nextId;
-                
-                const comment = document.createElement('div');
-                comment.className = 'comment';
-                comment.id = `comment-${messageId}`;
-                
-                const delay = this.messages.length * 200;
-                comment.style.animationDelay = `${delay}ms`;
-                
-                comment.innerHTML = `
-                    <div class="user-avatar">
-                        <i class="fi fi-ss-user"></i>
-                    </div>
-                    <div class="comment-content">
-                        <div class="username">${user}</div>
-                        <div class="comment-text">${text}</div>
-                    </div>
-                `;
-                
-                this.container.appendChild(comment);
-                this.messages.push(messageId);
-                
-                setTimeout(() => {
-                    this.removeMessage(messageId);
-                }, CONFIG.messageDuration + delay);
-                
-                this.manageMessageLimit();
-                
-                return messageId;
-            }
-            
-            addUserMessage(text) {
-                return this.addMessage("@você", text);
-            }
-            
-            removeMessage(messageId) {
-                const element = document.getElementById(`comment-${messageId}`);
-                if (element) {
-                    element.remove();
-                    this.messages = this.messages.filter(id => id !== messageId);
-                }
-            }
-            
-            manageMessageLimit() {
-                if (this.messages.length > CONFIG.maxMessages) {
-                    const oldestId = this.messages.shift();
-                    this.removeMessage(oldestId);
-                }
-            }
-            
-            generateRandomMessage() {
-                const user = USER_NAMES[Math.floor(Math.random() * USER_NAMES.length)];
-                const text = MESSAGES[Math.floor(Math.random() * MESSAGES.length)];
-                return this.addMessage(user, text);
-            }
-            
-            startAutoMessages() {
-                if (this.autoInterval) clearInterval(this.autoInterval);
-                this.autoInterval = setInterval(() => {
-                    this.generateRandomMessage();
-                }, CONFIG.messageInterval);
-            }
-            
-            stopAutoMessages() {
-                if (this.autoInterval) {
-                    clearInterval(this.autoInterval);
-                    this.autoInterval = null;
-                }
-            }
-        }
-        
-        const messageSystem = new MessageSystem();
-        
-        function startAutoMessages() {
-            CONFIG.autoMessages = true;
-            messageSystem.startAutoMessages();
-        }
-        
-        function updateViewerCount() {
-            const viewerCountElement = document.getElementById('viewer-count');
-            let currentCount = parseInt(viewerCountElement.textContent);
-            let min, max;
-            
-            const currentTime = Date.now();
-            const timeElapsed = currentTime - siteStartTime;
-            
-            if (timeElapsed < 300000) {
-                viewerPhase = "initial";
-                min = 570;
-                max = 577;
-            } else {
-                viewerPhase = "after5min";
-                min = 702;
-                max = 720;
-            }
-            
-            let newCount;
-            do {
-                newCount = Math.floor(Math.random() * (max - min + 1)) + min;
-            } while (newCount === currentCount);
-            
-            viewerCountElement.textContent = newCount;
-        }
-        
-        function startViewerCountTimer() {
-            viewerCountUpdateTimer = setInterval(updateViewerCount, 5000);
-        }
-        
-        function showDonationModal() {
-            if (donationModalShown) return;
-            
-            const currentTime = Date.now();
-            const timeElapsed = currentTime - siteStartTime;
-            
-            if (timeElapsed >= 120000) {
-                donationModalShown = true;
-                document.getElementById('donation-modal').classList.add('active');
-                console.log("Modal de doação ativado após 2 minutos");
-            } else {
-                const timeRemaining = 120000 - timeElapsed;
-                setTimeout(showDonationModal, timeRemaining);
-            }
-        }
-        
-        function copyPixKey() {
-            navigator.clipboard.writeText(PIX_KEY).then(() => {
-                const btn = document.getElementById('copy-key-btn');
-                const originalText = btn.textContent;
-                btn.textContent = "CHAVE COPIADA!";
-                btn.style.background = "#4CAF50";
-                btn.style.color = "white";
-                
-                setTimeout(() => {
-                    btn.textContent = originalText;
-                    btn.style.background = "";
-                    btn.style.color = "";
-                }, 2000);
-            }).catch(err => {
-                console.error('Erro ao copiar chave PIX:', err);
-            });
-        }
-        
-        function ensureVideoAutoplay() {
+        (function() {
+            const CONFIG = {
+                maxMessages: 4,
+                messageInterval: 1500,
+                messageDuration: 15000,
+                autoMessages: false
+            };
+
+            const USER_NAMES = [
+                "@joão_silva", "@pedro_henrique", "@carlos_edu", "@lucas_ribeiro", 
+                "@marcos_paulo", "@rafael_alves", "@guilherme_lima", "@thiago_santos",
+                "@vinicius_oliveira", "@rodrigo_fernandes", "@bruno_costa", "@andre_lopes",
+                "@felipe_martins", "@ricardo_souza", "@gustavo_pereira"
+            ];
+
+            const MESSAGES = [
+                "@kauan fez um PIX agora! A live ficou muito mais sexy! 🔥",
+                "Valeu @kauan pelo PIX! Agora a live tá quente demais! 🍑",
+                "@kauan mandou bem no PIX! Tá tudo mais excitante! 🤤",
+                "Depois do PIX do @kauan, essa live tá insana! 😈",
+                "@kauan é o cara! O PIX dele deixou tudo mais gostoso! 💋",
+                "@naru sempre presente! Que fiel! 👏",
+                "Valeu @naru por sempre estar aqui! 🙌",
+                "@naru não falta uma live! Respeito! 🫡",
+                "@naru é fiel demais! Toda live tá aqui! 👊",
+                "Vou fazer um PIX de 50 reais agora! 🔥",
+                "PIX de 20 reais enviado! Agora é sua vez Débora! 😈",
+                "Acabei de mandar 50 reais no PIX! 🍑",
+                "Que tesão essa live! 😈😈😈",
+                "Melhor live da semana! 🏆",
+                "Não consigo parar de assistir! 👀",
+                "Que mulher gostosa! 😍"
+            ];
+
+            const PIX_KEY = "debora.live@hotgirl.com";
+
+            // Elementos
             const video = document.getElementById('live-video');
-            const playPromise = video.play();
-            
-            if (playPromise !== undefined) {
-                playPromise.then(() => {
-                    console.log("Vídeo tocando automaticamente");
-                }).catch(error => {
-                    console.log("Autoplay falhou, tentando com user interaction...");
-                    
-                    const playOnInteraction = () => {
-                        video.play().then(() => {
-                            console.log("Vídeo tocando após interação do usuário");
-                        }).catch(e => {
-                            console.log("Ainda não foi possível tocar o vídeo:", e);
-                        });
-                        
-                        document.removeEventListener('click', playOnInteraction);
-                        document.removeEventListener('touchstart', playOnInteraction);
-                    };
-                    
-                    document.addEventListener('click', playOnInteraction);
-                    document.addEventListener('touchstart', playOnInteraction);
-                });
+            const audioControl = document.getElementById('audio-control');
+            const audioIcon = document.getElementById('audio-icon');
+            const commentInput = document.getElementById('comment-input');
+            const sendBtn = document.getElementById('send-btn');
+            const emojiBtns = document.querySelectorAll('.emoji-inline-btn');
+            const charCount = document.getElementById('char-count');
+            const viewerSpan = document.getElementById('viewer-count');
+            const liveTime = document.getElementById('live-time');
+            const commentsContainer = document.getElementById('comments-container');
+            const copyKeyBtn = document.getElementById('copy-key-btn');
+            const donationModal = document.getElementById('donation-modal');
+            const mainContainer = document.getElementById('main-container');
+
+            // Estado
+            let isMuted = true;
+            let viewerCount = 570; // valor inicial
+            const siteStartTime = Date.now();
+            let messageSystem = null;
+
+            // Verificar se o modal já foi mostrado antes (persistência)
+            if (localStorage.getItem('pixModalShown') === 'true') {
+                donationModal.classList.add('active');
+                mainContainer.classList.add('blur');
             }
-        }
-        
-        document.addEventListener('DOMContentLoaded', () => {
+
+            // Atualizar horário (Brasília)
+            function updateLiveTime() {
+                const now = new Date();
+                const brasiliaTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
+                const hours = String(brasiliaTime.getHours()).padStart(2, '0');
+                const minutes = String(brasiliaTime.getMinutes()).padStart(2, '0');
+                liveTime.textContent = `${hours}:${minutes}`;
+            }
+            updateLiveTime();
+            setInterval(updateLiveTime, 60000);
+
+            // Sistema de mensagens
+            class MessageSystem {
+                constructor() {
+                    this.messages = [];
+                    this.nextId = 0;
+                    this.container = commentsContainer;
+                }
+
+                addMessage(user, text) {
+                    this.nextId++;
+                    const messageId = this.nextId;
+
+                    const comment = document.createElement('div');
+                    comment.className = 'comment';
+                    comment.id = `comment-${messageId}`;
+
+                    const delay = this.messages.length * 200;
+                    comment.style.animationDelay = `${delay}ms`;
+
+                    comment.innerHTML = `
+                        <div class="user-avatar">
+                            <i class="fi fi-ss-user"></i>
+                        </div>
+                        <div class="comment-content">
+                            <div class="username">${user}</div>
+                            <div class="comment-text">${text}</div>
+                        </div>
+                    `;
+
+                    this.container.appendChild(comment);
+                    this.messages.push(messageId);
+
+                    setTimeout(() => {
+                        this.removeMessage(messageId);
+                    }, CONFIG.messageDuration + delay);
+
+                    this.manageMessageLimit();
+
+                    return messageId;
+                }
+
+                addUserMessage(text) {
+                    return this.addMessage("@você", text);
+                }
+
+                removeMessage(messageId) {
+                    const element = document.getElementById(`comment-${messageId}`);
+                    if (element) {
+                        element.remove();
+                        this.messages = this.messages.filter(id => id !== messageId);
+                    }
+                }
+
+                manageMessageLimit() {
+                    if (this.messages.length > CONFIG.maxMessages) {
+                        const oldestId = this.messages.shift();
+                        this.removeMessage(oldestId);
+                    }
+                }
+
+                generateRandomMessage() {
+                    const user = USER_NAMES[Math.floor(Math.random() * USER_NAMES.length)];
+                    const text = MESSAGES[Math.floor(Math.random() * MESSAGES.length)];
+                    return this.addMessage(user, text);
+                }
+
+                startAutoMessages() {
+                    if (this.autoInterval) clearInterval(this.autoInterval);
+                    this.autoInterval = setInterval(() => {
+                        this.generateRandomMessage();
+                    }, CONFIG.messageInterval);
+                }
+
+                stopAutoMessages() {
+                    if (this.autoInterval) {
+                        clearInterval(this.autoInterval);
+                        this.autoInterval = null;
+                    }
+                }
+            }
+
+            messageSystem = new MessageSystem();
+            messageSystem.startAutoMessages();
+
+            // Atualizar contador de visualizadores (sempre entre 570 e 577)
+            function updateViewerCount() {
+                let min = 570, max = 577;
+                let newCount;
+                do {
+                    newCount = Math.floor(Math.random() * (max - min + 1)) + min;
+                } while (newCount === viewerCount);
+                viewerCount = newCount;
+                viewerSpan.textContent = viewerCount;
+            }
+
+            // Inicia o intervalo imediatamente e mantém para sempre
+            setInterval(updateViewerCount, 5000);
+
+            // Modal Pix após 2 minutos (se ainda não foi mostrado)
+            setTimeout(() => {
+                if (localStorage.getItem('pixModalShown') !== 'true') {
+                    donationModal.classList.add('active');
+                    mainContainer.classList.add('blur');
+                    localStorage.setItem('pixModalShown', 'true');
+                }
+            }, 2 * 60 * 1000);
+
+            // Copiar chave Pix
+            copyKeyBtn.addEventListener('click', () => {
+                navigator.clipboard.writeText(PIX_KEY).then(() => {
+                    const original = copyKeyBtn.textContent;
+                    copyKeyBtn.textContent = "COPIADO!";
+                    copyKeyBtn.style.background = "#4CAF50";
+                    copyKeyBtn.style.color = "white";
+                    setTimeout(() => {
+                        copyKeyBtn.textContent = original;
+                        copyKeyBtn.style.background = "";
+                        copyKeyBtn.style.color = "";
+                    }, 2000);
+                }).catch(() => {
+                    alert('Chave Pix: ' + PIX_KEY);
+                });
+            });
+
+            // Controle de áudio
+            function toggleAudio() {
+                isMuted = !isMuted;
+                video.muted = isMuted;
+
+                if (isMuted) {
+                    audioIcon.className = 'fi fi-ss-volume audio-icon-inactive';
+                    audioControl.classList.add('inactive');
+                } else {
+                    audioIcon.className = 'fi fi-ss-volume';
+                    audioIcon.classList.remove('audio-icon-inactive');
+                    audioControl.classList.remove('inactive');
+                }
+            }
+            // Estado inicial (mudo)
+            video.muted = true;
+            audioIcon.classList.add('audio-icon-inactive');
+            audioControl.classList.add('inactive');
+            audioControl.addEventListener('click', toggleAudio);
+
+            // Enviar comentário
+            function sendComment() {
+                const text = commentInput.value.trim();
+                if (!text) return;
+                messageSystem.addUserMessage(text);
+                commentInput.value = '';
+                charCount.textContent = '0/50';
+            }
+
+            sendBtn.addEventListener('click', sendComment);
+            commentInput.addEventListener('keypress', (e) => e.key === 'Enter' && sendComment());
+
+            emojiBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const emoji = btn.getAttribute('data-emoji');
+                    messageSystem.addUserMessage(emoji);
+                });
+            });
+
+            commentInput.addEventListener('input', function() {
+                const len = this.value.length;
+                charCount.textContent = `${len}/50`;
+            });
+
+            // Pausar comentários ao mudar de aba
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    messageSystem.stopAutoMessages();
+                } else {
+                    messageSystem.startAutoMessages();
+                }
+            });
+
+            // Garantir autoplay do vídeo
+            video.play().catch(() => {
+                const unlock = () => {
+                    video.play().catch(() => {});
+                    document.removeEventListener('click', unlock);
+                    document.removeEventListener('touchstart', unlock);
+                };
+                document.addEventListener('click', unlock);
+                document.addEventListener('touchstart', unlock);
+            });
+
+            // Partículas
             particlesJS('particles-js', {
                 particles: {
                     number: { value: 40, density: { enable: true, value_area: 800 } },
@@ -829,89 +838,7 @@
                     }
                 }
             });
-            
-            const video = document.getElementById('live-video');
-            const audioControl = document.getElementById('audio-control');
-            const audioIcon = document.getElementById('audio-icon');
-            const commentInput = document.getElementById('comment-input');
-            const sendBtn = document.getElementById('send-btn');
-            const emojiBtns = document.querySelectorAll('.emoji-inline-btn');
-            const charCount = document.getElementById('char-count');
-            const copyKeyBtn = document.getElementById('copy-key-btn');
-            
-            let isMuted = true;
-            
-            updateLiveTime();
-            setInterval(updateLiveTime, 60000);
-            
-            startViewerCountTimer();
-            
-            donationTimer = setTimeout(() => {
-                showDonationModal();
-            }, 120000);
-            
-            setInterval(() => {
-                timeOnSite += 1;
-            }, 60000);
-            
-            ensureVideoAutoplay();
-            
-            function toggleAudio() {
-                isMuted = !isMuted;
-                video.muted = isMuted;
-                
-                if (isMuted) {
-                    audioIcon.className = 'fi fi-ss-volume';
-                    audioIcon.classList.add('audio-icon-inactive');
-                    audioControl.classList.add('inactive');
-                    audioControl.classList.remove('muted');
-                } else {
-                    audioIcon.className = 'fi fi-ss-volume';
-                    audioIcon.classList.remove('audio-icon-inactive');
-                    audioControl.classList.remove('inactive');
-                    audioControl.classList.add('muted');
-                }
-            }
-            
-            toggleAudio();
-            audioControl.addEventListener('click', toggleAudio);
-            
-            function sendComment() {
-                const text = commentInput.value.trim();
-                if (!text) return;
-                messageSystem.addUserMessage(text);
-                commentInput.value = '';
-                updateCharCount();
-            }
-            
-            sendBtn.addEventListener('click', sendComment);
-            commentInput.addEventListener('keypress', (e) => e.key === 'Enter' && sendComment());
-            
-            emojiBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const emoji = btn.getAttribute('data-emoji');
-                    messageSystem.addUserMessage(emoji);
-                });
-            });
-            
-            function updateCharCount() {
-                const length = commentInput.value.length;
-                charCount.textContent = `${length}/50`;
-            }
-            commentInput.addEventListener('input', updateCharCount);
-            
-            copyKeyBtn.addEventListener('click', copyPixKey);
-            
-            document.addEventListener('visibilitychange', () => {
-                if (document.hidden) {
-                    messageSystem.stopAutoMessages();
-                } else if (CONFIG.autoMessages) {
-                    messageSystem.startAutoMessages();
-                }
-            });
-            
-            startAutoMessages();
-        });
+        })();
     </script>
 </body>
 </html>
