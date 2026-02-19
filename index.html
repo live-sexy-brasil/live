@@ -7,6 +7,25 @@
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.1.0/uicons-solid-straight/css/uicons-solid-straight.css">
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <style>
+        /* ===== INÍCIO DAS CONFIGURAÇÕES ===== */
+        /* 
+            PARA TROCAR O VÍDEO: 
+            Procure por "URL_DO_VIDEO" no código (linha onde o vídeo é definido)
+            Substitua o link entre aspas pelo novo link do vídeo.
+        */
+        /* 
+            PARA TROCAR O NOME DA MODELO: 
+            Procure por "NOME_DA_MODELO" no código (geralmente em constantes e textos)
+            Substitua "DÉBORA" pelo novo nome em MAIÚSCULAS.
+            O nome aparecerá automaticamente em todos os lugares.
+        */
+        /* 
+            PARA TROCAR A CHAVE PIX: 
+            Procure por "CHAVE_PIX" no código (na seção de constantes)
+            Substitua o valor da chave Pix pelo novo código.
+        */
+        /* ===== FIM DAS CONFIGURAÇÕES ===== */
+
         * {
             margin: 0;
             padding: 0;
@@ -59,6 +78,99 @@
             display: block;
         }
 
+        /* ----- THUMBNAIL SOBREPOSTA ----- */
+        .thumbnail-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('https://tubepussy.org/contents/videos_screenshots/5000/5312/480x270/1.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: 25;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease;
+        }
+
+        .thumbnail-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        /* ----- CONTAINER PARA SOBREPOSIÇÃO DO TEXTO COM A IMAGEM ----- */
+        .button-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: auto;
+            height: auto;
+        }
+
+        /* ----- TEXTO SOBREPOSTO ----- */
+        .click-text-top {
+            color: white;
+            font-size: 22px;
+            font-weight: 900;
+            text-shadow: 3px 3px 6px #000, 0 0 15px #ff1493;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            z-index: 27;
+            position: absolute;
+            top: 25%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            white-space: nowrap;
+            animation: textGlow 2s infinite;
+            pointer-events: none;
+        }
+
+        @keyframes textGlow {
+            0%, 100% { text-shadow: 3px 3px 6px #000, 0 0 10px #ff1493, 0 0 20px #ff1493; }
+            50% { text-shadow: 3px 3px 6px #000, 0 0 20px #ff1493, 0 0 30px #ff1493; }
+        }
+
+        /* ----- BOTÃO COM IMAGEM ----- */
+        .play-button {
+            width: 160px;
+            height: 160px;
+            background-image: url('https://static.vecteezy.com/system/resources/thumbnails/011/016/931/small/live-streaming-icon-for-the-broadcast-system-live-streaming-icon-design-with-red-and-white-colors-live-streaming-image-with-text-effect-red-and-white-gradient-colors-free-png.png');
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            cursor: pointer;
+            border: none;
+            animation: pulse-image 2s infinite ease-in-out;
+            transition: transform 0.3s ease;
+            z-index: 28;
+            position: relative;
+        }
+
+        .play-button:hover {
+            transform: scale(1.05);
+        }
+
+        .play-button:active {
+            transform: scale(0.95);
+        }
+
+        @keyframes pulse-image {
+            0%, 100% { 
+                transform: scale(1); 
+                filter: drop-shadow(0 0 8px rgba(255,20,147,0.6));
+            }
+            50% { 
+                transform: scale(1.05); 
+                filter: drop-shadow(0 0 15px rgba(255,20,147,0.9));
+            }
+        }
+
         /* ----- HORÁRIO CENTRALIZADO ----- */
         .live-time {
             position: absolute;
@@ -76,9 +188,16 @@
             padding: 4px 12px;
             border-radius: 30px;
             backdrop-filter: blur(4px);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            pointer-events: none;
         }
 
-        /* ----- VISUALIZADORES NO CANTO ESQUERDO (mesma altura da hora) ----- */
+        .live-time.visible {
+            opacity: 1;
+        }
+
+        /* ----- VISUALIZADORES NO CANTO ESQUERDO ----- */
         .left-stats {
             position: absolute;
             top: 15px;
@@ -87,6 +206,13 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            pointer-events: none;
+        }
+
+        .left-stats.visible {
+            opacity: 1;
         }
 
         .viewer-count {
@@ -112,6 +238,13 @@
             align-items: flex-end;
             gap: 8px;
             z-index: 20;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            pointer-events: none;
+        }
+
+        .right-stats.visible {
+            opacity: 1;
         }
 
         .live-badge {
@@ -140,7 +273,7 @@
             50% { transform: scale(1.1); opacity: 0.7; }
         }
 
-        /* ----- BOTÃO DE ÁUDIO ABAIXO DO BADGE ----- */
+        /* ----- BOTÃO DE ÁUDIO ----- */
         .audio-control {
             position: absolute;
             top: 60px;
@@ -159,6 +292,13 @@
             transition: all 0.3s ease;
             font-size: 18px;
             box-shadow: 0 0 10px rgba(255, 105, 180, 0.5);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .audio-control.visible {
+            opacity: 1;
+            pointer-events: auto;
         }
 
         .audio-control:active {
@@ -197,6 +337,12 @@
             padding: 15px;
             z-index: 20;
             pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .comments-section.visible {
+            opacity: 1;
         }
 
         .comments-container {
@@ -343,7 +489,7 @@
             pointer-events: auto;
         }
 
-        /* ----- MODAL PIX (SEM FUNDO, SEM BORDA, APENAS CONTEÚDO) ----- */
+        /* ----- MODAL PIX ----- */
         .donation-modal {
             position: fixed;
             top: 0;
@@ -376,11 +522,11 @@
         }
 
         .donation-title {
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-weight: bold;
             margin-bottom: 15px;
             line-height: 1.4;
-            text-shadow: 0 2px 5px black;
+            text-shadow: 2px 2px 4px #000;
         }
 
         .qr-code-container {
@@ -393,29 +539,15 @@
             justify-content: center;
             align-items: center;
             padding: 5px;
-            border: 2px solid #FF1493; /* rosa pink */
+            border: 2px solid #FF1493;
+            overflow: hidden;
         }
 
-        .qr-code-placeholder {
-            width: 130px;
-            height: 130px;
-            background: linear-gradient(45deg, #333, #666);
+        .qr-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
             border-radius: 12px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #000;
-            font-size: 12px;
-            font-weight: bold;
-            position: relative;
-        }
-
-        .qr-code-placeholder:before {
-            content: "QR CODE PIX";
-            position: absolute;
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 14px;
-            text-align: center;
         }
 
         .copy-key-btn {
@@ -431,76 +563,93 @@
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
         }
 
         .copy-key-btn:active {
             transform: scale(0.95);
         }
 
-        /* ----- CONTAINER ROSA PINK PARA AS INSTRUÇÕES ----- */
         .pink-instructions {
-            background: #ff69b4; /* rosa pink */
+            background: rgba(255, 105, 180, 0.5);
+            border: 2px solid #FF1493;
             border-radius: 20px;
             padding: 15px 12px;
             margin-top: 10px;
-            color: #1a1a1a;
+            color: #ffffff;
             font-weight: 500;
-            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.5);
+            backdrop-filter: blur(2px);
         }
 
         .pink-instructions strong {
             color: #fff;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            text-shadow: 2px 2px 4px #000;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
         }
 
         .pink-instructions ol {
             text-align: left;
             margin-left: 20px;
-            margin-top: 8px;
-            font-size: 13px;
+            margin-top: 5px;
+            font-size: 12px;
             line-height: 1.6;
         }
 
         .pink-instructions li {
             margin-bottom: 6px;
-            color: #1e1e1e;
+            color: #ffffff;
+            font-weight: bold;
+            text-transform: uppercase;
+            text-shadow: 2px 2px 4px #000;
         }
 
         @media (max-width: 480px) {
             .comments-container { height: 140px; }
             .donation-container { max-width: 280px; }
             .qr-code-container { width: 140px; height: 140px; }
-            .qr-code-placeholder { width: 120px; height: 120px; }
+            .play-button { width: 140px; height: 140px; }
+            .click-text-top { font-size: 20px; top: 25%; }
         }
 
         @media (max-width: 360px) {
             .comments-container { height: 120px; }
             .donation-container { max-width: 260px; }
-            .qr-code-container { width: 130px; height: 130px; }
+            .play-button { width: 120px; height: 120px; }
+            .click-text-top { font-size: 18px; top: 25%; }
         }
     </style>
 </head>
 <body>
     <div id="particles-js"></div>
 
-    <!-- Modal Pix com container rosa nas instruções -->
+    <!-- Modal Pix -->
     <div class="donation-modal" id="donation-modal">
         <div class="donation-container">
-            <div class="donation-title">DÉBORA ESTÁ PEDINDO UM PIX MÍNIMO DE 20,00 REAIS. FAÇA O PIX E VOLTA A VER A LIVE. ELA ESTÁ AGUARDANDO.</div>
+            <!-- =================================================== -->
+            <!-- NOME DA MODELO: Substitua "DÉBORA" pelo novo nome   -->
+            <!-- =================================================== -->
+            <div class="donation-title">DÉBORA PEDE O MÍNIMO DE 5,00 REAIS VIA PIX, PARA FICAR NA LIVE</div>
             <div class="qr-code-container">
-                <div class="qr-code-placeholder"></div>
+                <video class="qr-video" autoplay loop muted playsinline>
+                    <source src="https://cdn-icons-mp4.flaticon.com/512/15574/15574256.mp4" type="video/mp4">
+                </video>
             </div>
+            <!-- =================================================== -->
+            <!-- CHAVE PIX: Substitua o valor da chave Pix abaixo   -->
+            <!-- =================================================== -->
             <button class="copy-key-btn" id="copy-key-btn">COPIAR CHAVE PIX</button>
             
-            <!-- Container rosa pink para instruções atualizadas -->
             <div class="pink-instructions">
-                <strong>Instruções:</strong>
+                <strong>INSTRUÇÕES:</strong>
                 <ol>
-                    <li>Copie a CHAVE PIX acima</li>
-                    <li>Abra o APP do seu Banco</li>
-                    <li>Cole a Chave no PIX</li>
-                    <li>Preencha o Valor de no Mínimo 20,00 Reais ou MAIS</li>
-                    <li>Em menos de 30 segundos você volta a ver a LIVE</li>
+                    <li>COPIE A CHAVE PIX ACIMA</li>
+                    <li>ABRA O APP DO SEU BANCO</li>
+                    <li>COLE A CHAVE NO PIX</li>
+                    <li>PREEnCHA O VALOR DE NO MÍNIMO 5,00 REAIS (ACIMA DE 20,00 GANHA O WHATSAPP DA MODELO)</li>
+                    <li>EM MENOS DE 30 SEGUNDOS VOCÊ VOLTA A VER A LIVE</li>
                 </ol>
             </div>
         </div>
@@ -508,15 +657,26 @@
 
     <div class="main-container" id="main-container">
         <div class="video-container">
-            <video class="video-background" autoplay loop muted playsinline id="live-video">
-                <source src="https://dg-videos.b-cdn.net/bg/720x1280_cm563.mp4" type="video/mp4">
+            <!-- Thumbnail com texto sobreposto -->
+            <div class="thumbnail-overlay" id="thumbnail-overlay">
+                <div class="button-container">
+                    <div class="click-text-top">ENTRAR</div>
+                    <div class="play-button" id="play-button"></div>
+                </div>
+            </div>
+
+            <!-- =================================================== -->
+            <!-- VÍDEO: Substitua o link abaixo pelo novo vídeo      -->
+            <!-- =================================================== -->
+            <video class="video-background" id="live-video" playsinline>
+                <source src="https://midias.foxvideo.club/5000/5312/5312.mp4" type="video/mp4">
             </video>
 
             <!-- Horário centralizado -->
             <div class="live-time" id="live-time">00:00</div>
 
             <!-- Visualizadores no canto esquerdo -->
-            <div class="left-stats">
+            <div class="left-stats" id="left-stats">
                 <div class="viewer-count">
                     <i class="fi fi-ss-eye"></i>
                     <span id="viewer-count">570</span>
@@ -524,20 +684,20 @@
             </div>
 
             <!-- Badge AO VIVO na direita -->
-            <div class="right-stats">
+            <div class="right-stats" id="right-stats">
                 <div class="live-badge">
                     <div class="live-pulse"></div>
                     <span>AO VIVO</span>
                 </div>
             </div>
 
-            <!-- Botão de áudio abaixo do badge -->
+            <!-- Botão de áudio -->
             <div class="audio-control" id="audio-control">
                 <i class="fi fi-ss-volume" id="audio-icon"></i>
             </div>
 
             <!-- Área de comentários -->
-            <div class="comments-section">
+            <div class="comments-section" id="comments-section">
                 <div class="comments-container" id="comments-container"></div>
 
                 <div class="comment-input-container">
@@ -572,6 +732,9 @@
             ];
 
             const MESSAGES = [
+                // ===================================================
+                // NOME DA MODELO: Substitua "DÉBORA" pelo novo nome
+                // ===================================================
                 "@kauan fez um PIX agora! A live ficou muito mais sexy! 🔥",
                 "Valeu @kauan pelo PIX! Agora a live tá quente demais! 🍑",
                 "@kauan mandou bem no PIX! Tá tudo mais excitante! 🤤",
@@ -582,7 +745,7 @@
                 "@naru não falta uma live! Respeito! 🫡",
                 "@naru é fiel demais! Toda live tá aqui! 👊",
                 "Vou fazer um PIX de 50 reais agora! 🔥",
-                "PIX de 20 reais enviado! Agora é sua vez Débora! 😈",
+                "PIX de 20 reais enviado! Agora é sua vez DÉBORA! 😈",
                 "Acabei de mandar 50 reais no PIX! 🍑",
                 "Que tesão essa live! 😈😈😈",
                 "Melhor live da semana! 🏆",
@@ -590,9 +753,14 @@
                 "Que mulher gostosa! 😍"
             ];
 
+            // ===================================================
+            // CHAVE PIX: Substitua o valor da chave Pix abaixo
+            // ===================================================
             const PIX_KEY = "debora.live@hotgirl.com";
 
             // Elementos
+            const thumbnailOverlay = document.getElementById('thumbnail-overlay');
+            const playButton = document.getElementById('play-button');
             const video = document.getElementById('live-video');
             const audioControl = document.getElementById('audio-control');
             const audioIcon = document.getElementById('audio-icon');
@@ -606,20 +774,25 @@
             const copyKeyBtn = document.getElementById('copy-key-btn');
             const donationModal = document.getElementById('donation-modal');
             const mainContainer = document.getElementById('main-container');
+            
+            // Elementos que serão mostrados após o play
+            const leftStats = document.getElementById('left-stats');
+            const rightStats = document.getElementById('right-stats');
+            const commentsSection = document.getElementById('comments-section');
 
             // Estado
-            let isMuted = true;
-            let viewerCount = 570; // valor inicial
-            const siteStartTime = Date.now();
+            let isMuted = false;
+            let viewerCount = 570;
             let messageSystem = null;
+            let videoStarted = false;
 
-            // Verificar se o modal já foi mostrado antes (persistência)
+            // Verificar se o modal já foi mostrado antes
             if (localStorage.getItem('pixModalShown') === 'true') {
                 donationModal.classList.add('active');
                 mainContainer.classList.add('blur');
             }
 
-            // Atualizar horário (Brasília)
+            // Atualizar horário
             function updateLiveTime() {
                 const now = new Date();
                 const brasiliaTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
@@ -712,9 +885,8 @@
             }
 
             messageSystem = new MessageSystem();
-            messageSystem.startAutoMessages();
 
-            // Atualizar contador de visualizadores (sempre entre 570 e 577)
+            // Atualizar contador de visualizadores
             function updateViewerCount() {
                 let min = 570, max = 577;
                 let newCount;
@@ -725,10 +897,9 @@
                 viewerSpan.textContent = viewerCount;
             }
 
-            // Inicia o intervalo imediatamente e mantém para sempre
             setInterval(updateViewerCount, 5000);
 
-            // Modal Pix após 2 minutos (se ainda não foi mostrado)
+            // Modal Pix após 2 minutos
             setTimeout(() => {
                 if (localStorage.getItem('pixModalShown') !== 'true') {
                     donationModal.classList.add('active');
@@ -754,8 +925,43 @@
                 });
             });
 
+            // Função para iniciar o vídeo
+            function startVideo() {
+                if (videoStarted) return;
+                
+                thumbnailOverlay.classList.add('hidden');
+                
+                liveTime.classList.add('visible');
+                leftStats.classList.add('visible');
+                rightStats.classList.add('visible');
+                audioControl.classList.add('visible');
+                commentsSection.classList.add('visible');
+                
+                video.muted = false;
+                isMuted = false;
+                audioIcon.className = 'fi fi-ss-volume';
+                audioControl.classList.remove('inactive');
+                
+                video.play().catch(e => console.log('Autoplay bloqueado:', e));
+                
+                messageSystem.startAutoMessages();
+                
+                videoStarted = true;
+            }
+
+            // Botão de play
+            playButton.addEventListener('click', startVideo);
+            
+            thumbnailOverlay.addEventListener('click', (e) => {
+                if (e.target === thumbnailOverlay || e.target.closest('.play-button')) {
+                    startVideo();
+                }
+            });
+
             // Controle de áudio
             function toggleAudio() {
+                if (!videoStarted) return;
+                
                 isMuted = !isMuted;
                 video.muted = isMuted;
 
@@ -768,14 +974,13 @@
                     audioControl.classList.remove('inactive');
                 }
             }
-            // Estado inicial (mudo)
-            video.muted = true;
-            audioIcon.classList.add('audio-icon-inactive');
-            audioControl.classList.add('inactive');
+            
             audioControl.addEventListener('click', toggleAudio);
 
             // Enviar comentário
             function sendComment() {
+                if (!videoStarted) return;
+                
                 const text = commentInput.value.trim();
                 if (!text) return;
                 messageSystem.addUserMessage(text);
@@ -788,6 +993,7 @@
 
             emojiBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
+                    if (!videoStarted) return;
                     const emoji = btn.getAttribute('data-emoji');
                     messageSystem.addUserMessage(emoji);
                 });
@@ -800,22 +1006,13 @@
 
             // Pausar comentários ao mudar de aba
             document.addEventListener('visibilitychange', () => {
+                if (!videoStarted) return;
+                
                 if (document.hidden) {
                     messageSystem.stopAutoMessages();
                 } else {
                     messageSystem.startAutoMessages();
                 }
-            });
-
-            // Garantir autoplay do vídeo
-            video.play().catch(() => {
-                const unlock = () => {
-                    video.play().catch(() => {});
-                    document.removeEventListener('click', unlock);
-                    document.removeEventListener('touchstart', unlock);
-                };
-                document.addEventListener('click', unlock);
-                document.addEventListener('touchstart', unlock);
             });
 
             // Partículas
