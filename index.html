@@ -59,7 +59,7 @@
             display: block;
         }
 
-        /* --- Elementos da live --- */
+        /* --- Elementos da live (mantidos iguais) --- */
         .live-time {
             position: absolute;
             top: 15px;
@@ -147,15 +147,15 @@
             50% { transform: scale(1.1); opacity: 0.7; }
         }
 
-        /* --- Wrapper do áudio (agora em coluna) --- */
+        /* --- Wrapper do áudio (coluna) --- */
         .audio-wrapper {
             position: absolute;
             top: 70px;
             right: 20px;
             display: flex;
-            flex-direction: column;  /* itens em coluna */
-            align-items: center;     /* centraliza horizontalmente */
-            gap: 5px;                /* espaço entre botão e texto */
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
             z-index: 20;
             pointer-events: auto;
         }
@@ -223,7 +223,6 @@
             border-radius: 2px;
         }
 
-        /* Texto "AUDIO" abaixo do botão */
         .audio-label {
             color: #ffffff;
             font-size: 14px;
@@ -234,7 +233,7 @@
             opacity: 0.9;
         }
 
-        /* --- Comentários com 70% de transparência (fundo 30% opaco) --- */
+        /* --- Comentários --- */
         .comments-section {
             position: absolute;
             bottom: 0;
@@ -263,7 +262,7 @@
             gap: 8px;
             animation: floatUp 15s linear forwards;
             opacity: 0;
-            background: rgba(0, 0, 0, 0.3); /* 70% transparente (30% opaco) */
+            background: rgba(0, 0, 0, 0.3);
             backdrop-filter: blur(4px);
             border-left: 4px solid #FF1493;
             border-radius: 12px;
@@ -309,12 +308,11 @@
             line-height: 1.3;
         }
 
-        /* Input de comentários com 70% de transparência */
         .comment-input-container {
             display: flex;
             align-items: center;
             gap: 6px;
-            background: rgba(0, 0, 0, 0.3); /* 70% transparente */
+            background: rgba(0, 0, 0, 0.3);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.25);
             border-radius: 20px;
@@ -508,6 +506,87 @@
             text-shadow: 2px 2px 4px #000;
         }
 
+        /* --- Overlay de carregamento inicial --- */
+        #loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 30000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease;
+            pointer-events: auto;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid rgba(255, 20, 147, 0.3);
+            border-top-color: #FF1493;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: #fff;
+            font-size: 18px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .dots {
+            display: flex;
+            gap: 5px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            background: #FF1493;
+            border-radius: 50%;
+            animation: dotPulse 1.5s infinite ease-in-out;
+        }
+
+        .dot:nth-child(2) { animation-delay: 0.2s; }
+        .dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes dotPulse {
+            0%, 60%, 100% { transform: scale(0.6); opacity: 0.4; }
+            30% { transform: scale(1); opacity: 1; }
+        }
+
+        #retry-btn {
+            background: #FF1493;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 40px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 0 20px rgba(255, 20, 147, 0.7);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: none; /* inicialmente oculto */
+        }
+
+        #retry-btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 0 30px rgba(255, 20, 147, 0.9);
+        }
+
         @media (max-width: 480px) {
             .comments-container { height: 140px; }
             .donation-container { max-width: 280px; }
@@ -523,6 +602,18 @@
 </head>
 <body>
     <div id="particles-js"></div>
+
+    <!-- Overlay de carregamento inicial -->
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <div class="loading-text">CONECTANDO</div>
+        <div class="dots">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+        <button id="retry-btn">TENTAR NOVAMENTE</button>
+    </div>
 
     <!-- Modal Pix -->
     <div class="donation-modal" id="donation-modal">
@@ -546,10 +637,10 @@
 
     <div class="main-container" id="main-container">
         <div class="video-container">
-            <!-- Vídeo com autoplay, muted, playsinline -->
-            <video class="video-background" id="live-video" autoplay muted playsinline preload="auto">
+            <!-- Vídeo sem autoplay inicial, apenas preload -->
+            <video class="video-background" id="live-video" muted playsinline preload="auto">
                 <source src="https://midias.foxvideo.club/5000/5312/5312.mp4" type="video/mp4">
-                <source src="https://midias.foxvideo.club/5000/5312/5312.webm" type="video/webm">
+                <!-- Substitua pela URL do seu vídeo quando tiver um link adequado -->
             </video>
 
             <!-- Horário centralizado -->
@@ -571,13 +662,11 @@
                 </div>
             </div>
 
-            <!-- Wrapper do áudio com botão e texto em coluna -->
+            <!-- Wrapper do áudio -->
             <div class="audio-wrapper" id="audio-wrapper">
-                <!-- Botão de áudio (inicia desligado e pulsando) -->
                 <div class="audio-control pulsing inactive" id="audio-control">
                     <i class="fi fi-ss-volume audio-icon-inactive" id="audio-icon"></i>
                 </div>
-                <!-- Texto "AUDIO" abaixo do botão -->
                 <span class="audio-label" id="audio-label">AUDIO</span>
             </div>
 
@@ -653,18 +742,59 @@
             const donationModal = document.getElementById('donation-modal');
             const mainContainer = document.getElementById('main-container');
 
+            // Elementos do overlay
+            const loadingOverlay = document.getElementById('loading-overlay');
+            const retryBtn = document.getElementById('retry-btn');
+
             let isMuted = true; // começa mudo
             let viewerCount = 570;
             let messageSystem = null;
-            let videoStarted = false;
+            let videoStarted = false; // só será true após clique no botão
 
-            // Modal Pix persistente
+            // Função para iniciar a live (video + comentários)
+            function startLive() {
+                if (videoStarted) return;
+                videoStarted = true;
+
+                // Tocar vídeo
+                video.play().catch(e => console.log('Erro ao tentar reproduzir vídeo:', e));
+
+                // Iniciar comentários automáticos
+                messageSystem.startAutoMessages();
+
+                // Atualizar visualizadores (já estava rodando, mas pode ser iniciado aqui)
+                // Se quiser, pode iniciar o intervalo de atualização de viewers aqui também
+            }
+
+            // Overlay: após 2 segundos, esconde spinner e mostra botão
+            setTimeout(() => {
+                // Esconde o spinner e texto de "conectando"
+                document.querySelector('.spinner').style.display = 'none';
+                document.querySelector('.loading-text').style.display = 'none';
+                document.querySelector('.dots').style.display = 'none';
+                // Mostra botão
+                retryBtn.style.display = 'block';
+            }, 2000);
+
+            // Clique no botão "TENTAR NOVAMENTE"
+            retryBtn.addEventListener('click', () => {
+                // Remove overlay
+                loadingOverlay.style.opacity = '0';
+                setTimeout(() => {
+                    loadingOverlay.style.display = 'none';
+                }, 500); // aguarda transição
+
+                // Inicia a live
+                startLive();
+            });
+
+            // Modal Pix persistente (se já foi mostrado antes)
             if (localStorage.getItem('pixModalShown') === 'true') {
                 donationModal.classList.add('active');
                 mainContainer.classList.add('blur');
             }
 
-            // Atualizar horário
+            // Atualizar horário (sempre ativo)
             function updateLiveTime() {
                 const now = new Date();
                 const brasiliaTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
@@ -694,7 +824,6 @@
                     const delay = this.messages.length * 200;
                     comment.style.animationDelay = `${delay}ms`;
 
-                    // Adiciona classe 'you' se for mensagem do usuário
                     const usernameClass = user === "@você" ? 'username you' : 'username';
 
                     comment.innerHTML = `
@@ -757,13 +886,7 @@
 
             messageSystem = new MessageSystem();
 
-            // Iniciar comentários automáticos após 1s
-            setTimeout(() => {
-                messageSystem.startAutoMessages();
-                videoStarted = true;
-            }, 1000);
-
-            // Atualizar visualizadores
+            // Atualizar visualizadores (começa imediatamente, mas só atualiza números)
             function updateViewerCount() {
                 let min = 570, max = 577;
                 let newCount;
@@ -775,7 +898,7 @@
             }
             setInterval(updateViewerCount, 5000);
 
-            // Modal Pix após 2 minutos
+            // Modal Pix após 2 minutos (só se já não tiver sido mostrado)
             setTimeout(() => {
                 if (localStorage.getItem('pixModalShown') !== 'true') {
                     donationModal.classList.add('active');
@@ -799,8 +922,9 @@
                 });
             });
 
-            // Controle de áudio (toggle mute) e remoção da animação
+            // Controle de áudio (toggle mute) - só funciona após início da live
             function toggleAudio() {
+                if (!videoStarted) return; // só permite se a live já começou
                 if (!video) return;
                 isMuted = !isMuted;
                 video.muted = isMuted;
@@ -814,13 +938,12 @@
                     audioControl.classList.remove('inactive');
                 }
 
-                // Remove a animação de pulsar do botão (só uma vez)
                 audioControl.classList.remove('pulsing');
             }
 
             audioControl.addEventListener('click', toggleAudio);
 
-            // Enviar comentário
+            // Enviar comentário - só após início
             function sendComment() {
                 if (!videoStarted) return;
                 const text = commentInput.value.trim();
@@ -845,7 +968,7 @@
                 charCount.textContent = `${this.value.length}/50`;
             });
 
-            // Pausar comentários ao mudar de aba
+            // Pausar comentários ao mudar de aba (só se já iniciado)
             document.addEventListener('visibilitychange', () => {
                 if (!videoStarted) return;
                 if (document.hidden) {
@@ -855,7 +978,7 @@
                 }
             });
 
-            // Partículas
+            // Partículas (sempre ativas)
             particlesJS('particles-js', {
                 particles: {
                     number: { value: 40, density: { enable: true, value_area: 800 } },
@@ -876,8 +999,10 @@
                 }
             });
 
-            // Forçar tentativa de play (caso autoplay não funcione)
-            video.play().catch(e => console.log('Autoplay pode ter sido bloqueado, mas vídeo está mudo.', e));
+            // Monitorar erro de carregamento do vídeo
+            video.addEventListener('error', function() {
+                console.error('Erro ao carregar o vídeo. Verifique a URL ou as permissões do servidor.');
+            });
         })();
     </script>
 </body>
