@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
@@ -7,7 +8,14 @@
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.1.0/uicons-solid-straight/css/uicons-solid-straight.css">
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <style>
-        /* ===== CONFIGURAÇÕES ===== */
+        :root {
+            --primary-pink: #FF1493;
+            --neon-pink: #FF00FF;
+            --live-red: #ff0000;
+            --text-white: #ffffff;
+            --donation-pink: #ff4da6;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -18,8 +26,21 @@
 
         html, body {
             height: 100%;
+            width: 100%;
             overflow: hidden;
-            background: #000;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start; /* Alinha ao topo */
+            background: #000; /* Fundo preto */
+        }
+
+        body {
+            position: relative;
+            padding: 0; /* Remove padding */
+        }
+
+        body.tutorial-active {
+            filter: brightness(0.6);
         }
 
         #particles-js {
@@ -27,30 +48,75 @@
             width: 100%;
             height: 100%;
             z-index: 1;
-            pointer-events: none;
+            opacity: 0.3; /* Reduz opacidade para não competir com fundo preto */
         }
 
+        /* Container principal - FIXO NO TOPO, OCUPA ALTURA TOTAL */
         .main-container {
-            position: fixed;
-            top: 0;
-            left: 0;
+            position: relative;
             width: 100%;
-            height: 100dvh;
+            max-width: 340px;
+            height: 100vh; /* Exatamente a altura da tela */
+            margin: 0 auto;
             overflow: hidden;
             background: #000;
             z-index: 10;
-            transition: filter 0.4s ease;
+            opacity: 1;
+            transition: all 0.3s ease;
+            border-radius: 20px 20px 0 0; /* Arredondado apenas em cima, reto embaixo */
+            border: 5px solid var(--neon-pink); /* Borda mais espessa, cor neon pink */
+            box-shadow: 0 0 30px rgba(255, 105, 180, 0.5);
         }
 
-        .main-container.blur {
-            filter: blur(8px);
-            pointer-events: none;
+        /* Estilos para quando o container estiver em tela cheia (Android/Desktop) */
+        .main-container:fullscreen {
+            width: 100vw !important;
+            height: 100vh !important;
+            max-width: 100vw !important;
+            border-radius: 0;
+            border: 5px solid var(--neon-pink); /* Mantém borda */
+        }
+        .main-container:-webkit-full-screen {
+            width: 100vw !important;
+            height: 100vh !important;
+            max-width: 100vw !important;
+            border-radius: 0;
+            border: 5px solid var(--neon-pink);
+        }
+        .main-container:-moz-full-screen {
+            width: 100vw !important;
+            height: 100vh !important;
+            max-width: 100vw !important;
+            border-radius: 0;
+            border: 5px solid var(--neon-pink);
+        }
+        .main-container:-ms-fullscreen {
+            width: 100vw !important;
+            height: 100vh !important;
+            max-width: 100vw !important;
+            border-radius: 0;
+            border: 5px solid var(--neon-pink);
+        }
+
+        @media (min-width: 768px) {
+            .main-container {
+                max-width: 375px; /* Ajuste para telas maiores */
+            }
+        }
+
+        @media (max-width: 360px) {
+            .main-container {
+                max-width: 320px;
+            }
         }
 
         .video-container {
             width: 100%;
             height: 100%;
             position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         .video-background {
@@ -58,168 +124,50 @@
             height: 100%;
             object-fit: cover;
             display: block;
+            background: #000;
         }
 
-        /* ----- OVERLAY DE CARREGAMENTO INICIAL ----- */
-        #loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
+        /* Video fallback */
+        .video-fallback {
+            position: absolute;
             width: 100%;
             height: 100%;
-            background: #000;
-            z-index: 30000;
+            background: linear-gradient(45deg, #FF1493, #FF69B4);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            transition: opacity 0.5s ease;
-            pointer-events: auto;
-        }
-
-        .spinner {
-            width: 60px;
-            height: 60px;
-            border: 6px solid rgba(255, 20, 147, 0.3);
-            border-top-color: #FF1493;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .loading-text {
-            color: #fff;
-            font-size: 18px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-bottom: 10px;
-        }
-
-        .dots {
-            display: flex;
-            gap: 5px;
-        }
-
-        .dot {
-            width: 8px;
-            height: 8px;
-            background: #FF1493;
-            border-radius: 50%;
-            animation: dotPulse 1.5s infinite ease-in-out;
-        }
-
-        .dot:nth-child(2) { animation-delay: 0.2s; }
-        .dot:nth-child(3) { animation-delay: 0.4s; }
-
-        @keyframes dotPulse {
-            0%, 60%, 100% { transform: scale(0.6); opacity: 0.4; }
-            30% { transform: scale(1); opacity: 1; }
-        }
-
-        #retry-btn {
-            background: #FF1493;
             color: white;
-            border: none;
-            padding: 12px 30px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 40px;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            box-shadow: 0 0 20px rgba(255, 20, 147, 0.7);
-            transition: transform 0.2s, box-shadow 0.2s;
-            display: none; /* inicialmente oculto */
+            text-align: center;
+            padding: 20px;
+            z-index: 5;
         }
 
-        #retry-btn:active {
-            transform: scale(0.95);
-            box-shadow: 0 0 30px rgba(255, 20, 147, 0.9);
+        .video-fallback.hidden {
+            display: none;
         }
 
-        /* ----- HORÁRIO CENTRALIZADO ----- */
+        /* HORÁRIO EM NEGRITO E BRANCO */
         .live-time {
             position: absolute;
             top: 15px;
             left: 50%;
             transform: translateX(-50%);
-            color: #ffffff;
+            color: var(--text-white);
             font-size: 14px;
             font-weight: 900;
             z-index: 20;
-            text-shadow: 0 0 8px rgba(0,0,0,0.7);
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.7);
             font-family: 'Courier New', monospace;
             letter-spacing: 1px;
-            background: rgba(0,0,0,0.4);
-            padding: 4px 12px;
-            border-radius: 30px;
-            backdrop-filter: blur(4px);
-            opacity: 0;
-            transition: opacity 0.5s ease;
-            pointer-events: none;
-        }
-
-        .live-time.visible {
-            opacity: 1;
-        }
-
-        /* ----- VISUALIZADORES NO CANTO ESQUERDO ----- */
-        .left-stats {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            z-index: 20;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-            pointer-events: none;
-        }
-
-        .left-stats.visible {
-            opacity: 1;
-        }
-
-        .viewer-count {
-            background: rgba(0, 0, 0, 0.7);
-            color: #f0f0f0;
-            padding: 6px 12px;
-            border-radius: 15px;
-            font-size: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        /* ----- BADGE AO VIVO (DIREITA) ----- */
-        .right-stats {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 8px;
-            z-index: 20;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-            pointer-events: none;
-        }
-
-        .right-stats.visible {
-            opacity: 1;
         }
 
         .live-badge {
-            background: linear-gradient(to right, #ff0000, #ff3333);
-            color: #ffffff;
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: linear-gradient(to right, var(--live-red), #ff3333);
+            color: var(--text-white);
             padding: 6px 12px;
             border-radius: 15px;
             font-size: 12px;
@@ -227,13 +175,14 @@
             display: flex;
             align-items: center;
             gap: 6px;
+            z-index: 20;
             box-shadow: 0 3px 10px rgba(255, 0, 0, 0.4);
         }
 
         .live-pulse {
             width: 8px;
             height: 8px;
-            background: #ffffff;
+            background: var(--text-white);
             border-radius: 50%;
             animation: pulse 1.5s infinite;
         }
@@ -243,40 +192,24 @@
             50% { transform: scale(1.1); opacity: 0.7; }
         }
 
-        /* ----- BOTÃO DE ÁUDIO (AGRUPADO COM TEXTO) ----- */
-        .audio-wrapper {
+        .audio-control {
             position: absolute;
             top: 60px;
             right: 15px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-            z-index: 20;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-            pointer-events: none;
-        }
-
-        .audio-wrapper.visible {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .audio-control {
-            width: 60px;
-            height: 60px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
             background: rgba(255, 105, 180, 0.9);
-            border: 3px solid #FF00FF;
-            color: #ffffff;
+            border: 2px solid var(--neon-pink);
+            color: var(--text-white);
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
+            z-index: 20;
             transition: all 0.3s ease;
-            font-size: 26px;
-            box-shadow: 0 0 15px rgba(255, 105, 180, 0.7);
+            font-size: 18px;
+            box-shadow: 0 0 10px rgba(255, 105, 180, 0.5);
         }
 
         .audio-control:active {
@@ -285,7 +218,7 @@
 
         .audio-control.inactive {
             background: rgba(0, 0, 0, 0.7);
-            border: 3px solid rgba(255, 255, 255, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.3);
             box-shadow: none;
         }
 
@@ -300,49 +233,49 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) rotate(45deg);
-            width: 35px;
-            height: 3px;
+            width: 20px;
+            height: 2px;
             background-color: #ff3333;
-            border-radius: 2px;
+            border-radius: 1px;
         }
 
-        .audio-label {
-            color: #ffffff;
+        .viewer-count {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(0, 0, 0, 0.7);
+            color: #f0f0f0;
+            padding: 6px 12px;
+            border-radius: 15px;
             font-size: 12px;
-            font-weight: 500;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
-            letter-spacing: 1px;
-            white-space: nowrap;
-            opacity: 0.9;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 20;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
 
-        /* ----- COMENTÁRIOS FLUTUANTES (75% transparentes) ----- */
+        /* Sistema de comentários */
         .comments-section {
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
             padding: 15px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
             z-index: 20;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-        }
-
-        .comments-section.visible {
-            opacity: 1;
         }
 
         .comments-container {
             height: 150px;
             overflow: hidden;
             margin-bottom: 10px;
-            position: relative;
         }
 
         .comment {
             color: #ffffff;
-            padding: 8px 12px;
+            padding: 8px 0;
             margin-bottom: 3px;
             font-size: 12px;
             display: flex;
@@ -350,14 +283,6 @@
             gap: 8px;
             animation: floatUp 15s linear forwards;
             opacity: 0;
-            background: rgba(0, 0, 0, 0.25); /* 75% transparente (25% opaco) */
-            backdrop-filter: blur(4px);
-            border-left: 4px solid #FF1493;
-            border-radius: 12px;
-            width: fit-content;
-            max-width: 85%;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            pointer-events: none;
         }
 
         @keyframes floatUp {
@@ -396,60 +321,31 @@
             line-height: 1.3;
         }
 
-        /* INPUT (75% transparente) */
         .comment-input-container {
             display: flex;
             align-items: center;
-            gap: 6px;
-            background: rgba(0, 0, 0, 0.25); /* 75% transparente */
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            border-radius: 20px;
-            padding: 0 8px;
-            pointer-events: auto;
+            gap: 8px;
         }
 
         .comment-input {
             flex: 1;
-            padding: 10px 0;
+            padding: 10px 14px;
+            border-radius: 20px;
             border: none;
-            background: transparent;
-            color: #ffffff;
+            background: rgba(255, 255, 255, 0.15);
+            color: var(--text-white);
             font-size: 14px;
-            min-width: 0;
+            border: 1px solid rgba(255, 255, 255, 0.25);
         }
 
         .comment-input:focus {
             outline: none;
-        }
-
-        .emoji-inline {
-            display: flex;
-            gap: 4px;
-            align-items: center;
-        }
-
-        .emoji-inline-btn {
-            background: transparent;
-            border: none;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            font-size: 16px;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: background 0.2s;
-            color: white;
-        }
-
-        .emoji-inline-btn:active {
-            background: rgba(255, 255, 255, 0.3);
+            border-color: var(--neon-pink);
+            box-shadow: 0 0 10px rgba(255, 105, 180, 0.5);
         }
 
         .send-btn {
-            background: #FF00FF;
+            background: var(--neon-pink);
             color: white;
             border: none;
             width: 38px;
@@ -461,23 +357,115 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            flex-shrink: 0;
         }
 
         .send-btn:active {
             transform: scale(0.95);
         }
 
-        .char-count {
-            font-size: 10px;
-            color: rgba(255, 255, 255, 0.7);
-            text-align: right;
-            margin-top: 4px;
-            padding-right: 6px;
-            pointer-events: auto;
+        .emoji-selector {
+            display: flex;
+            gap: 6px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
-        /* ----- MODAL PIX ----- */
+        .emoji-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 16px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .emoji-btn:active {
+            transform: scale(0.9);
+        }
+
+        /* Botão de tela cheia */
+        .fullscreen-control {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 1);
+            border: 2px solid var(--neon-pink);
+            color: var(--neon-pink);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 10000;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(255, 0, 255, 0.6);
+        }
+
+        body.tutorial-active .fullscreen-control {
+            animation: buttonGlow 0.8s infinite alternate;
+        }
+
+        @keyframes buttonGlow {
+            0% { 
+                transform: scale(1);
+                box-shadow: 0 0 10px rgba(255, 0, 255, 0.6);
+            }
+            100% { 
+                transform: scale(1.1);
+                box-shadow: 0 0 25px rgba(255, 0, 255, 1);
+            }
+        }
+
+        .fullscreen-control:active {
+            transform: scale(0.95);
+        }
+
+        /* Tutorial */
+        .tutorial-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        .tutorial-text {
+            position: fixed;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            text-align: center;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
+            padding: 15px;
+            max-width: 280px;
+            pointer-events: none;
+            opacity: 1;
+            background: rgba(0, 0, 0, 0.5);
+            border-radius: 12px;
+            backdrop-filter: blur(5px);
+        }
+
+        .tutorial-hidden {
+            display: none !important;
+        }
+
+        /* Modal de doação */
         .donation-modal {
             position: fixed;
             top: 0;
@@ -501,499 +489,628 @@
         }
 
         .donation-container {
-            background: transparent;
+            background: rgba(255, 77, 166, 0.15);
             width: 90%;
             max-width: 300px;
-            padding: 20px 16px;
-            color: white;
-            text-align: center;
+            border-radius: 15px;
+            padding: 0;
+            position: relative;
+            box-shadow: 0 0 30px rgba(255, 105, 180, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .donation-red-line {
+            width: 100%;
+            height: 2px;
+            background: #ff0000;
+            border-radius: 15px 15px 0 0;
+            opacity: 0.8;
         }
 
         .donation-title {
-            font-size: 0.9rem;
+            color: white;
+            font-size: 14px;
             font-weight: bold;
-            margin-bottom: 15px;
-            line-height: 1.4;
-            text-shadow: 2px 2px 4px #000;
+            text-align: center;
+            padding: 15px 12px 8px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+            line-height: 1.3;
         }
 
-        .profile-image-container {
+        .qr-code-container {
+            background: rgba(255, 255, 255, 0.9);
             width: 150px;
             height: 150px;
             margin: 10px auto;
-            border-radius: 50%;
-            border: 3px solid #FF1493;
-            overflow: hidden;
-            box-shadow: 0 0 20px rgba(255, 20, 147, 0.5);
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 8px;
         }
 
-        .profile-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
+        .qr-code-placeholder {
+            width: 130px;
+            height: 130px;
+            background: linear-gradient(45deg, #333, #666);
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #000;
+            font-size: 12px;
+            font-weight: bold;
+            position: relative;
+        }
+
+        .qr-code-placeholder:before {
+            content: "QR CODE PIX";
+            position: absolute;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
         }
 
         .copy-key-btn {
             display: block;
             width: 80%;
-            margin: 15px auto 10px;
+            margin: 0 auto 12px;
             padding: 10px;
-            background: #ffffff;
-            color: #FF1493;
-            border: 2px solid #FF1493;
-            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--donation-pink);
+            border: none;
+            border-radius: 20px;
             font-size: 14px;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            pointer-events: auto;
         }
 
         .copy-key-btn:hover {
-            background: #ffe6f0;
+            background: rgba(255, 255, 255, 1);
+            transform: scale(1.05);
         }
 
         .copy-key-btn:active {
             transform: scale(0.95);
         }
 
-        .copy-key-btn.copied {
-            background: #FF1493 !important;
-            color: #ffffff !important;
-            border: 2px solid #FF1493 !important;
+        .donation-instructions {
+            color: white;
+            font-size: 11px;
+            padding: 0 15px 15px;
+            line-height: 1.4;
+            text-align: center;
         }
 
-        .pink-instructions {
-            background: rgba(255, 105, 180, 0.5);
-            border: 2px solid #FF1493;
-            border-radius: 20px;
-            padding: 15px 12px;
-            margin-top: 10px;
-            color: #ffffff;
-            font-weight: 500;
-            backdrop-filter: blur(2px);
-        }
-
-        .pink-instructions strong {
-            color: #fff;
-            text-shadow: 2px 2px 4px #000;
-            text-transform: uppercase;
-            display: block;
-            margin-bottom: 8px;
-            font-size: 14px;
-        }
-
-        .pink-instructions p {
+        .donation-instructions ol {
             text-align: left;
-            margin: 5px 0;
-            font-size: 12px;
-            line-height: 1.6;
-            color: #ffffff;
-            font-weight: bold;
-            text-transform: uppercase;
-            text-shadow: 2px 2px 4px #000;
+            margin-left: 18px;
+            margin-top: 5px;
         }
 
+        .donation-instructions li {
+            margin-bottom: 3px;
+        }
+
+        .surprise-me {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 12px;
+            font-style: italic;
+            text-shadow: 0 0 8px rgba(255, 0, 255, 0.8);
+            z-index: 10001;
+        }
+
+        /* Responsividade */
         @media (max-width: 480px) {
-            .comments-container { height: 140px; }
-            .donation-container { max-width: 280px; }
-            .profile-image-container { width: 140px; height: 140px; }
+            .main-container {
+                max-width: 340px;
+            }
+            .tutorial-text {
+                font-size: 16px;
+                max-width: 250px;
+                top: 35%;
+            }
+            .comments-container {
+                height: 140px;
+            }
+            .donation-container {
+                width: 85%;
+                max-width: 280px;
+            }
+            .donation-title {
+                font-size: 13px;
+                padding: 12px 10px 6px;
+            }
+            .qr-code-container {
+                width: 140px;
+                height: 140px;
+            }
+            .qr-code-placeholder {
+                width: 120px;
+                height: 120px;
+            }
+            .live-time {
+                font-size: 13px;
+                top: 12px;
+            }
         }
 
         @media (max-width: 360px) {
-            .comments-container { height: 120px; }
-            .donation-container { max-width: 260px; }
-            .profile-image-container { width: 130px; height: 130px; }
+            .main-container {
+                max-width: 320px;
+            }
+            .comments-container {
+                height: 120px;
+            }
+            .tutorial-text {
+                top: 30%;
+                font-size: 14px;
+                max-width: 220px;
+            }
+            .donation-container {
+                max-width: 260px;
+            }
+            .qr-code-container {
+                width: 130px;
+                height: 130px;
+                margin: 8px auto;
+            }
+            .qr-code-placeholder {
+                width: 110px;
+                height: 110px;
+            }
+            .comment {
+                font-size: 11px;
+            }
+            .user-avatar {
+                width: 22px;
+                height: 22px;
+            }
+        }
+
+        .char-count {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.7);
+            text-align: right;
+            margin-top: 4px;
+            padding-right: 6px;
+        }
+
+        .retry-btn {
+            background: var(--neon-pink);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .retry-btn:active {
+            transform: scale(0.95);
         }
     </style>
 </head>
 <body>
     <div id="particles-js"></div>
-
-    <!-- Overlay de carregamento inicial -->
-    <div id="loading-overlay">
-        <div class="spinner"></div>
-        <div class="loading-text">CONECTANDO</div>
-        <div class="dots">
-            <div class="dot"></div>
-            <div class="dot"></div>
-            <div class="dot"></div>
-        </div>
-        <button id="retry-btn">TENTAR NOVAMENTE</button>
+    
+    <!-- Tutorial -->
+    <div class="tutorial-overlay tutorial-hidden" id="tutorial-overlay">
+        <div class="tutorial-text" id="tutorial-text">Clique no botão para maximizar a tela e ter a melhor experiência</div>
     </div>
-
-    <!-- Modal Pix -->
+    
+    <!-- Modal de doação -->
     <div class="donation-modal" id="donation-modal">
         <div class="donation-container">
-            <div class="donation-title">DÉBORA PEDE O MÍNIMO DE 5,00 REAIS PARA FICAR NA LIVE</div>
-            <div class="profile-image-container">
-                <img class="profile-image" src="https://scontent-poa1-1.cdninstagram.com/v/t51.82787-15/541145964_17870386002431432_7867686677431603489_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=102&ig_cache_key=MzcwOTM1MTc5NTI1MzkxOTgzMw%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6InhwaWRzLjEwODB4MTQ0MC5zZHIuQzMifQ%3D%3D&_nc_ohc=MvqQP1913vkQ7kNvwF6b7GR&_nc_oc=AdkBGtLp6yUD3bfr3RjPcc1n1uFKGmZ1S5qCMYo9U_92bj6Fi9PplcN80qt1x4_cGxc&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-poa1-1.cdninstagram.com&_nc_gid=lZLWvuEtWSPEeVjDyiUusg&oh=00_AfvGdjRBSNo0ED6Drj7krWMgL6GGqz_et5Al47vNoichkw&oe=699D7B6F" alt="Perfil">
+            <div class="donation-red-line"></div>
+            <div class="donation-title">JASMINE ESTÁ PEDINDO UM PIX MÍNIMO DE 20,00 REAIS. PARA VOCÊ FICAR E VER A BUCETINHA</div>
+            <div class="qr-code-container">
+                <div class="qr-code-placeholder"></div>
             </div>
             <button class="copy-key-btn" id="copy-key-btn">COPIAR CHAVE PIX</button>
-            <div class="pink-instructions">
-                <strong>INSTRUÇÕES:</strong>
-                <p>1-COPIE A CHAVE PIX ACIMA!</p>
-                <p>2-ABRA O APP DO SEU BANCO!</p>
-                <p>3-COLE A CHAVE PIX!</p>
-                <p>4-VALOR DE NO MÍNIMO 5,00 REAIS!</p>
-                <p>5-VALORES ACIMA DE 20,00 GANHA O WHATSAPP DA MODELO + COMENTARIO COM SEU NOME!</p>
-                <p>6-EM 30 SEGUNDOS, SISTEMA RECONHECE O PIX E VOCÊ VOLTA A VER A LIVE!</p>
+            <div class="donation-instructions">
+                <strong>Instruções:</strong>
+                <ol>
+                    <li>Copie a CHAVE PIX acima</li>
+                    <li>Abra o APP do seu Banco</li>
+                    <li>Cole a Chave no PIX</li>
+                    <li>Preencha o Valor de no Mínimo 20,00 Reais ou MAIS</li>
+                </ol>
             </div>
         </div>
+        <div class="surprise-me">Surpreenda-Me</div>
     </div>
-
+    
+    <!-- Container principal - FIXO NO TOPO, ALTURA TOTAL -->
     <div class="main-container" id="main-container">
         <div class="video-container">
-            <!-- VÍDEO - VERSÃO CORRIGIDA PARA GITHUB PAGES -->
-            <!-- Opção 1: Vídeo de exemplo da W3Schools (funciona 100%) -->
-            <video class="video-background" id="live-video" playsinline>
+            <!-- Video fallback -->
+            <div class="video-fallback hidden" id="video-fallback">
+                <h3>Carregando live...</h3>
+                <p>Se o vídeo não carregar automaticamente, tente:</p>
+                <ol style="text-align: left; margin: 10px 0;">
+                    <li>Verificar sua conexão</li>
+                    <li>Atualizar a página</li>
+                    <li>Tocar no botão abaixo</li>
+                </ol>
+                <button class="retry-btn" id="retry-video">CONECTAR NOVAMENTE</button>
+            </div>
+            
+            <!-- Vídeo da live -->
+            <video 
+                class="video-background" 
+                autoplay 
+                loop 
+                muted 
+                playsinline 
+                webkit-playsinline
+                id="live-video" 
+                preload="auto"
+            >
                 <source src="https://midias.foxvideo.club/5000/5312/5312.mp4" type="video/mp4">
-                <!-- Se quiser testar o vídeo original com proxy CORS, descomente a linha abaixo e comente a de cima -->
-                <!-- <source src="https://cors-anywhere.herokuapp.com/https://midias.foxvideo.club/5000/5312/5312.mp4" type="video/mp4"> -->
-                Seu navegador não suporta vídeo HTML5.
+                <source src="https://assets.mixkit.co/videos/preview/mixkit-woman-with-red-lips-posing-1644-large.mp4" type="video/mp4">
+                <source src="https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_1mb.mp4" type="video/mp4">
+                Seu navegador não suporta vídeos HTML5.
             </video>
-
-            <!-- Horário centralizado -->
+            
+            <!-- Overlays -->
             <div class="live-time" id="live-time">00:00</div>
-
-            <!-- Visualizadores -->
-            <div class="left-stats" id="left-stats">
-                <div class="viewer-count">
-                    <i class="fi fi-ss-eye"></i>
-                    <span id="viewer-count">570</span>
-                </div>
+            <div class="live-badge">
+                <div class="live-pulse"></div>
+                <span>AO VIVO</span>
             </div>
-
-            <!-- Badge AO VIVO -->
-            <div class="right-stats" id="right-stats">
-                <div class="live-badge">
-                    <div class="live-pulse"></div>
-                    <span>AO VIVO</span>
-                </div>
+            <div class="viewer-count">
+                <i class="fi fi-ss-eye"></i>
+                <span id="viewer-count">570</span>
             </div>
-
-            <!-- Wrapper do áudio (botão + texto) -->
-            <div class="audio-wrapper" id="audio-wrapper">
-                <div class="audio-control" id="audio-control">
-                    <i class="fi fi-ss-volume" id="audio-icon"></i>
-                </div>
-                <span class="audio-label">AUDIO</span>
+            <div class="audio-control" id="audio-control">
+                <i class="fi fi-ss-volume" id="audio-icon"></i>
             </div>
-
-            <!-- Área de comentários -->
-            <div class="comments-section" id="comments-section">
+            
+            <!-- Sistema de comentários -->
+            <div class="comments-section">
                 <div class="comments-container" id="comments-container"></div>
-
                 <div class="comment-input-container">
                     <input type="text" class="comment-input" id="comment-input" placeholder="Envie um comentário..." maxlength="50">
-                    <div class="emoji-inline">
-                        <button class="emoji-inline-btn" data-emoji="❤️">❤️</button>
-                    </div>
                     <button class="send-btn" id="send-btn">
                         <i class="fi fi-ss-paper-plane"></i>
                     </button>
                 </div>
-
                 <div class="char-count" id="char-count">0/50</div>
+                <div class="emoji-selector">
+                    <button class="emoji-btn" data-emoji="😈">😈</button>
+                    <button class="emoji-btn" data-emoji="😇">😇</button>
+                    <button class="emoji-btn" data-emoji="🍑">🍑</button>
+                    <button class="emoji-btn" data-emoji="🤤">🤤</button>
+                    <button class="emoji-btn" data-emoji="❤️">❤️</button>
+                </div>
+            </div>
+            
+            <!-- Botão de tela cheia -->
+            <div class="fullscreen-control" id="fullscreen-control">
+                <i class="fi fi-ss-expand" id="fullscreen-icon"></i>
             </div>
         </div>
     </div>
 
     <script>
-        (function() {
-            const CONFIG = {
-                maxMessages: 4,
-                messageInterval: 1500,
-                messageDuration: 15000,
-                autoMessages: false
-            };
-
-            const USER_NAMES = [
-                "@joão_silva", "@pedro_henrique", "@carlos_edu", "@lucas_ribeiro", 
-                "@marcos_paulo", "@rafael_alves", "@guilherme_lima", "@thiago_santos",
-                "@vinicius_oliveira", "@rodrigo_fernandes", "@bruno_costa", "@andre_lopes",
-                "@felipe_martins", "@ricardo_souza", "@gustavo_pereira"
-            ];
-
-            const MESSAGES = [
-                "@kauan fez um PIX agora! A live ficou muito mais sexy! 🔥",
-                "Valeu @kauan pelo PIX! Agora a live tá quente demais! 🍑",
-                "@kauan mandou bem no PIX! Tá tudo mais excitante! 🤤",
-                "Depois do PIX do @kauan, essa live tá insana! 😈",
-                "@kauan é o cara! O PIX dele deixou tudo mais gostoso! 💋",
-                "@naru sempre presente! Que fiel! 👏",
-                "Valeu @naru por sempre estar aqui! 🙌",
-                "@naru não falta uma live! Respeito! 🫡",
-                "@naru é fiel demais! Toda live tá aqui! 👊",
-                "Vou fazer um PIX de 50 reais agora! 🔥",
-                "PIX de 20 reais enviado! Agora é sua vez DÉBORA! 😈",
-                "Acabei de mandar 50 reais no PIX! 🍑",
-                "Que tesão essa live! 😈😈😈",
-                "Melhor live da semana! 🏆",
-                "Não consigo parar de assistir! 👀",
-                "Que mulher gostosa! 😍"
-            ];
-
-            const PIX_KEY = "debora.live@hotgirl.com";
-
-            // Elementos
-            const loadingOverlay = document.getElementById('loading-overlay');
-            const retryBtn = document.getElementById('retry-btn');
-            const video = document.getElementById('live-video');
-            const audioWrapper = document.getElementById('audio-wrapper');
-            const audioControl = document.getElementById('audio-control');
-            const audioIcon = document.getElementById('audio-icon');
-            const commentInput = document.getElementById('comment-input');
-            const sendBtn = document.getElementById('send-btn');
-            const emojiBtns = document.querySelectorAll('.emoji-inline-btn');
-            const charCount = document.getElementById('char-count');
-            const viewerSpan = document.getElementById('viewer-count');
-            const liveTime = document.getElementById('live-time');
-            const commentsContainer = document.getElementById('comments-container');
-            const copyKeyBtn = document.getElementById('copy-key-btn');
-            const donationModal = document.getElementById('donation-modal');
-            const mainContainer = document.getElementById('main-container');
+        // ========== CONFIGURAÇÕES ==========
+        const CONFIG = {
+            maxMessages: 4,
+            messageInterval: 1500,
+            messageDuration: 15000,
+            autoMessages: false
+        };
+        
+        const USER_NAMES = [
+            "@joão_silva", "@pedro_henrique", "@carlos_edu", "@lucas_ribeiro", 
+            "@marcos_paulo", "@rafael_alves", "@guilherme_lima", "@thiago_santos",
+            "@vinicius_oliveira", "@rodrigo_fernandes", "@bruno_costa", "@andre_lopes",
+            "@felipe_martins", "@ricardo_souza", "@gustavo_pereira"
+        ];
+        
+        const MESSAGES = [
+            "@kauan fez um PIX agora! A live ficou muito mais sexy! 🔥",
+            "Valeu @kauan pelo PIX! Agora a live tá quente demais! 🍑",
+            "@kauan mandou bem no PIX! Tá tudo mais excitante! 🤤",
+            "Depois do PIX do @kauan, essa live tá insana! 😈",
+            "@kauan é o cara! O PIX dele deixou tudo mais gostoso! 💋",
+            "Obrigado @kauan pelo PIX! A live tá incrível! ❤️",
+            "@kauan fez PIX e a Jasmim tá muito mais sexy! 🔥",
+            "@naru sempre presente! Que fiel! 👏",
+            "Valeu @naru por sempre estar aqui! 🙌",
+            "@naru não falta uma live! Respeito! 🫡",
+            "Presença confirmada do @naru como sempre! 💪",
+            "@naru é fiel demais! Toda live tá aqui! 👊",
+            "Respeito ao @naru que nunca falta! 🎯",
+            "@naru é o maior fã da Jasmim! 🏆",
+            "Vou fazer um PIX de 50 reais agora! 🔥",
+            "Fazendo PIX de 20 reais para a Jasmim! 💖",
+            "Aguardando aprovação do PIX de 100 reais! 🚀",
+            "Acabei de mandar 50 reais no PIX! 🍑",
+            "PIX de 20 reais enviado! Agora é sua vez Jasmim! 😈",
+            "Vou fazer um PIX de 100 reais, prepara que vem coisa boa! 💰",
+            "PIX de 50 reais a caminho! Tá valendo a pena! 🤤",
+            "20 reais no PIX já foi! Agora quero ver! 😇",
+            "Meu PIX de 100 reais já caiu? Quero ver a recompensa! 🔥",
+            "Acabei de mandar 50 reais, mostra mais Jasmim! 🍑",
+            "PIX de 20 reais feito! Ansioso para o que vem! 😈",
+            "100 reais no PIX! Espero que valha a pena! 💸",
+            "Que tesão essa live! 😈😈😈",
+            "Muito desejo agora! 🤤🤤🤤",
+            "Excitação total! ❤️🍑",
+            "Isso é quente demais! 🔥",
+            "Que delícia de live! 🍭",
+            "Proibido e gostoso! 😈❤️",
+            "Tá muito sexy hoje! 💋",
+            "Que bucetinha linda! 🍑",
+            "Mais quente que isso impossível! 🔥",
+            "Melhor live da semana! 🏆",
+            "Não consigo parar de assistir! 👀",
+            "Que mulher gostosa! 😍",
+            "Perfeição em forma de mulher! ✨",
+            "Sonho de consumo! 💭",
+            "Impossível não se excitar! 🥵"
+        ];
+        
+        // ========== ESTADO GLOBAL ==========
+        let tutorialShown = false;
+        let isFullscreen = false;
+        let donationModalShown = false;
+        let siteStartTime = Date.now();
+        let videoErrorCount = 0;
+        
+        const PIX_KEY = "jasmine.live@hotgirl.com";
+        
+        // ========== SISTEMA DE MENSAGENS ==========
+        class MessageSystem {
+            constructor() {
+                this.messages = [];
+                this.nextId = 0;
+                this.container = document.getElementById('comments-container');
+                this.autoInterval = null;
+            }
             
-            const leftStats = document.getElementById('left-stats');
-            const rightStats = document.getElementById('right-stats');
-            const commentsSection = document.getElementById('comments-section');
-
-            let isMuted = false;
-            let viewerCount = 570;
-            let messageSystem = null;
-            let videoStarted = false;
-
-            // Modal Pix persistente
-            if (localStorage.getItem('pixModalShown') === 'true') {
-                donationModal.classList.add('active');
-                mainContainer.classList.add('blur');
+            addMessage(user, text) {
+                this.nextId++;
+                const messageId = this.nextId;
+                const comment = document.createElement('div');
+                comment.className = 'comment';
+                comment.id = `comment-${messageId}`;
+                const delay = this.messages.length * 200;
+                comment.style.animationDelay = `${delay}ms`;
+                comment.innerHTML = `
+                    <div class="user-avatar">
+                        <i class="fi fi-ss-user"></i>
+                    </div>
+                    <div class="comment-content">
+                        <div class="username">${user}</div>
+                        <div class="comment-text">${text}</div>
+                    </div>
+                `;
+                this.container.appendChild(comment);
+                this.messages.push(messageId);
+                setTimeout(() => this.removeMessage(messageId), CONFIG.messageDuration + delay);
+                this.manageMessageLimit();
+                return messageId;
             }
-
-            // Atualizar horário
-            function updateLiveTime() {
-                const now = new Date();
-                const brasiliaTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
-                const hours = String(brasiliaTime.getHours()).padStart(2, '0');
-                const minutes = String(brasiliaTime.getMinutes()).padStart(2, '0');
-                liveTime.textContent = `${hours}:${minutes}`;
+            
+            addUserMessage(text) {
+                return this.addMessage("@você", text);
             }
-            updateLiveTime();
-            setInterval(updateLiveTime, 60000);
-
-            // Sistema de mensagens
-            class MessageSystem {
-                constructor() {
-                    this.messages = [];
-                    this.nextId = 0;
-                    this.container = commentsContainer;
-                }
-
-                addMessage(user, text) {
-                    this.nextId++;
-                    const messageId = this.nextId;
-
-                    const comment = document.createElement('div');
-                    comment.className = 'comment';
-                    comment.id = `comment-${messageId}`;
-
-                    const delay = this.messages.length * 200;
-                    comment.style.animationDelay = `${delay}ms`;
-
-                    // Adiciona classe 'you' se for mensagem do usuário
-                    const usernameClass = user === "@você" ? 'username you' : 'username';
-
-                    comment.innerHTML = `
-                        <div class="user-avatar">
-                            <i class="fi fi-ss-user"></i>
-                        </div>
-                        <div class="comment-content">
-                            <div class="${usernameClass}">${user}</div>
-                            <div class="comment-text">${text}</div>
-                        </div>
-                    `;
-
-                    this.container.appendChild(comment);
-                    this.messages.push(messageId);
-
-                    setTimeout(() => {
-                        this.removeMessage(messageId);
-                    }, CONFIG.messageDuration + delay);
-
-                    this.manageMessageLimit();
-
-                    return messageId;
-                }
-
-                addUserMessage(text) {
-                    return this.addMessage("@você", text);
-                }
-
-                removeMessage(messageId) {
-                    const element = document.getElementById(`comment-${messageId}`);
-                    if (element) element.remove();
+            
+            removeMessage(messageId) {
+                const element = document.getElementById(`comment-${messageId}`);
+                if (element) {
+                    element.remove();
                     this.messages = this.messages.filter(id => id !== messageId);
                 }
-
-                manageMessageLimit() {
-                    if (this.messages.length > CONFIG.maxMessages) {
-                        const oldestId = this.messages.shift();
-                        this.removeMessage(oldestId);
-                    }
-                }
-
-                generateRandomMessage() {
-                    const user = USER_NAMES[Math.floor(Math.random() * USER_NAMES.length)];
-                    const text = MESSAGES[Math.floor(Math.random() * MESSAGES.length)];
-                    return this.addMessage(user, text);
-                }
-
-                startAutoMessages() {
-                    if (this.autoInterval) clearInterval(this.autoInterval);
-                    this.autoInterval = setInterval(() => this.generateRandomMessage(), CONFIG.messageInterval);
-                }
-
-                stopAutoMessages() {
-                    if (this.autoInterval) {
-                        clearInterval(this.autoInterval);
-                        this.autoInterval = null;
-                    }
+            }
+            
+            manageMessageLimit() {
+                if (this.messages.length > CONFIG.maxMessages) {
+                    const oldestId = this.messages.shift();
+                    this.removeMessage(oldestId);
                 }
             }
-
-            messageSystem = new MessageSystem();
-
-            // Atualizar visualizadores
-            function updateViewerCount() {
-                let min = 570, max = 577;
-                let newCount;
-                do {
-                    newCount = Math.floor(Math.random() * (max - min + 1)) + min;
-                } while (newCount === viewerCount);
-                viewerCount = newCount;
-                viewerSpan.textContent = viewerCount;
+            
+            generateRandomMessage() {
+                const user = USER_NAMES[Math.floor(Math.random() * USER_NAMES.length)];
+                const text = MESSAGES[Math.floor(Math.random() * MESSAGES.length)];
+                return this.addMessage(user, text);
             }
+            
+            startAutoMessages() {
+                if (this.autoInterval) clearInterval(this.autoInterval);
+                this.autoInterval = setInterval(() => this.generateRandomMessage(), CONFIG.messageInterval);
+            }
+            
+            stopAutoMessages() {
+                if (this.autoInterval) {
+                    clearInterval(this.autoInterval);
+                    this.autoInterval = null;
+                }
+            }
+        }
+        
+        const messageSystem = new MessageSystem();
+        
+        // ========== FUNÇÕES AUXILIARES ==========
+        function updateLiveTime() {
+            const now = new Date();
+            const brasiliaTime = new Date(now.getTime() - 3 * 60 * 60 * 1000);
+            const hours = String(brasiliaTime.getUTCHours()).padStart(2, '0');
+            const minutes = String(brasiliaTime.getUTCMinutes()).padStart(2, '0');
+            document.getElementById('live-time').textContent = `${hours}:${minutes}`;
+        }
+        
+        function initTutorial() {
+            const hasSeenTutorial = localStorage.getItem('liveTutorialSeen');
+            if (!hasSeenTutorial) {
+                document.body.classList.add('tutorial-active');
+                document.getElementById('tutorial-overlay').classList.remove('tutorial-hidden');
+                tutorialShown = true;
+            } else {
+                startAutoMessages();
+            }
+        }
+        
+        function completeTutorial() {
+            if (!tutorialShown) return;
+            localStorage.setItem('liveTutorialSeen', 'true');
+            tutorialShown = false;
+            document.getElementById('tutorial-overlay').classList.add('tutorial-hidden');
+            document.body.classList.remove('tutorial-active');
+            startAutoMessages();
+        }
+        
+        function startAutoMessages() {
+            CONFIG.autoMessages = true;
+            messageSystem.startAutoMessages();
+        }
+        
+        function updateViewerCount() {
+            const viewerCountElement = document.getElementById('viewer-count');
+            let currentCount = parseInt(viewerCountElement.textContent);
+            let min, max;
+            const timeElapsed = Date.now() - siteStartTime;
+            if (timeElapsed < 300000) {
+                min = 570; max = 577;
+            } else {
+                min = 702; max = 720;
+            }
+            let newCount;
+            do {
+                newCount = Math.floor(Math.random() * (max - min + 1)) + min;
+            } while (newCount === currentCount);
+            viewerCountElement.textContent = newCount;
+        }
+        
+        function startViewerCountTimer() {
             setInterval(updateViewerCount, 5000);
-
-            // Modal Pix após 2 minutos
-            setTimeout(() => {
-                if (localStorage.getItem('pixModalShown') !== 'true') {
-                    donationModal.classList.add('active');
-                    mainContainer.classList.add('blur');
-                    localStorage.setItem('pixModalShown', 'true');
-                }
-            }, 2 * 60 * 1000);
-
-            // Botão copiar Pix
-            copyKeyBtn.addEventListener('click', () => {
-                navigator.clipboard.writeText(PIX_KEY).then(() => {
-                    const originalText = copyKeyBtn.textContent;
-                    copyKeyBtn.classList.add('copied');
-                    copyKeyBtn.textContent = "COPIADO!";
-                    setTimeout(() => {
-                        copyKeyBtn.classList.remove('copied');
-                        copyKeyBtn.textContent = originalText;
-                    }, 2000);
-                }).catch(() => {
-                    alert('Chave Pix: ' + PIX_KEY);
-                });
-            });
-
-            // Overlay: após 2 segundos, esconde spinner e mostra botão
-            setTimeout(() => {
-                document.querySelector('.spinner').style.display = 'none';
-                document.querySelector('.loading-text').style.display = 'none';
-                document.querySelector('.dots').style.display = 'none';
-                retryBtn.style.display = 'block';
-            }, 2000);
-
-            // Função para iniciar a live
-            function startVideo() {
-                if (videoStarted) return;
-                
-                // Remove overlay
-                loadingOverlay.style.opacity = '0';
+        }
+        
+        function showDonationModal() {
+            if (donationModalShown) return;
+            const timeElapsed = Date.now() - siteStartTime;
+            if (timeElapsed >= 120000) {
+                donationModalShown = true;
+                document.getElementById('donation-modal').classList.add('active');
+            } else {
+                setTimeout(showDonationModal, 120000 - timeElapsed);
+            }
+        }
+        
+        function copyPixKey() {
+            navigator.clipboard.writeText(PIX_KEY).then(() => {
+                const btn = document.getElementById('copy-key-btn');
+                const originalText = btn.textContent;
+                btn.textContent = "CHAVE COPIADA!";
+                btn.style.background = "#4CAF50";
+                btn.style.color = "white";
                 setTimeout(() => {
-                    loadingOverlay.style.display = 'none';
-                }, 500);
-
-                // Mostra elementos da live
-                liveTime.classList.add('visible');
-                leftStats.classList.add('visible');
-                rightStats.classList.add('visible');
-                audioWrapper.classList.add('visible');
-                commentsSection.classList.add('visible');
-                
-                // Ativa áudio (vídeo começa com áudio)
-                video.muted = false;
-                isMuted = false;
-                audioIcon.className = 'fi fi-ss-volume';
-                audioControl.classList.remove('inactive');
-                
-                // Tenta reproduzir vídeo
-                video.play().catch(e => console.log('Erro ao reproduzir vídeo:', e));
-                
-                // Inicia comentários automáticos
-                messageSystem.startAutoMessages();
-                videoStarted = true;
-            }
-
-            // Clique no botão "TENTAR NOVAMENTE"
-            retryBtn.addEventListener('click', startVideo);
-
-            // Controle de áudio
-            function toggleAudio() {
-                if (!videoStarted) return;
-                isMuted = !isMuted;
-                video.muted = isMuted;
-
-                if (isMuted) {
-                    audioIcon.className = 'fi fi-ss-volume audio-icon-inactive';
-                    audioControl.classList.add('inactive');
+                    btn.textContent = originalText;
+                    btn.style.background = "";
+                    btn.style.color = "";
+                }, 2000);
+            }).catch(console.error);
+        }
+        
+        // ========== GERENCIAMENTO DO VÍDEO ==========
+        function ensureVideoAutoplay() {
+            const video = document.getElementById('live-video');
+            const videoFallback = document.getElementById('video-fallback');
+            videoFallback.classList.remove('hidden');
+            video.addEventListener('error', (e) => {
+                videoErrorCount++;
+                if (videoErrorCount >= 2) videoFallback.classList.remove('hidden');
+            });
+            video.addEventListener('loadeddata', () => videoFallback.classList.add('hidden'));
+            video.play().then(() => videoFallback.classList.add('hidden')).catch(() => {
+                videoFallback.classList.remove('hidden');
+                const playOnInteraction = () => {
+                    video.muted = true;
+                    video.play().then(() => videoFallback.classList.add('hidden')).catch(e => console.log);
+                    document.removeEventListener('click', playOnInteraction);
+                    document.removeEventListener('touchstart', playOnInteraction);
+                };
+                document.addEventListener('click', playOnInteraction);
+                document.addEventListener('touchstart', playOnInteraction);
+            });
+        }
+        
+        // ========== FUNÇÃO HÍBRIDA DE FULLSCREEN ==========
+        function toggleFullscreen() {
+            const video = document.getElementById('live-video');
+            const container = document.getElementById('main-container');
+            
+            if (tutorialShown) completeTutorial();
+            
+            // Detecta iOS (iPhone/iPad)
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            
+            // Verifica se já está em fullscreen
+            const isCurrentlyFullscreen = !!(document.fullscreenElement || 
+                document.webkitFullscreenElement || 
+                document.mozFullScreenElement || 
+                document.msFullscreenElement);
+            
+            if (!isCurrentlyFullscreen) {
+                // ---- Entrar em tela cheia ----
+                if (isIOS) {
+                    // iOS: usa player nativo do vídeo (NÃO mostra overlays)
+                    if (video.webkitEnterFullscreen) {
+                        video.webkitEnterFullscreen();
+                    }
                 } else {
-                    audioIcon.className = 'fi fi-ss-volume';
-                    audioIcon.classList.remove('audio-icon-inactive');
-                    audioControl.classList.remove('inactive');
+                    // Android / Desktop: coloca o container inteiro em fullscreen (overlays aparecem!)
+                    if (container.requestFullscreen) {
+                        container.requestFullscreen();
+                    } else if (container.webkitRequestFullscreen) {
+                        container.webkitRequestFullscreen();
+                    } else if (container.mozRequestFullScreen) {
+                        container.mozRequestFullScreen();
+                    } else if (container.msRequestFullscreen) {
+                        container.msRequestFullscreen();
+                    }
+                }
+            } else {
+                // ---- Sair da tela cheia ----
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
                 }
             }
-            audioControl.addEventListener('click', toggleAudio);
-
-            // Enviar comentário
-            function sendComment() {
-                if (!videoStarted) return;
-                const text = commentInput.value.trim();
-                if (!text) return;
-                messageSystem.addUserMessage(text);
-                commentInput.value = '';
-                charCount.textContent = '0/50';
-            }
-
-            sendBtn.addEventListener('click', sendComment);
-            commentInput.addEventListener('keypress', (e) => e.key === 'Enter' && sendComment());
-
-            emojiBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    if (!videoStarted) return;
-                    const emoji = btn.getAttribute('data-emoji');
-                    messageSystem.addUserMessage(emoji);
-                });
-            });
-
-            commentInput.addEventListener('input', function() {
-                charCount.textContent = `${this.value.length}/50`;
-            });
-
-            // Pausar comentários ao mudar de aba
-            document.addEventListener('visibilitychange', () => {
-                if (!videoStarted) return;
-                if (document.hidden) {
-                    messageSystem.stopAutoMessages();
-                } else {
-                    messageSystem.startAutoMessages();
-                }
-            });
-
-            // Partículas
+        }
+        
+        // Atualiza ícone do fullscreen conforme estado
+        function updateFullscreenState() {
+            const isFullscreenNow = !!(document.fullscreenElement || 
+                document.webkitFullscreenElement || 
+                document.mozFullScreenElement || 
+                document.msFullscreenElement);
+            isFullscreen = isFullscreenNow;
+            const icon = document.getElementById('fullscreen-icon');
+            icon.className = isFullscreenNow ? 'fi fi-ss-compress' : 'fi fi-ss-expand';
+        }
+        
+        // ========== INICIALIZAÇÃO ==========
+        document.addEventListener('DOMContentLoaded', () => {
+            // Particles
             particlesJS('particles-js', {
                 particles: {
                     number: { value: 40, density: { enable: true, value_area: 800 } },
@@ -1013,7 +1130,107 @@
                     }
                 }
             });
-        })();
+            
+            // Elementos DOM
+            const video = document.getElementById('live-video');
+            const audioControl = document.getElementById('audio-control');
+            const audioIcon = document.getElementById('audio-icon');
+            const commentInput = document.getElementById('comment-input');
+            const sendBtn = document.getElementById('send-btn');
+            const emojiBtns = document.querySelectorAll('.emoji-btn');
+            const fullscreenControl = document.getElementById('fullscreen-control');
+            const charCount = document.getElementById('char-count');
+            const copyKeyBtn = document.getElementById('copy-key-btn');
+            const retryVideoBtn = document.getElementById('retry-video');
+            const videoFallback = document.getElementById('video-fallback');
+            
+            let isMuted = true;
+            
+            // Inicializações
+            initTutorial();
+            updateLiveTime();
+            setInterval(updateLiveTime, 60000);
+            startViewerCountTimer();
+            setTimeout(showDonationModal, 120000);
+            ensureVideoAutoplay();
+            
+            // Retry vídeo
+            retryVideoBtn.addEventListener('click', () => {
+                videoErrorCount = 0;
+                video.load();
+                videoFallback.classList.add('hidden');
+                setTimeout(() => {
+                    video.play().catch(() => videoFallback.classList.remove('hidden'));
+                }, 500);
+            });
+            
+            // Controle de áudio
+            function toggleAudio() {
+                isMuted = !isMuted;
+                video.muted = isMuted;
+                if (isMuted) {
+                    audioIcon.className = 'fi fi-ss-volume';
+                    audioIcon.classList.add('audio-icon-inactive');
+                    audioControl.classList.add('inactive');
+                    audioControl.classList.remove('muted');
+                } else {
+                    audioIcon.className = 'fi fi-ss-volume';
+                    audioIcon.classList.remove('audio-icon-inactive');
+                    audioControl.classList.remove('inactive');
+                    audioControl.classList.add('muted');
+                }
+            }
+            toggleAudio(); // estado inicial: mudo
+            audioControl.addEventListener('click', toggleAudio);
+            
+            // Comentários
+            function sendComment() {
+                const text = commentInput.value.trim();
+                if (!text) return;
+                messageSystem.addUserMessage(text);
+                commentInput.value = '';
+                updateCharCount();
+            }
+            sendBtn.addEventListener('click', sendComment);
+            commentInput.addEventListener('keypress', (e) => e.key === 'Enter' && sendComment());
+            
+            // Emojis
+            emojiBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    commentInput.value += btn.getAttribute('data-emoji');
+                    commentInput.focus();
+                    updateCharCount();
+                });
+            });
+            
+            // Contador de caracteres
+            function updateCharCount() {
+                const length = commentInput.value.length;
+                charCount.textContent = `${length}/50`;
+            }
+            commentInput.addEventListener('input', updateCharCount);
+            
+            // Fullscreen - evento do botão (chama a função híbrida)
+            fullscreenControl.addEventListener('click', toggleFullscreen);
+            
+            // Monitora mudanças no estado de fullscreen (para ícone)
+            document.addEventListener('fullscreenchange', updateFullscreenState);
+            document.addEventListener('webkitfullscreenchange', updateFullscreenState);
+            document.addEventListener('mozfullscreenchange', updateFullscreenState);
+            document.addEventListener('MSFullscreenChange', updateFullscreenState);
+            
+            // Copiar Pix
+            copyKeyBtn.addEventListener('click', copyPixKey);
+            
+            // Visibilidade da página
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    messageSystem.stopAutoMessages();
+                } else if (CONFIG.autoMessages) {
+                    messageSystem.startAutoMessages();
+                }
+            });
+        });
     </script>
 </body>
 </html>
