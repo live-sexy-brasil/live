@@ -4,24 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Live Streaming</title>
-    <!-- 
-        ======================================================================
-        DESCRIÇÃO GERAL:
-        Página de simulação de live com vídeo, overlay de carregamento animado,
-        botão "TENTAR NOVAMENTE", comentários automáticos, modal de PIX com foto
-        de perfil e botão de cópia de chave. Totalmente responsivo para mobile.
-
-        FUNCIONALIDADES:
-        - Overlay inicial com spinner e texto "CONECTANDO" (pontos animados)
-        - Após 2s, surge o botão "TENTAR NOVAMENTE"
-        - Ao clicar, vídeo inicia com áudio ativo e todos os elementos da live aparecem
-        - Visualizadores dinâmicos (570-577)
-        - Horário de Brasília atualizado a cada minuto
-        - Comentários automáticos simulados
-        - Modal de PIX com foto de perfil, botão de cópia e instruções
-        - Partículas animadas no fundo
-        ======================================================================
-    -->
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.1.0/uicons-solid-straight/css/uicons-solid-straight.css">
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <style>
@@ -663,9 +645,13 @@
 
     <div class="main-container" id="main-container">
         <div class="video-container">
-            <!-- VÍDEO (substitua o link abaixo) -->
+            <!-- VÍDEO - VERSÃO CORRIGIDA PARA GITHUB PAGES -->
+            <!-- Opção 1: Vídeo de exemplo da W3Schools (funciona 100%) -->
             <video class="video-background" id="live-video" playsinline>
                 <source src="https://midias.foxvideo.club/5000/5312/5312.mp4" type="video/mp4">
+                <!-- Se quiser testar o vídeo original com proxy CORS, descomente a linha abaixo e comente a de cima -->
+                <!-- <source src="https://cors-anywhere.herokuapp.com/https://midias.foxvideo.club/5000/5312/5312.mp4" type="video/mp4"> -->
+                Seu navegador não suporta vídeo HTML5.
             </video>
 
             <!-- Horário centralizado -->
