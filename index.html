@@ -4,9 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Live Streaming</title>
+    <!-- 
+        ======================================================================
+        DESCRIÇÃO GERAL:
+        Página de simulação de live com vídeo, overlay de carregamento animado,
+        botão "TENTAR NOVAMENTE", comentários automáticos, modal de PIX com foto
+        de perfil e botão de cópia de chave. Totalmente responsivo para mobile.
+
+        FUNCIONALIDADES:
+        - Overlay inicial com spinner e texto "CONECTANDO" (pontos animados)
+        - Após 2s, surge o botão "TENTAR NOVAMENTE"
+        - Ao clicar, vídeo inicia com áudio ativo e todos os elementos da live aparecem
+        - Visualizadores dinâmicos (570-577)
+        - Horário de Brasília atualizado a cada minuto
+        - Comentários automáticos simulados
+        - Modal de PIX com foto de perfil, botão de cópia e instruções
+        - Partículas animadas no fundo
+        ======================================================================
+    -->
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.1.0/uicons-solid-straight/css/uicons-solid-straight.css">
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <style>
+        /* ===== CONFIGURAÇÕES ===== */
         * {
             margin: 0;
             padding: 0;
@@ -59,7 +78,88 @@
             display: block;
         }
 
-        /* --- Elementos da live (mantidos iguais) --- */
+        /* ----- OVERLAY DE CARREGAMENTO INICIAL ----- */
+        #loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 30000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease;
+            pointer-events: auto;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 6px solid rgba(255, 20, 147, 0.3);
+            border-top-color: #FF1493;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: #fff;
+            font-size: 18px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .dots {
+            display: flex;
+            gap: 5px;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            background: #FF1493;
+            border-radius: 50%;
+            animation: dotPulse 1.5s infinite ease-in-out;
+        }
+
+        .dot:nth-child(2) { animation-delay: 0.2s; }
+        .dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes dotPulse {
+            0%, 60%, 100% { transform: scale(0.6); opacity: 0.4; }
+            30% { transform: scale(1); opacity: 1; }
+        }
+
+        #retry-btn {
+            background: #FF1493;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 40px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 0 20px rgba(255, 20, 147, 0.7);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: none; /* inicialmente oculto */
+        }
+
+        #retry-btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 0 30px rgba(255, 20, 147, 0.9);
+        }
+
+        /* ----- HORÁRIO CENTRALIZADO ----- */
         .live-time {
             position: absolute;
             top: 15px;
@@ -76,11 +176,16 @@
             padding: 4px 12px;
             border-radius: 30px;
             backdrop-filter: blur(4px);
-            opacity: 1;
+            opacity: 0;
+            transition: opacity 0.5s ease;
             pointer-events: none;
-            white-space: nowrap;
         }
 
+        .live-time.visible {
+            opacity: 1;
+        }
+
+        /* ----- VISUALIZADORES NO CANTO ESQUERDO ----- */
         .left-stats {
             position: absolute;
             top: 15px;
@@ -89,8 +194,13 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
-            opacity: 1;
+            opacity: 0;
+            transition: opacity 0.5s ease;
             pointer-events: none;
+        }
+
+        .left-stats.visible {
+            opacity: 1;
         }
 
         .viewer-count {
@@ -104,9 +214,9 @@
             gap: 8px;
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            white-space: nowrap;
         }
 
+        /* ----- BADGE AO VIVO (DIREITA) ----- */
         .right-stats {
             position: absolute;
             top: 15px;
@@ -116,8 +226,13 @@
             align-items: flex-end;
             gap: 8px;
             z-index: 20;
-            opacity: 1;
+            opacity: 0;
+            transition: opacity 0.5s ease;
             pointer-events: none;
+        }
+
+        .right-stats.visible {
+            opacity: 1;
         }
 
         .live-badge {
@@ -131,7 +246,6 @@
             align-items: center;
             gap: 6px;
             box-shadow: 0 3px 10px rgba(255, 0, 0, 0.4);
-            white-space: nowrap;
         }
 
         .live-pulse {
@@ -147,22 +261,29 @@
             50% { transform: scale(1.1); opacity: 0.7; }
         }
 
-        /* --- Wrapper do áudio (coluna) --- */
+        /* ----- BOTÃO DE ÁUDIO (AGRUPADO COM TEXTO) ----- */
         .audio-wrapper {
             position: absolute;
-            top: 70px;
-            right: 20px;
+            top: 60px;
+            right: 15px;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 5px;
             z-index: 20;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            pointer-events: none;
+        }
+
+        .audio-wrapper.visible {
+            opacity: 1;
             pointer-events: auto;
         }
 
         .audio-control {
-            width: 76px;
-            height: 76px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
             background: rgba(255, 105, 180, 0.9);
             border: 3px solid #FF00FF;
@@ -172,28 +293,8 @@
             align-items: center;
             cursor: pointer;
             transition: all 0.3s ease;
-            font-size: 32px;
+            font-size: 26px;
             box-shadow: 0 0 15px rgba(255, 105, 180, 0.7);
-            opacity: 1;
-        }
-
-        .audio-control.pulsing {
-            animation: audioPulse 1.5s infinite ease-in-out;
-        }
-
-        @keyframes audioPulse {
-            0% {
-                box-shadow: 0 0 10px #FF1493, 0 0 20px #FF1493;
-                transform: scale(1);
-            }
-            50% {
-                box-shadow: 0 0 25px #FF1493, 0 0 40px #FF1493;
-                transform: scale(1.08);
-            }
-            100% {
-                box-shadow: 0 0 10px #FF1493, 0 0 20px #FF1493;
-                transform: scale(1);
-            }
         }
 
         .audio-control:active {
@@ -217,7 +318,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) rotate(45deg);
-            width: 40px;
+            width: 35px;
             height: 3px;
             background-color: #ff3333;
             border-radius: 2px;
@@ -225,7 +326,7 @@
 
         .audio-label {
             color: #ffffff;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 500;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
             letter-spacing: 1px;
@@ -233,7 +334,7 @@
             opacity: 0.9;
         }
 
-        /* --- Comentários --- */
+        /* ----- COMENTÁRIOS FLUTUANTES (75% transparentes) ----- */
         .comments-section {
             position: absolute;
             bottom: 0;
@@ -242,6 +343,11 @@
             padding: 15px;
             z-index: 20;
             pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .comments-section.visible {
             opacity: 1;
         }
 
@@ -262,13 +368,13 @@
             gap: 8px;
             animation: floatUp 15s linear forwards;
             opacity: 0;
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.25); /* 75% transparente (25% opaco) */
             backdrop-filter: blur(4px);
             border-left: 4px solid #FF1493;
             border-radius: 12px;
             width: fit-content;
             max-width: 85%;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
             pointer-events: none;
         }
 
@@ -308,12 +414,13 @@
             line-height: 1.3;
         }
 
+        /* INPUT (75% transparente) */
         .comment-input-container {
             display: flex;
             align-items: center;
             gap: 6px;
-            background: rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, 0.25); /* 75% transparente */
+            backdrop-filter: blur(8px);
             border: 1px solid rgba(255, 255, 255, 0.25);
             border-radius: 20px;
             padding: 0 8px;
@@ -388,7 +495,7 @@
             pointer-events: auto;
         }
 
-        /* --- Modal PIX (inalterado) --- */
+        /* ----- MODAL PIX ----- */
         .donation-modal {
             position: fixed;
             top: 0;
@@ -506,87 +613,6 @@
             text-shadow: 2px 2px 4px #000;
         }
 
-        /* --- Overlay de carregamento inicial --- */
-        #loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            z-index: 30000;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            transition: opacity 0.5s ease;
-            pointer-events: auto;
-        }
-
-        .spinner {
-            width: 60px;
-            height: 60px;
-            border: 6px solid rgba(255, 20, 147, 0.3);
-            border-top-color: #FF1493;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .loading-text {
-            color: #fff;
-            font-size: 18px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-bottom: 10px;
-        }
-
-        .dots {
-            display: flex;
-            gap: 5px;
-        }
-
-        .dot {
-            width: 8px;
-            height: 8px;
-            background: #FF1493;
-            border-radius: 50%;
-            animation: dotPulse 1.5s infinite ease-in-out;
-        }
-
-        .dot:nth-child(2) { animation-delay: 0.2s; }
-        .dot:nth-child(3) { animation-delay: 0.4s; }
-
-        @keyframes dotPulse {
-            0%, 60%, 100% { transform: scale(0.6); opacity: 0.4; }
-            30% { transform: scale(1); opacity: 1; }
-        }
-
-        #retry-btn {
-            background: #FF1493;
-            color: white;
-            border: none;
-            padding: 12px 30px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 40px;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            box-shadow: 0 0 20px rgba(255, 20, 147, 0.7);
-            transition: transform 0.2s, box-shadow 0.2s;
-            display: none; /* inicialmente oculto */
-        }
-
-        #retry-btn:active {
-            transform: scale(0.95);
-            box-shadow: 0 0 30px rgba(255, 20, 147, 0.9);
-        }
-
         @media (max-width: 480px) {
             .comments-container { height: 140px; }
             .donation-container { max-width: 280px; }
@@ -637,10 +663,9 @@
 
     <div class="main-container" id="main-container">
         <div class="video-container">
-            <!-- Vídeo sem autoplay inicial, apenas preload -->
-            <video class="video-background" id="live-video" muted playsinline preload="auto">
+            <!-- VÍDEO (substitua o link abaixo) -->
+            <video class="video-background" id="live-video" playsinline>
                 <source src="https://midias.foxvideo.club/5000/5312/5312.mp4" type="video/mp4">
-                <!-- Substitua pela URL do seu vídeo quando tiver um link adequado -->
             </video>
 
             <!-- Horário centralizado -->
@@ -662,12 +687,12 @@
                 </div>
             </div>
 
-            <!-- Wrapper do áudio -->
+            <!-- Wrapper do áudio (botão + texto) -->
             <div class="audio-wrapper" id="audio-wrapper">
-                <div class="audio-control pulsing inactive" id="audio-control">
-                    <i class="fi fi-ss-volume audio-icon-inactive" id="audio-icon"></i>
+                <div class="audio-control" id="audio-control">
+                    <i class="fi fi-ss-volume" id="audio-icon"></i>
                 </div>
-                <span class="audio-label" id="audio-label">AUDIO</span>
+                <span class="audio-label">AUDIO</span>
             </div>
 
             <!-- Área de comentários -->
@@ -727,10 +752,12 @@
             const PIX_KEY = "debora.live@hotgirl.com";
 
             // Elementos
+            const loadingOverlay = document.getElementById('loading-overlay');
+            const retryBtn = document.getElementById('retry-btn');
             const video = document.getElementById('live-video');
+            const audioWrapper = document.getElementById('audio-wrapper');
             const audioControl = document.getElementById('audio-control');
             const audioIcon = document.getElementById('audio-icon');
-            const audioLabel = document.getElementById('audio-label');
             const commentInput = document.getElementById('comment-input');
             const sendBtn = document.getElementById('send-btn');
             const emojiBtns = document.querySelectorAll('.emoji-inline-btn');
@@ -741,60 +768,23 @@
             const copyKeyBtn = document.getElementById('copy-key-btn');
             const donationModal = document.getElementById('donation-modal');
             const mainContainer = document.getElementById('main-container');
+            
+            const leftStats = document.getElementById('left-stats');
+            const rightStats = document.getElementById('right-stats');
+            const commentsSection = document.getElementById('comments-section');
 
-            // Elementos do overlay
-            const loadingOverlay = document.getElementById('loading-overlay');
-            const retryBtn = document.getElementById('retry-btn');
-
-            let isMuted = true; // começa mudo
+            let isMuted = false;
             let viewerCount = 570;
             let messageSystem = null;
-            let videoStarted = false; // só será true após clique no botão
+            let videoStarted = false;
 
-            // Função para iniciar a live (video + comentários)
-            function startLive() {
-                if (videoStarted) return;
-                videoStarted = true;
-
-                // Tocar vídeo
-                video.play().catch(e => console.log('Erro ao tentar reproduzir vídeo:', e));
-
-                // Iniciar comentários automáticos
-                messageSystem.startAutoMessages();
-
-                // Atualizar visualizadores (já estava rodando, mas pode ser iniciado aqui)
-                // Se quiser, pode iniciar o intervalo de atualização de viewers aqui também
-            }
-
-            // Overlay: após 2 segundos, esconde spinner e mostra botão
-            setTimeout(() => {
-                // Esconde o spinner e texto de "conectando"
-                document.querySelector('.spinner').style.display = 'none';
-                document.querySelector('.loading-text').style.display = 'none';
-                document.querySelector('.dots').style.display = 'none';
-                // Mostra botão
-                retryBtn.style.display = 'block';
-            }, 2000);
-
-            // Clique no botão "TENTAR NOVAMENTE"
-            retryBtn.addEventListener('click', () => {
-                // Remove overlay
-                loadingOverlay.style.opacity = '0';
-                setTimeout(() => {
-                    loadingOverlay.style.display = 'none';
-                }, 500); // aguarda transição
-
-                // Inicia a live
-                startLive();
-            });
-
-            // Modal Pix persistente (se já foi mostrado antes)
+            // Modal Pix persistente
             if (localStorage.getItem('pixModalShown') === 'true') {
                 donationModal.classList.add('active');
                 mainContainer.classList.add('blur');
             }
 
-            // Atualizar horário (sempre ativo)
+            // Atualizar horário
             function updateLiveTime() {
                 const now = new Date();
                 const brasiliaTime = new Date(now.toLocaleString('en-US', { timeZone: 'America/Sao_Paulo' }));
@@ -824,6 +814,7 @@
                     const delay = this.messages.length * 200;
                     comment.style.animationDelay = `${delay}ms`;
 
+                    // Adiciona classe 'you' se for mensagem do usuário
                     const usernameClass = user === "@você" ? 'username you' : 'username';
 
                     comment.innerHTML = `
@@ -886,7 +877,7 @@
 
             messageSystem = new MessageSystem();
 
-            // Atualizar visualizadores (começa imediatamente, mas só atualiza números)
+            // Atualizar visualizadores
             function updateViewerCount() {
                 let min = 570, max = 577;
                 let newCount;
@@ -898,7 +889,7 @@
             }
             setInterval(updateViewerCount, 5000);
 
-            // Modal Pix após 2 minutos (só se já não tiver sido mostrado)
+            // Modal Pix após 2 minutos
             setTimeout(() => {
                 if (localStorage.getItem('pixModalShown') !== 'true') {
                     donationModal.classList.add('active');
@@ -922,10 +913,51 @@
                 });
             });
 
-            // Controle de áudio (toggle mute) - só funciona após início da live
+            // Overlay: após 2 segundos, esconde spinner e mostra botão
+            setTimeout(() => {
+                document.querySelector('.spinner').style.display = 'none';
+                document.querySelector('.loading-text').style.display = 'none';
+                document.querySelector('.dots').style.display = 'none';
+                retryBtn.style.display = 'block';
+            }, 2000);
+
+            // Função para iniciar a live
+            function startVideo() {
+                if (videoStarted) return;
+                
+                // Remove overlay
+                loadingOverlay.style.opacity = '0';
+                setTimeout(() => {
+                    loadingOverlay.style.display = 'none';
+                }, 500);
+
+                // Mostra elementos da live
+                liveTime.classList.add('visible');
+                leftStats.classList.add('visible');
+                rightStats.classList.add('visible');
+                audioWrapper.classList.add('visible');
+                commentsSection.classList.add('visible');
+                
+                // Ativa áudio (vídeo começa com áudio)
+                video.muted = false;
+                isMuted = false;
+                audioIcon.className = 'fi fi-ss-volume';
+                audioControl.classList.remove('inactive');
+                
+                // Tenta reproduzir vídeo
+                video.play().catch(e => console.log('Erro ao reproduzir vídeo:', e));
+                
+                // Inicia comentários automáticos
+                messageSystem.startAutoMessages();
+                videoStarted = true;
+            }
+
+            // Clique no botão "TENTAR NOVAMENTE"
+            retryBtn.addEventListener('click', startVideo);
+
+            // Controle de áudio
             function toggleAudio() {
-                if (!videoStarted) return; // só permite se a live já começou
-                if (!video) return;
+                if (!videoStarted) return;
                 isMuted = !isMuted;
                 video.muted = isMuted;
 
@@ -937,13 +969,10 @@
                     audioIcon.classList.remove('audio-icon-inactive');
                     audioControl.classList.remove('inactive');
                 }
-
-                audioControl.classList.remove('pulsing');
             }
-
             audioControl.addEventListener('click', toggleAudio);
 
-            // Enviar comentário - só após início
+            // Enviar comentário
             function sendComment() {
                 if (!videoStarted) return;
                 const text = commentInput.value.trim();
@@ -968,7 +997,7 @@
                 charCount.textContent = `${this.value.length}/50`;
             });
 
-            // Pausar comentários ao mudar de aba (só se já iniciado)
+            // Pausar comentários ao mudar de aba
             document.addEventListener('visibilitychange', () => {
                 if (!videoStarted) return;
                 if (document.hidden) {
@@ -978,7 +1007,7 @@
                 }
             });
 
-            // Partículas (sempre ativas)
+            // Partículas
             particlesJS('particles-js', {
                 particles: {
                     number: { value: 40, density: { enable: true, value_area: 800 } },
@@ -997,11 +1026,6 @@
                         resize: true
                     }
                 }
-            });
-
-            // Monitorar erro de carregamento do vídeo
-            video.addEventListener('error', function() {
-                console.error('Erro ao carregar o vídeo. Verifique a URL ou as permissões do servidor.');
             });
         })();
     </script>
