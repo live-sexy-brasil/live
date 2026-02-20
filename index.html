@@ -4,27 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Live Streaming</title>
+    <!-- 
+        ======================================================================
+        DESCRIÇÃO GERAL:
+        Página de simulação de live com vídeo, thumbnail, botão de entrada,
+        comentários automáticos, modal de PIX com foto de perfil e botão de 
+        cópia de chave. Totalmente responsivo para mobile.
+
+        FUNCIONALIDADES:
+        - Vídeo em background (substituível)
+        - Thumbnail com texto "ENTRAR" sobreposto ao botão
+        - Botão pulsante que inicia o vídeo com áudio e ativa comentários
+        - Visualizadores dinâmicos (entre 570-577)
+        - Horário de Brasília atualizado a cada minuto
+        - Comentários automáticos simulados (podem ser desativados)
+        - Modal de PIX com foto de perfil redonda, botão de cópia com inversão
+          de cores e instruções passo a passo
+        - Partículas animadas no fundo
+
+        COMO PERSONALIZAR:
+        - TROCAR VÍDEO: procure por "URL_DO_VIDEO" no HTML (tag <source>)
+        - TROCAR THUMBNAIL: altere a url em background-image da classe .thumbnail-overlay
+        - TROCAR NOME DA MODELO: procure por "DÉBORA" em todo o código (título do modal e comentários)
+        - TROCAR CHAVE PIX: procure por "CHAVE_PIX" no JavaScript (const PIX_KEY)
+        - TROCAR FOTO DE PERFIL: procure por "COLE_AQUI_O_LINK_DA_IMAGEM" no HTML (dentro da div .profile-image-container)
+        - TROCAR BOTÃO DE ENTRADA: altere a url em background-image da classe .play-button
+        - AJUSTAR TEXTOS: mensagens automáticas estão no array MESSAGES no JavaScript
+        - TEMPO DO MODAL PIX: altere o valor em setTimeout (2 * 60 * 1000 = 2 minutos)
+        ======================================================================
+    -->
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.1.0/uicons-solid-straight/css/uicons-solid-straight.css">
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <style>
-        /* ===== INÍCIO DAS CONFIGURAÇÕES ===== */
-        /* 
-            PARA TROCAR O VÍDEO: 
-            Procure por "URL_DO_VIDEO" no código (linha onde o vídeo é definido)
-            Substitua o link entre aspas pelo novo link do vídeo.
-        */
-        /* 
-            PARA TROCAR O NOME DA MODELO: 
-            Procure por "NOME_DA_MODELO" no código (geralmente em constantes e textos)
-            Substitua "DÉBORA" pelo novo nome em MAIÚSCULAS.
-            O nome aparecerá automaticamente em todos os lugares.
-        */
-        /* 
-            PARA TROCAR A CHAVE PIX: 
-            Procure por "CHAVE_PIX" no código (na seção de constantes)
-            Substitua o valor da chave Pix pelo novo código.
-        */
-        /* ===== FIM DAS CONFIGURAÇÕES ===== */
+        /* ===== CONFIGURAÇÕES ===== */
+        /* TROCAR VÍDEO: procure por "URL_DO_VIDEO" no HTML */
+        /* TROCAR NOME MODELO: procure por "DÉBORA" (várias ocorrências) */
+        /* TROCAR CHAVE PIX: procure por "CHAVE_PIX" no JavaScript */
+        /* TROCAR FOTO PERFIL: procure pela linha com "COLE_AQUI_O_LINK_DA_IMAGEM" no HTML */
+        /* ========================= */
 
         * {
             margin: 0;
@@ -102,7 +119,7 @@
             pointer-events: none;
         }
 
-        /* ----- CONTAINER PARA SOBREPOSIÇÃO DO TEXTO COM A IMAGEM ----- */
+        /* ----- CONTAINER DO BOTÃO ----- */
         .button-container {
             position: relative;
             display: flex;
@@ -113,7 +130,6 @@
             height: auto;
         }
 
-        /* ----- TEXTO SOBREPOSTO ----- */
         .click-text-top {
             color: white;
             font-size: 22px;
@@ -136,7 +152,6 @@
             50% { text-shadow: 3px 3px 6px #000, 0 0 20px #ff1493, 0 0 30px #ff1493; }
         }
 
-        /* ----- BOTÃO COM IMAGEM ----- */
         .play-button {
             width: 160px;
             height: 160px;
@@ -529,45 +544,54 @@
             text-shadow: 2px 2px 4px #000;
         }
 
-        .qr-code-container {
-            background: white;
+        /* FOTO DE PERFIL REDONDA */
+        .profile-image-container {
             width: 150px;
             height: 150px;
             margin: 10px auto;
-            border-radius: 16px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 5px;
-            border: 2px solid #FF1493;
+            border-radius: 50%;
+            border: 3px solid #FF1493;
             overflow: hidden;
+            box-shadow: 0 0 20px rgba(255, 20, 147, 0.5);
         }
 
-        .qr-video {
+        .profile-image {
             width: 100%;
             height: 100%;
             object-fit: cover;
-            border-radius: 12px;
         }
 
+        /* BOTÃO COPIAR CHAVE - ESTILO PADRÃO (branco com rosa) */
         .copy-key-btn {
             display: block;
             width: 80%;
             margin: 15px auto 10px;
             padding: 10px;
-            background: rgba(255, 255, 255, 0.9);
-            color: #000;
-            border: none;
+            background: #ffffff; /* Fundo branco */
+            color: #FF1493; /* Texto rosa */
+            border: 2px solid #FF1493; /* Borda rosa */
             border-radius: 30px;
             font-size: 14px;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .copy-key-btn:hover {
+            background: #ffe6f0; /* Rosa claro no hover */
         }
 
         .copy-key-btn:active {
             transform: scale(0.95);
+        }
+
+        /* Classe temporária para estado copiado (fundo rosa, texto branco) */
+        .copy-key-btn.copied {
+            background: #FF1493 !important;
+            color: #ffffff !important;
+            border: 2px solid #FF1493 !important;
         }
 
         .pink-instructions {
@@ -590,16 +614,11 @@
             font-size: 14px;
         }
 
-        .pink-instructions ol {
+        .pink-instructions p {
             text-align: left;
-            margin-left: 20px;
-            margin-top: 5px;
+            margin: 5px 0;
             font-size: 12px;
             line-height: 1.6;
-        }
-
-        .pink-instructions li {
-            margin-bottom: 6px;
             color: #ffffff;
             font-weight: bold;
             text-transform: uppercase;
@@ -609,7 +628,7 @@
         @media (max-width: 480px) {
             .comments-container { height: 140px; }
             .donation-container { max-width: 280px; }
-            .qr-code-container { width: 140px; height: 140px; }
+            .profile-image-container { width: 140px; height: 140px; }
             .play-button { width: 140px; height: 140px; }
             .click-text-top { font-size: 20px; top: 25%; }
         }
@@ -617,6 +636,7 @@
         @media (max-width: 360px) {
             .comments-container { height: 120px; }
             .donation-container { max-width: 260px; }
+            .profile-image-container { width: 130px; height: 130px; }
             .play-button { width: 120px; height: 120px; }
             .click-text-top { font-size: 18px; top: 25%; }
         }
@@ -628,36 +648,34 @@
     <!-- Modal Pix -->
     <div class="donation-modal" id="donation-modal">
         <div class="donation-container">
-            <!-- =================================================== -->
-            <!-- NOME DA MODELO: Substitua "DÉBORA" pelo novo nome   -->
-            <!-- =================================================== -->
-            <div class="donation-title">DÉBORA PEDE O MÍNIMO DE 5,00 REAIS VIA PIX, PARA FICAR NA LIVE</div>
-            <div class="qr-code-container">
-                <video class="qr-video" autoplay loop muted playsinline>
-                    <source src="https://cdn-icons-mp4.flaticon.com/512/15574/15574256.mp4" type="video/mp4">
-                </video>
+            <!-- NOME DA MODELO -->
+            <div class="donation-title">DÉBORA PEDE O MÍNIMO DE 5,00 REAIS PARA FICAR NA LIVE</div>
+            
+            <!-- FOTO DE PERFIL REDONDA (substitua o link) -->
+            <div class="profile-image-container">
+                <!-- COLE AQUI O LINK DA IMAGEM HOSPEDADA -->
+                <img class="profile-image" src=https://scontent-poa1-1.cdninstagram.com/v/t51.82787-15/541145964_17870386002431432_7867686677431603489_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=102&ig_cache_key=MzcwOTM1MTc5NTI1MzkxOTgzMw%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6InhwaWRzLjEwODB4MTQ0MC5zZHIuQzMifQ%3D%3D&_nc_ohc=MvqQP1913vkQ7kNvwF6b7GR&_nc_oc=AdkBGtLp6yUD3bfr3RjPcc1n1uFKGmZ1S5qCMYo9U_92bj6Fi9PplcN80qt1x4_cGxc&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-poa1-1.cdninstagram.com&_nc_gid=lZLWvuEtWSPEeVjDyiUusg&oh=00_AfvGdjRBSNo0ED6Drj7krWMgL6GGqz_et5Al47vNoichkw&oe=699D7B6F alt="Perfil">
             </div>
-            <!-- =================================================== -->
-            <!-- CHAVE PIX: Substitua o valor da chave Pix abaixo   -->
-            <!-- =================================================== -->
+
+            <!-- BOTÃO COPIAR CHAVE (com estilo branco/rosa) -->
             <button class="copy-key-btn" id="copy-key-btn">COPIAR CHAVE PIX</button>
             
+            <!-- INSTRUÇÕES -->
             <div class="pink-instructions">
                 <strong>INSTRUÇÕES:</strong>
-                <ol>
-                    <li>COPIE A CHAVE PIX ACIMA</li>
-                    <li>ABRA O APP DO SEU BANCO</li>
-                    <li>COLE A CHAVE NO PIX</li>
-                    <li>PREEnCHA O VALOR DE NO MÍNIMO 5,00 REAIS (ACIMA DE 20,00 GANHA O WHATSAPP DA MODELO)</li>
-                    <li>EM MENOS DE 30 SEGUNDOS VOCÊ VOLTA A VER A LIVE</li>
-                </ol>
+                <p>1-COPIE A CHAVE PIX ACIMA!</p>
+                <p>2-ABRA O APP DO SEU BANCO!</p>
+                <p>3-COLE A CHAVE PIX!</p>
+                <p>4-VALOR DE NO MÍNIMO 5,00 REAIS!</p>
+                <p>5-VALORES ACIMA DE 20,00 GANHA O WHATSAPP DA MODELO + COMENTARIO COM SEU NOME!</p>
+                <p>6-EM 30 SEGUNDOS, SISTEMA RECONHECE O PIX E VOCÊ VOLTA A VER A LIVE!</p>
             </div>
         </div>
     </div>
 
     <div class="main-container" id="main-container">
         <div class="video-container">
-            <!-- Thumbnail com texto sobreposto -->
+            <!-- Thumbnail com botão -->
             <div class="thumbnail-overlay" id="thumbnail-overlay">
                 <div class="button-container">
                     <div class="click-text-top">ENTRAR</div>
@@ -665,9 +683,7 @@
                 </div>
             </div>
 
-            <!-- =================================================== -->
-            <!-- VÍDEO: Substitua o link abaixo pelo novo vídeo      -->
-            <!-- =================================================== -->
+            <!-- VÍDEO (substitua o link abaixo) -->
             <video class="video-background" id="live-video" playsinline>
                 <source src="https://midias.foxvideo.club/5000/5312/5312.mp4" type="video/mp4">
             </video>
@@ -675,7 +691,7 @@
             <!-- Horário centralizado -->
             <div class="live-time" id="live-time">00:00</div>
 
-            <!-- Visualizadores no canto esquerdo -->
+            <!-- Visualizadores -->
             <div class="left-stats" id="left-stats">
                 <div class="viewer-count">
                     <i class="fi fi-ss-eye"></i>
@@ -683,7 +699,7 @@
                 </div>
             </div>
 
-            <!-- Badge AO VIVO na direita -->
+            <!-- Badge AO VIVO -->
             <div class="right-stats" id="right-stats">
                 <div class="live-badge">
                     <div class="live-pulse"></div>
@@ -732,9 +748,6 @@
             ];
 
             const MESSAGES = [
-                // ===================================================
-                // NOME DA MODELO: Substitua "DÉBORA" pelo novo nome
-                // ===================================================
                 "@kauan fez um PIX agora! A live ficou muito mais sexy! 🔥",
                 "Valeu @kauan pelo PIX! Agora a live tá quente demais! 🍑",
                 "@kauan mandou bem no PIX! Tá tudo mais excitante! 🤤",
@@ -753,9 +766,7 @@
                 "Que mulher gostosa! 😍"
             ];
 
-            // ===================================================
-            // CHAVE PIX: Substitua o valor da chave Pix abaixo
-            // ===================================================
+            // CHAVE PIX (substitua o valor)
             const PIX_KEY = "debora.live@hotgirl.com";
 
             // Elementos
@@ -775,18 +786,16 @@
             const donationModal = document.getElementById('donation-modal');
             const mainContainer = document.getElementById('main-container');
             
-            // Elementos que serão mostrados após o play
             const leftStats = document.getElementById('left-stats');
             const rightStats = document.getElementById('right-stats');
             const commentsSection = document.getElementById('comments-section');
 
-            // Estado
             let isMuted = false;
             let viewerCount = 570;
             let messageSystem = null;
             let videoStarted = false;
 
-            // Verificar se o modal já foi mostrado antes
+            // Modal Pix persistente
             if (localStorage.getItem('pixModalShown') === 'true') {
                 donationModal.classList.add('active');
                 mainContainer.classList.add('blur');
@@ -850,10 +859,8 @@
 
                 removeMessage(messageId) {
                     const element = document.getElementById(`comment-${messageId}`);
-                    if (element) {
-                        element.remove();
-                        this.messages = this.messages.filter(id => id !== messageId);
-                    }
+                    if (element) element.remove();
+                    this.messages = this.messages.filter(id => id !== messageId);
                 }
 
                 manageMessageLimit() {
@@ -871,9 +878,7 @@
 
                 startAutoMessages() {
                     if (this.autoInterval) clearInterval(this.autoInterval);
-                    this.autoInterval = setInterval(() => {
-                        this.generateRandomMessage();
-                    }, CONFIG.messageInterval);
+                    this.autoInterval = setInterval(() => this.generateRandomMessage(), CONFIG.messageInterval);
                 }
 
                 stopAutoMessages() {
@@ -886,7 +891,7 @@
 
             messageSystem = new MessageSystem();
 
-            // Atualizar contador de visualizadores
+            // Atualizar visualizadores
             function updateViewerCount() {
                 let min = 570, max = 577;
                 let newCount;
@@ -896,7 +901,6 @@
                 viewerCount = newCount;
                 viewerSpan.textContent = viewerCount;
             }
-
             setInterval(updateViewerCount, 5000);
 
             // Modal Pix após 2 minutos
@@ -908,29 +912,29 @@
                 }
             }, 2 * 60 * 1000);
 
-            // Copiar chave Pix
+            // Botão copiar Pix - com inversão de cores (fundo rosa, texto branco) mantendo borda rosa
             copyKeyBtn.addEventListener('click', () => {
                 navigator.clipboard.writeText(PIX_KEY).then(() => {
-                    const original = copyKeyBtn.textContent;
+                    const originalText = copyKeyBtn.textContent;
+                    
+                    // Aplica classe de copiado (fundo rosa, texto branco, borda rosa)
+                    copyKeyBtn.classList.add('copied');
                     copyKeyBtn.textContent = "COPIADO!";
-                    copyKeyBtn.style.background = "#4CAF50";
-                    copyKeyBtn.style.color = "white";
+                    
                     setTimeout(() => {
-                        copyKeyBtn.textContent = original;
-                        copyKeyBtn.style.background = "";
-                        copyKeyBtn.style.color = "";
+                        copyKeyBtn.classList.remove('copied');
+                        copyKeyBtn.textContent = originalText;
                     }, 2000);
                 }).catch(() => {
                     alert('Chave Pix: ' + PIX_KEY);
                 });
             });
 
-            // Função para iniciar o vídeo
+            // Iniciar vídeo
             function startVideo() {
                 if (videoStarted) return;
                 
                 thumbnailOverlay.classList.add('hidden');
-                
                 liveTime.classList.add('visible');
                 leftStats.classList.add('visible');
                 rightStats.classList.add('visible');
@@ -943,15 +947,11 @@
                 audioControl.classList.remove('inactive');
                 
                 video.play().catch(e => console.log('Autoplay bloqueado:', e));
-                
                 messageSystem.startAutoMessages();
-                
                 videoStarted = true;
             }
 
-            // Botão de play
             playButton.addEventListener('click', startVideo);
-            
             thumbnailOverlay.addEventListener('click', (e) => {
                 if (e.target === thumbnailOverlay || e.target.closest('.play-button')) {
                     startVideo();
@@ -961,7 +961,6 @@
             // Controle de áudio
             function toggleAudio() {
                 if (!videoStarted) return;
-                
                 isMuted = !isMuted;
                 video.muted = isMuted;
 
@@ -974,13 +973,11 @@
                     audioControl.classList.remove('inactive');
                 }
             }
-            
             audioControl.addEventListener('click', toggleAudio);
 
             // Enviar comentário
             function sendComment() {
                 if (!videoStarted) return;
-                
                 const text = commentInput.value.trim();
                 if (!text) return;
                 messageSystem.addUserMessage(text);
@@ -1000,14 +997,12 @@
             });
 
             commentInput.addEventListener('input', function() {
-                const len = this.value.length;
-                charCount.textContent = `${len}/50`;
+                charCount.textContent = `${this.value.length}/50`;
             });
 
             // Pausar comentários ao mudar de aba
             document.addEventListener('visibilitychange', () => {
                 if (!videoStarted) return;
-                
                 if (document.hidden) {
                     messageSystem.stopAutoMessages();
                 } else {
