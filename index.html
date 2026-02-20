@@ -4,45 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Live Streaming</title>
-    <!-- 
-        ======================================================================
-        DESCRIÇÃO GERAL:
-        Página de simulação de live com vídeo, thumbnail, botão de entrada,
-        comentários automáticos, modal de PIX com foto de perfil e botão de 
-        cópia de chave. Totalmente responsivo para mobile.
-
-        FUNCIONALIDADES:
-        - Vídeo em background (substituível)
-        - Thumbnail com texto "ENTRAR" sobreposto ao botão
-        - Botão pulsante que inicia o vídeo com áudio e ativa comentários
-        - Visualizadores dinâmicos (entre 570-577)
-        - Horário de Brasília atualizado a cada minuto
-        - Comentários automáticos simulados (podem ser desativados)
-        - Modal de PIX com foto de perfil redonda, botão de cópia com inversão
-          de cores e instruções passo a passo
-        - Partículas animadas no fundo
-
-        COMO PERSONALIZAR:
-        - TROCAR VÍDEO: procure por "URL_DO_VIDEO" no HTML (tag <source>)
-        - TROCAR THUMBNAIL: altere a url em background-image da classe .thumbnail-overlay
-        - TROCAR NOME DA MODELO: procure por "DÉBORA" em todo o código (título do modal e comentários)
-        - TROCAR CHAVE PIX: procure por "CHAVE_PIX" no JavaScript (const PIX_KEY)
-        - TROCAR FOTO DE PERFIL: procure por "COLE_AQUI_O_LINK_DA_IMAGEM" no HTML (dentro da div .profile-image-container)
-        - TROCAR BOTÃO DE ENTRADA: altere a url em background-image da classe .play-button
-        - AJUSTAR TEXTOS: mensagens automáticas estão no array MESSAGES no JavaScript
-        - TEMPO DO MODAL PIX: altere o valor em setTimeout (2 * 60 * 1000 = 2 minutos)
-        ======================================================================
-    -->
     <link rel="stylesheet" href="https://cdn-uicons.flaticon.com/2.1.0/uicons-solid-straight/css/uicons-solid-straight.css">
     <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
     <style>
-        /* ===== CONFIGURAÇÕES ===== */
-        /* TROCAR VÍDEO: procure por "URL_DO_VIDEO" no HTML */
-        /* TROCAR NOME MODELO: procure por "DÉBORA" (várias ocorrências) */
-        /* TROCAR CHAVE PIX: procure por "CHAVE_PIX" no JavaScript */
-        /* TROCAR FOTO PERFIL: procure pela linha com "COLE_AQUI_O_LINK_DA_IMAGEM" no HTML */
-        /* ========================= */
-
         * {
             margin: 0;
             padding: 0;
@@ -95,98 +59,7 @@
             display: block;
         }
 
-        /* ----- THUMBNAIL SOBREPOSTA ----- */
-        .thumbnail-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('https://tubepussy.org/contents/videos_screenshots/5000/5312/480x270/1.jpg');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            z-index: 25;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            transition: opacity 0.5s ease;
-        }
-
-        .thumbnail-overlay.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        /* ----- CONTAINER DO BOTÃO ----- */
-        .button-container {
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: auto;
-            height: auto;
-        }
-
-        .click-text-top {
-            color: white;
-            font-size: 22px;
-            font-weight: 900;
-            text-shadow: 3px 3px 6px #000, 0 0 15px #ff1493;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            z-index: 27;
-            position: absolute;
-            top: 25%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            white-space: nowrap;
-            animation: textGlow 2s infinite;
-            pointer-events: none;
-        }
-
-        @keyframes textGlow {
-            0%, 100% { text-shadow: 3px 3px 6px #000, 0 0 10px #ff1493, 0 0 20px #ff1493; }
-            50% { text-shadow: 3px 3px 6px #000, 0 0 20px #ff1493, 0 0 30px #ff1493; }
-        }
-
-        .play-button {
-            width: 160px;
-            height: 160px;
-            background-image: url('https://static.vecteezy.com/system/resources/thumbnails/011/016/931/small/live-streaming-icon-for-the-broadcast-system-live-streaming-icon-design-with-red-and-white-colors-live-streaming-image-with-text-effect-red-and-white-gradient-colors-free-png.png');
-            background-size: contain;
-            background-position: center;
-            background-repeat: no-repeat;
-            cursor: pointer;
-            border: none;
-            animation: pulse-image 2s infinite ease-in-out;
-            transition: transform 0.3s ease;
-            z-index: 28;
-            position: relative;
-        }
-
-        .play-button:hover {
-            transform: scale(1.05);
-        }
-
-        .play-button:active {
-            transform: scale(0.95);
-        }
-
-        @keyframes pulse-image {
-            0%, 100% { 
-                transform: scale(1); 
-                filter: drop-shadow(0 0 8px rgba(255,20,147,0.6));
-            }
-            50% { 
-                transform: scale(1.05); 
-                filter: drop-shadow(0 0 15px rgba(255,20,147,0.9));
-            }
-        }
-
-        /* ----- HORÁRIO CENTRALIZADO ----- */
+        /* --- Elementos da live --- */
         .live-time {
             position: absolute;
             top: 15px;
@@ -203,16 +76,11 @@
             padding: 4px 12px;
             border-radius: 30px;
             backdrop-filter: blur(4px);
-            opacity: 0;
-            transition: opacity 0.5s ease;
-            pointer-events: none;
-        }
-
-        .live-time.visible {
             opacity: 1;
+            pointer-events: none;
+            white-space: nowrap;
         }
 
-        /* ----- VISUALIZADORES NO CANTO ESQUERDO ----- */
         .left-stats {
             position: absolute;
             top: 15px;
@@ -221,13 +89,8 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-            pointer-events: none;
-        }
-
-        .left-stats.visible {
             opacity: 1;
+            pointer-events: none;
         }
 
         .viewer-count {
@@ -241,9 +104,9 @@
             gap: 8px;
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.2);
+            white-space: nowrap;
         }
 
-        /* ----- BADGE AO VIVO (DIREITA) ----- */
         .right-stats {
             position: absolute;
             top: 15px;
@@ -253,13 +116,8 @@
             align-items: flex-end;
             gap: 8px;
             z-index: 20;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-            pointer-events: none;
-        }
-
-        .right-stats.visible {
             opacity: 1;
+            pointer-events: none;
         }
 
         .live-badge {
@@ -273,6 +131,7 @@
             align-items: center;
             gap: 6px;
             box-shadow: 0 3px 10px rgba(255, 0, 0, 0.4);
+            white-space: nowrap;
         }
 
         .live-pulse {
@@ -288,32 +147,53 @@
             50% { transform: scale(1.1); opacity: 0.7; }
         }
 
-        /* ----- BOTÃO DE ÁUDIO ----- */
-        .audio-control {
+        /* --- Wrapper do áudio (agora em coluna) --- */
+        .audio-wrapper {
             position: absolute;
-            top: 60px;
-            right: 15px;
-            width: 38px;
-            height: 38px;
+            top: 70px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;  /* itens em coluna */
+            align-items: center;     /* centraliza horizontalmente */
+            gap: 5px;                /* espaço entre botão e texto */
+            z-index: 20;
+            pointer-events: auto;
+        }
+
+        .audio-control {
+            width: 76px;
+            height: 76px;
             border-radius: 50%;
             background: rgba(255, 105, 180, 0.9);
-            border: 2px solid #FF00FF;
+            border: 3px solid #FF00FF;
             color: #ffffff;
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            z-index: 20;
             transition: all 0.3s ease;
-            font-size: 18px;
-            box-shadow: 0 0 10px rgba(255, 105, 180, 0.5);
-            opacity: 0;
-            pointer-events: none;
+            font-size: 32px;
+            box-shadow: 0 0 15px rgba(255, 105, 180, 0.7);
+            opacity: 1;
         }
 
-        .audio-control.visible {
-            opacity: 1;
-            pointer-events: auto;
+        .audio-control.pulsing {
+            animation: audioPulse 1.5s infinite ease-in-out;
+        }
+
+        @keyframes audioPulse {
+            0% {
+                box-shadow: 0 0 10px #FF1493, 0 0 20px #FF1493;
+                transform: scale(1);
+            }
+            50% {
+                box-shadow: 0 0 25px #FF1493, 0 0 40px #FF1493;
+                transform: scale(1.08);
+            }
+            100% {
+                box-shadow: 0 0 10px #FF1493, 0 0 20px #FF1493;
+                transform: scale(1);
+            }
         }
 
         .audio-control:active {
@@ -322,7 +202,7 @@
 
         .audio-control.inactive {
             background: rgba(0, 0, 0, 0.7);
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            border: 3px solid rgba(255, 255, 255, 0.3);
             box-shadow: none;
         }
 
@@ -337,13 +217,24 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) rotate(45deg);
-            width: 22px;
-            height: 2px;
+            width: 40px;
+            height: 3px;
             background-color: #ff3333;
             border-radius: 2px;
         }
 
-        /* ----- COMENTÁRIOS FLUTUANTES ----- */
+        /* Texto "AUDIO" abaixo do botão */
+        .audio-label {
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 500;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            letter-spacing: 1px;
+            white-space: nowrap;
+            opacity: 0.9;
+        }
+
+        /* --- Comentários com 70% de transparência (fundo 30% opaco) --- */
         .comments-section {
             position: absolute;
             bottom: 0;
@@ -352,11 +243,6 @@
             padding: 15px;
             z-index: 20;
             pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-        }
-
-        .comments-section.visible {
             opacity: 1;
         }
 
@@ -377,8 +263,8 @@
             gap: 8px;
             animation: floatUp 15s linear forwards;
             opacity: 0;
-            background: rgba(0, 0, 0, 0.75);
-            backdrop-filter: blur(8px);
+            background: rgba(0, 0, 0, 0.3); /* 70% transparente (30% opaco) */
+            backdrop-filter: blur(4px);
             border-left: 4px solid #FF1493;
             border-radius: 12px;
             width: fit-content;
@@ -423,12 +309,12 @@
             line-height: 1.3;
         }
 
-        /* INPUT */
+        /* Input de comentários com 70% de transparência */
         .comment-input-container {
             display: flex;
             align-items: center;
             gap: 6px;
-            background: rgba(0, 0, 0, 0.6);
+            background: rgba(0, 0, 0, 0.3); /* 70% transparente */
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.25);
             border-radius: 20px;
@@ -504,7 +390,7 @@
             pointer-events: auto;
         }
 
-        /* ----- MODAL PIX ----- */
+        /* --- Modal PIX (inalterado) --- */
         .donation-modal {
             position: fixed;
             top: 0;
@@ -544,7 +430,6 @@
             text-shadow: 2px 2px 4px #000;
         }
 
-        /* FOTO DE PERFIL REDONDA */
         .profile-image-container {
             width: 150px;
             height: 150px;
@@ -561,15 +446,14 @@
             object-fit: cover;
         }
 
-        /* BOTÃO COPIAR CHAVE - ESTILO PADRÃO (branco com rosa) */
         .copy-key-btn {
             display: block;
             width: 80%;
             margin: 15px auto 10px;
             padding: 10px;
-            background: #ffffff; /* Fundo branco */
-            color: #FF1493; /* Texto rosa */
-            border: 2px solid #FF1493; /* Borda rosa */
+            background: #ffffff;
+            color: #FF1493;
+            border: 2px solid #FF1493;
             border-radius: 30px;
             font-size: 14px;
             font-weight: bold;
@@ -580,14 +464,13 @@
         }
 
         .copy-key-btn:hover {
-            background: #ffe6f0; /* Rosa claro no hover */
+            background: #ffe6f0;
         }
 
         .copy-key-btn:active {
             transform: scale(0.95);
         }
 
-        /* Classe temporária para estado copiado (fundo rosa, texto branco) */
         .copy-key-btn.copied {
             background: #FF1493 !important;
             color: #ffffff !important;
@@ -629,16 +512,12 @@
             .comments-container { height: 140px; }
             .donation-container { max-width: 280px; }
             .profile-image-container { width: 140px; height: 140px; }
-            .play-button { width: 140px; height: 140px; }
-            .click-text-top { font-size: 20px; top: 25%; }
         }
 
         @media (max-width: 360px) {
             .comments-container { height: 120px; }
             .donation-container { max-width: 260px; }
             .profile-image-container { width: 130px; height: 130px; }
-            .play-button { width: 120px; height: 120px; }
-            .click-text-top { font-size: 18px; top: 25%; }
         }
     </style>
 </head>
@@ -648,19 +527,11 @@
     <!-- Modal Pix -->
     <div class="donation-modal" id="donation-modal">
         <div class="donation-container">
-            <!-- NOME DA MODELO -->
             <div class="donation-title">DÉBORA PEDE O MÍNIMO DE 5,00 REAIS PARA FICAR NA LIVE</div>
-            
-            <!-- FOTO DE PERFIL REDONDA (substitua o link) -->
             <div class="profile-image-container">
-                <!-- COLE AQUI O LINK DA IMAGEM HOSPEDADA -->
                 <img class="profile-image" src="https://scontent-poa1-1.cdninstagram.com/v/t51.82787-15/541145964_17870386002431432_7867686677431603489_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=102&ig_cache_key=MzcwOTM1MTc5NTI1MzkxOTgzMw%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6InhwaWRzLjEwODB4MTQ0MC5zZHIuQzMifQ%3D%3D&_nc_ohc=MvqQP1913vkQ7kNvwF6b7GR&_nc_oc=AdkBGtLp6yUD3bfr3RjPcc1n1uFKGmZ1S5qCMYo9U_92bj6Fi9PplcN80qt1x4_cGxc&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-poa1-1.cdninstagram.com&_nc_gid=lZLWvuEtWSPEeVjDyiUusg&oh=00_AfvGdjRBSNo0ED6Drj7krWMgL6GGqz_et5Al47vNoichkw&oe=699D7B6F" alt="Perfil">
             </div>
-
-            <!-- BOTÃO COPIAR CHAVE (com estilo branco/rosa) -->
             <button class="copy-key-btn" id="copy-key-btn">COPIAR CHAVE PIX</button>
-            
-            <!-- INSTRUÇÕES -->
             <div class="pink-instructions">
                 <strong>INSTRUÇÕES:</strong>
                 <p>1-COPIE A CHAVE PIX ACIMA!</p>
@@ -675,18 +546,9 @@
 
     <div class="main-container" id="main-container">
         <div class="video-container">
-            <!-- Thumbnail com botão -->
-            <div class="thumbnail-overlay" id="thumbnail-overlay">
-                <div class="button-container">
-                    <div class="click-text-top">ENTRAR</div>
-                    <div class="play-button" id="play-button"></div>
-                </div>
-            </div>
-
-            <!-- VÍDEO (substitua o link abaixo) - adicionado preload="auto" para iniciar carregamento -->
-            <video class="video-background" id="live-video" playsinline preload="auto">
+            <!-- Vídeo com autoplay, muted, playsinline -->
+            <video class="video-background" id="live-video" autoplay muted playsinline preload="auto">
                 <source src="https://midias.foxvideo.club/5000/5312/5312.mp4" type="video/mp4">
-                <!-- Fallback para outros formatos (opcional, melhora compatibilidade) -->
                 <source src="https://midias.foxvideo.club/5000/5312/5312.webm" type="video/webm">
             </video>
 
@@ -709,9 +571,14 @@
                 </div>
             </div>
 
-            <!-- Botão de áudio -->
-            <div class="audio-control" id="audio-control">
-                <i class="fi fi-ss-volume" id="audio-icon"></i>
+            <!-- Wrapper do áudio com botão e texto em coluna -->
+            <div class="audio-wrapper" id="audio-wrapper">
+                <!-- Botão de áudio (inicia desligado e pulsando) -->
+                <div class="audio-control pulsing inactive" id="audio-control">
+                    <i class="fi fi-ss-volume audio-icon-inactive" id="audio-icon"></i>
+                </div>
+                <!-- Texto "AUDIO" abaixo do botão -->
+                <span class="audio-label" id="audio-label">AUDIO</span>
             </div>
 
             <!-- Área de comentários -->
@@ -768,15 +635,13 @@
                 "Que mulher gostosa! 😍"
             ];
 
-            // CHAVE PIX (substitua o valor)
             const PIX_KEY = "debora.live@hotgirl.com";
 
             // Elementos
-            const thumbnailOverlay = document.getElementById('thumbnail-overlay');
-            const playButton = document.getElementById('play-button');
             const video = document.getElementById('live-video');
             const audioControl = document.getElementById('audio-control');
             const audioIcon = document.getElementById('audio-icon');
+            const audioLabel = document.getElementById('audio-label');
             const commentInput = document.getElementById('comment-input');
             const sendBtn = document.getElementById('send-btn');
             const emojiBtns = document.querySelectorAll('.emoji-inline-btn');
@@ -787,16 +652,11 @@
             const copyKeyBtn = document.getElementById('copy-key-btn');
             const donationModal = document.getElementById('donation-modal');
             const mainContainer = document.getElementById('main-container');
-            
-            const leftStats = document.getElementById('left-stats');
-            const rightStats = document.getElementById('right-stats');
-            const commentsSection = document.getElementById('comments-section');
 
-            let isMuted = false;
+            let isMuted = true; // começa mudo
             let viewerCount = 570;
             let messageSystem = null;
             let videoStarted = false;
-            let playAttemptPending = false; // controle para evitar múltiplas tentativas
 
             // Modal Pix persistente
             if (localStorage.getItem('pixModalShown') === 'true') {
@@ -834,12 +694,15 @@
                     const delay = this.messages.length * 200;
                     comment.style.animationDelay = `${delay}ms`;
 
+                    // Adiciona classe 'you' se for mensagem do usuário
+                    const usernameClass = user === "@você" ? 'username you' : 'username';
+
                     comment.innerHTML = `
                         <div class="user-avatar">
                             <i class="fi fi-ss-user"></i>
                         </div>
                         <div class="comment-content">
-                            <div class="username">${user}</div>
+                            <div class="${usernameClass}">${user}</div>
                             <div class="comment-text">${text}</div>
                         </div>
                     `;
@@ -894,6 +757,12 @@
 
             messageSystem = new MessageSystem();
 
+            // Iniciar comentários automáticos após 1s
+            setTimeout(() => {
+                messageSystem.startAutoMessages();
+                videoStarted = true;
+            }, 1000);
+
             // Atualizar visualizadores
             function updateViewerCount() {
                 let min = 570, max = 577;
@@ -930,67 +799,9 @@
                 });
             });
 
-            // Função robusta para iniciar o vídeo
-            function attemptPlay() {
-                if (!video) return Promise.reject('Vídeo não encontrado');
-                
-                // Tenta dar play imediatamente
-                return video.play().catch(error => {
-                    console.log('Play imediato falhou, aguardando canplay...', error);
-                    // Se falhou, espera o evento canplay
-                    return new Promise((resolve, reject) => {
-                        const onCanPlay = () => {
-                            video.removeEventListener('canplay', onCanPlay);
-                            video.play().then(resolve).catch(reject);
-                        };
-                        video.addEventListener('canplay', onCanPlay);
-                        
-                        // Se já estiver pronto, chama diretamente (readyState >= 3)
-                        if (video.readyState >= 3) {
-                            video.removeEventListener('canplay', onCanPlay);
-                            video.play().then(resolve).catch(reject);
-                        }
-                    });
-                });
-            }
-
-            function startVideo() {
-                if (videoStarted) return;
-                
-                thumbnailOverlay.classList.add('hidden');
-                liveTime.classList.add('visible');
-                leftStats.classList.add('visible');
-                rightStats.classList.add('visible');
-                audioControl.classList.add('visible');
-                commentsSection.classList.add('visible');
-                
-                video.muted = false;
-                isMuted = false;
-                audioIcon.className = 'fi fi-ss-volume';
-                audioControl.classList.remove('inactive');
-                
-                // Usa a função robusta de play
-                attemptPlay().then(() => {
-                    console.log('Vídeo reproduzindo com sucesso');
-                    messageSystem.startAutoMessages();
-                    videoStarted = true;
-                }).catch(error => {
-                    console.error('Falha ao reproduzir vídeo:', error);
-                    // Opcional: exibir mensagem para o usuário (sem alterar aparência)
-                    // Pode criar um pequeno toast invisível ou apenas registrar
-                });
-            }
-
-            playButton.addEventListener('click', startVideo);
-            thumbnailOverlay.addEventListener('click', (e) => {
-                if (e.target === thumbnailOverlay || e.target.closest('.play-button')) {
-                    startVideo();
-                }
-            });
-
-            // Controle de áudio
+            // Controle de áudio (toggle mute) e remoção da animação
             function toggleAudio() {
-                if (!videoStarted) return;
+                if (!video) return;
                 isMuted = !isMuted;
                 video.muted = isMuted;
 
@@ -1002,7 +813,11 @@
                     audioIcon.classList.remove('audio-icon-inactive');
                     audioControl.classList.remove('inactive');
                 }
+
+                // Remove a animação de pulsar do botão (só uma vez)
+                audioControl.classList.remove('pulsing');
             }
+
             audioControl.addEventListener('click', toggleAudio);
 
             // Enviar comentário
@@ -1060,6 +875,9 @@
                     }
                 }
             });
+
+            // Forçar tentativa de play (caso autoplay não funcione)
+            video.play().catch(e => console.log('Autoplay pode ter sido bloqueado, mas vídeo está mudo.', e));
         })();
     </script>
 </body>
