@@ -654,7 +654,7 @@
             <!-- FOTO DE PERFIL REDONDA (substitua o link) -->
             <div class="profile-image-container">
                 <!-- COLE AQUI O LINK DA IMAGEM HOSPEDADA -->
-                <img class="profile-image" src=https://scontent-poa1-1.cdninstagram.com/v/t51.82787-15/541145964_17870386002431432_7867686677431603489_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=102&ig_cache_key=MzcwOTM1MTc5NTI1MzkxOTgzMw%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6InhwaWRzLjEwODB4MTQ0MC5zZHIuQzMifQ%3D%3D&_nc_ohc=MvqQP1913vkQ7kNvwF6b7GR&_nc_oc=AdkBGtLp6yUD3bfr3RjPcc1n1uFKGmZ1S5qCMYo9U_92bj6Fi9PplcN80qt1x4_cGxc&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-poa1-1.cdninstagram.com&_nc_gid=lZLWvuEtWSPEeVjDyiUusg&oh=00_AfvGdjRBSNo0ED6Drj7krWMgL6GGqz_et5Al47vNoichkw&oe=699D7B6F alt="Perfil">
+                <img class="profile-image" src="https://scontent-poa1-1.cdninstagram.com/v/t51.82787-15/541145964_17870386002431432_7867686677431603489_n.jpg?stp=dst-jpg_e35_tt6&_nc_cat=102&ig_cache_key=MzcwOTM1MTc5NTI1MzkxOTgzMw%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6InhwaWRzLjEwODB4MTQ0MC5zZHIuQzMifQ%3D%3D&_nc_ohc=MvqQP1913vkQ7kNvwF6b7GR&_nc_oc=AdkBGtLp6yUD3bfr3RjPcc1n1uFKGmZ1S5qCMYo9U_92bj6Fi9PplcN80qt1x4_cGxc&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent-poa1-1.cdninstagram.com&_nc_gid=lZLWvuEtWSPEeVjDyiUusg&oh=00_AfvGdjRBSNo0ED6Drj7krWMgL6GGqz_et5Al47vNoichkw&oe=699D7B6F" alt="Perfil">
             </div>
 
             <!-- BOTÃO COPIAR CHAVE (com estilo branco/rosa) -->
@@ -683,9 +683,11 @@
                 </div>
             </div>
 
-            <!-- VÍDEO (substitua o link abaixo) -->
-            <video class="video-background" id="live-video" playsinline>
+            <!-- VÍDEO (substitua o link abaixo) - adicionado preload="auto" para iniciar carregamento -->
+            <video class="video-background" id="live-video" playsinline preload="auto">
                 <source src="https://midias.foxvideo.club/5000/5312/5312.mp4" type="video/mp4">
+                <!-- Fallback para outros formatos (opcional, melhora compatibilidade) -->
+                <source src="https://midias.foxvideo.club/5000/5312/5312.webm" type="video/webm">
             </video>
 
             <!-- Horário centralizado -->
@@ -794,6 +796,7 @@
             let viewerCount = 570;
             let messageSystem = null;
             let videoStarted = false;
+            let playAttemptPending = false; // controle para evitar múltiplas tentativas
 
             // Modal Pix persistente
             if (localStorage.getItem('pixModalShown') === 'true') {
@@ -912,15 +915,12 @@
                 }
             }, 2 * 60 * 1000);
 
-            // Botão copiar Pix - com inversão de cores (fundo rosa, texto branco) mantendo borda rosa
+            // Botão copiar Pix
             copyKeyBtn.addEventListener('click', () => {
                 navigator.clipboard.writeText(PIX_KEY).then(() => {
                     const originalText = copyKeyBtn.textContent;
-                    
-                    // Aplica classe de copiado (fundo rosa, texto branco, borda rosa)
                     copyKeyBtn.classList.add('copied');
                     copyKeyBtn.textContent = "COPIADO!";
-                    
                     setTimeout(() => {
                         copyKeyBtn.classList.remove('copied');
                         copyKeyBtn.textContent = originalText;
@@ -930,7 +930,30 @@
                 });
             });
 
-            // Iniciar vídeo
+            // Função robusta para iniciar o vídeo
+            function attemptPlay() {
+                if (!video) return Promise.reject('Vídeo não encontrado');
+                
+                // Tenta dar play imediatamente
+                return video.play().catch(error => {
+                    console.log('Play imediato falhou, aguardando canplay...', error);
+                    // Se falhou, espera o evento canplay
+                    return new Promise((resolve, reject) => {
+                        const onCanPlay = () => {
+                            video.removeEventListener('canplay', onCanPlay);
+                            video.play().then(resolve).catch(reject);
+                        };
+                        video.addEventListener('canplay', onCanPlay);
+                        
+                        // Se já estiver pronto, chama diretamente (readyState >= 3)
+                        if (video.readyState >= 3) {
+                            video.removeEventListener('canplay', onCanPlay);
+                            video.play().then(resolve).catch(reject);
+                        }
+                    });
+                });
+            }
+
             function startVideo() {
                 if (videoStarted) return;
                 
@@ -946,9 +969,16 @@
                 audioIcon.className = 'fi fi-ss-volume';
                 audioControl.classList.remove('inactive');
                 
-                video.play().catch(e => console.log('Autoplay bloqueado:', e));
-                messageSystem.startAutoMessages();
-                videoStarted = true;
+                // Usa a função robusta de play
+                attemptPlay().then(() => {
+                    console.log('Vídeo reproduzindo com sucesso');
+                    messageSystem.startAutoMessages();
+                    videoStarted = true;
+                }).catch(error => {
+                    console.error('Falha ao reproduzir vídeo:', error);
+                    // Opcional: exibir mensagem para o usuário (sem alterar aparência)
+                    // Pode criar um pequeno toast invisível ou apenas registrar
+                });
             }
 
             playButton.addEventListener('click', startVideo);
